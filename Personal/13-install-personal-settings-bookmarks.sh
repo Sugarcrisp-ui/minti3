@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Define relative source and destination paths
 source_dir="../personal-settings/.config/gtk-3.0"
 destination_dir="$HOME/.config/"

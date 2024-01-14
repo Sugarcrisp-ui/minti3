@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Update Manager
+Comment=Show and install available updates
+Exec=mintupdate
+
+Icon=mintupdate
+Terminal=false
+Type=Application
+Encoding=UTF-8
+Categories=Application;System;Settings;XFCE;X-XFCE-SettingsDialog;X-XFCE-SystemSettings;
+StartupNotify=false
+NotShowIn=KDE;
+Path=

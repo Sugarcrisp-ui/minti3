@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Download and install ExpressVPN
 echo -e "\e[32mDownloading ExpressVPN\e[0m"
 wget https://www.expressvpn.works/clients/linux/expressvpn_3.61.0.12-1_amd64.deb

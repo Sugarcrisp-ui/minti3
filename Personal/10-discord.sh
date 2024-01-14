@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Check if Discord is already installed
 if dpkg -s discord &> /dev/null; then
     echo "Discord is already installed."

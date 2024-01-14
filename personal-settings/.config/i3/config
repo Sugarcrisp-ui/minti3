@@ -1,0 +1,209 @@
+# Color Definitions
+set $focusedBorderColor #6790EB
+set $unfocusedBorderColor #222222
+set $textColor #e5e5e5
+set $backgroundBorderColor #242424
+
+# Key Definitions
+set $mod Mod4
+bindsym $mod+Right focus right
+bindsym $mod+Left focus left
+bindsym $mod+Up focus up
+bindsym $mod+Down focus down
+
+# Gaps Definitions
+gaps inner 10
+gaps outer 0
+
+# Workspaces
+set $firstMonitor HDMI1
+set $secondMonitor HDMI2
+workspace 1 output $firstMonitor
+workspace 2 output $firstMonitor
+workspace 3 output $firstMonitor
+workspace 4 output $firstMonitor
+workspace 5 output $firstMonitor
+workspace 6 output $secondMonitor
+workspace 7 output $secondMonitor
+workspace 8 output $secondMonitor
+workspace 9 output $secondMonitor
+workspace 10 output $secondMonitor
+
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
+bindsym $mod+7 workspace 7
+bindsym $mod+8 workspace 8
+bindsym $mod+9 workspace 9
+bindsym $mod+0 workspace 10
+
+bindsym $mod+Shift+1 move container to workspace 1
+bindsym $mod+Shift+2 move container to workspace 2
+bindsym $mod+Shift+3 move container to workspace 3
+bindsym $mod+Shift+4 move container to workspace 4
+bindsym $mod+Shift+5 move container to workspace 5
+bindsym $mod+Shift+6 move container to workspace 6
+bindsym $mod+Shift+7 move container to workspace 7
+bindsym $mod+Shift+8 move container to workspace 8
+bindsym $mod+Shift+9 move container to workspace 9
+bindsym $mod+Shift+0 move container to workspace 10
+
+# Xfce4 Application Launcher
+bindsym mod1+d exec --no-startup-id xfce4-appfinder
+
+# Rofi Application Launcher
+bindsym $mod+d exec rofi -show drun -font "Noto Mono 13"
+
+# Logout
+bindsym $mod+x exec --no-startup-id /home/brett/.bin-personal/screenlock.sh
+
+# Reload Configuration
+bindsym $mod+Shift+c reload
+
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r exec --no-startup-id killall polybar && ~/.config/polybar/launch.sh
+
+# Kill Window
+bindsym $mod+q kill
+
+# Mouse and Floating Windows
+floating_modifier $mod
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+$left focus left
+bindsym $mod+$down focus down
+bindsym $mod+$up focus up
+bindsym $mod+$right focus right
+bindsym $mod+Shift+$left move left
+bindsym $mod+Shift+$down move down
+bindsym $mod+Shift+$up move up
+bindsym $mod+Shift+$right move right
+
+# Workspace Navigation
+bindsym Mod1+Tab workspace next
+bindsym Mod1+Shift+Tab workspace prev
+bindsym $mod+Tab workspace back_and_forth
+bindsym Mod1+Ctrl+Right workspace next
+bindsym Mod1+Ctrl+Left workspace prev
+for_window [urgent=latest] focus
+
+# Tiling Parameters
+default_orientation horizontal
+bindsym $mod+h split h
+bindsym $mod+v split v
+bindsym $mod+f fullscreen toggle
+bindsym $mod+space focus mode_toggle
+bindsym $mod+a focus parent
+
+# Autostart
+#exec --no-startup-id xrandr --output VGA-1 --mode 1920x1080
+exec_always --no-startup-id /home/brett/.local/bin/autotiling
+#exec_always --no-startup-id mintupdate
+#exec --no-startup-id google-chrome-stable
+exec --no-startup-id /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1
+#exec --no-startup-id firefox
+#exec --no-startup-id insync start
+exec_always --no-startup-id copyq
+exec_always --no-startup-id blueberry-tray
+#exec_always --no-startup-id blueman-tray &
+exec --no-startup-id ~/.config/polybar/launch.sh
+exec_always --no-startup-id feh --bg-fill /home/brett/Pictures/wonder-woman.jpg &
+#exec_always --no-startup-id numlockx on
+#exec_always --no-startup-id cryptomator
+#exec_always --no-startup-id xfce4-power-manager &
+
+# Application Keyboard Shortcuts
+bindsym Ctrl+space exec --no-startup-id catfish;focus
+bindsym $mod+Return exec --no-startup-id xfce4-terminal;focus
+bindsym $mod+mod1+Return exec xfce4-terminal -e fish
+bindsym Ctrl+mod1+m exec --no-startup-id xfce4-settings-manager
+bindsym $mod+s exec --no-startup-id subl
+bindsym Ctrl+mod1+v exec --no-startup-id code
+bindsym Ctrl+mod1+j exec --no-startup-id joplin-desktop
+bindsym $mod+Shift+Return exec --no-startup-id thunar
+bindsym $mod+w exec --no-startup-id exo-open --launch webbrowser
+bindsym Ctrl+mod1+f exec --no-startup-id firefox
+#bindsym Ctrl+mod1+c exec --no-startup-id chromium
+bindsym Ctrl+mod1+g exec --no-startup-id google-chrome-stable
+bindsym --release $mod+Escape exec xkill
+bindsym Ctrl+Shift+p exec --no-startup-id xfce4-screenshooter
+# Add more application keyboard shortcuts here
+
+# Audio Control
+bindsym XF86AudioRaiseVolume exec --no-startup-id "amixer -D pulse sset Master '5%+'"
+bindsym XF86AudioLowerVolume exec --no-startup-id "amixer -D pulse sset Master '5%-'"
+bindsym XF86AudioMute exec --no-startup-id "amixer -D pulse set Master toggle"
+bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
+bindsym XF86AudioNext exec --no-startup-id playerctl next
+bindsym XF86AudioPrev exec --no-startup-id playerctl previous
+bindsym XF86AudioStop exec --no-startup-id playerctl stop
+
+# Screen Brightness Control
+# --------------------------------
+# Use XF86MonBrightnessUp to increase screen brightness and
+# XF86MonBrightnessDown to decrease it.
+bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 20
+bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 20
+
+# Set default window border size
+#default_border pixel 4
+
+# Set window borders
+for_window [class=".*"] border pixel 4
+
+# Border Control
+# --------------------------------
+# Toggle window borders between normal, 2 pixel, and none.
+bindsym $mod+shift+b border pixel 4
+bindsym $mod+t border normal
+bindsym $mod+u border none
+
+# Enable smart borders
+smart_borders on
+
+# Enable smart gaps to auto adjust outer gaps when only one window is present
+smart_gaps on
+
+mode "$mode_gaps_inner" {
+    bindsym plus gaps inner current plus 5
+    bindsym minus gaps inner current minus 5
+    bindsym 0 gaps inner current set 0
+    bindsym Shift+plus gaps inner all plus 5
+    bindsym Shift+minus gaps inner all minus 5
+    bindsym Shift+0 gaps inner all set 0
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+mode "$mode_gaps_outer" {
+    bindsym plus gaps outer current plus 5
+    bindsym minus gaps outer current minus 5
+    bindsym 0 gaps outer current set 0
+    bindsym Shift+plus gaps outer all plus 5
+    bindsym Shift+minus gaps outer all minus 5
+    bindsym Shift+0 gaps outer all set 0
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+# Picom Transparency Control (if you use picom)
+# --------------------------------
+# Start picom with custom settings.
+exec_always --no-startup-id picom --config ~/.config/picom.conf
+
+# Border Color Settings
+# The options that I'm not currently using revert to the
+# defaults
+# --------------------------------
+# Define border and background colors for different window states.
+client.focused          #6790EB #6790EB #e5e5e5 #6790EB
+#client.unfocused        #222222 #222222 #aaaaaa #222222
+#client.focused_inactive #222222 #222222 #a9a9a9 #222222
+#client.placeholder      #222222 #222222 #aaaaaa #222222
+#client.urgent           #d42121 #d42121 #f7f7f7 #d42121
+
+# Set a background color for all clients.
+client.background       #242424
+

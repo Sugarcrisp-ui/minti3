@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Check if picom is already installed
 if command -v picom &> /dev/null
 then

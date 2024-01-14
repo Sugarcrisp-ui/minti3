@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # The set command is used to determine action if an error is encountered.
 # (-e) will stop and exit, and (+e) will continue with the script.
 set -e

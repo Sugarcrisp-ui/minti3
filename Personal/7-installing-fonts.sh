@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # List of fonts to install
 fonts_to_install=(
     fonts-dejavu

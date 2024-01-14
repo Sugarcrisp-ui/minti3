@@ -1,6 +1,8 @@
 # Install necessary packages
-sudo apt-get update
-sudo apt-get install -y \
+
+set -e
+
+sudo apt install -y \
     git \
     libxcb1 \
     libxcb-keysyms1 \

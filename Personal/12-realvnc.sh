@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Check if RealVNC Viewer is installed
 if ! command -v vncviewer &> /dev/null
 then

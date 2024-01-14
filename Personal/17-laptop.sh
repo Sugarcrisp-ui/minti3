@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Function to install a package if it's not already installed
 install_package() {
   if ! dpkg -l "$1" &> /dev/null; then

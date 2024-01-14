@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+<action>
+	<icon>utilities-terminal</icon>
+	<name>Open Terminal Here</name>
+	<submenu></submenu>
+	<unique-id>1704462535322484-1</unique-id>
+	<command>exo-open --working-directory %f --launch TerminalEmulator</command>
+	<description>Example for a custom action</description>
+	<range></range>
+	<patterns>*</patterns>
+	<startup-notify/>
+	<directories/>
+</action>
+<action>
+	<icon>terminal-app</icon>
+	<name>Extract Here</name>
+	<submenu></submenu>
+	<unique-id>1704551792913098-1</unique-id>
+	<command>tar xjf %n</command>
+	<description></description>
+	<range>*</range>
+	<patterns>*</patterns>
+</action>
+<action>
+	<icon>application-x-zip</icon>
+	<name>Unzip Here</name>
+	<submenu></submenu>
+	<unique-id>1704551883040033-2</unique-id>
+	<command>/usr/bin/unzip %f</command>
+	<description></description>
+	<range>*</range>
+	<patterns>*</patterns>
+</action>
+<action>
+	<icon>org.gnome.meld</icon>
+	<name>Compare</name>
+	<submenu></submenu>
+	<unique-id>1704551946555483-3</unique-id>
+	<command>meld %F</command>
+	<description></description>
+	<range>*</range>
+	<patterns>*</patterns>
+</action>
+</actions>

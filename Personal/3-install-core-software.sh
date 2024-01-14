@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # List of packages to install.
 list=(
     # Web Browsers

@@ -1,0 +1,11 @@
+{
+	"bootstrapped": true,
+	"installed_packages":
+	[
+		"i3 wm",
+		"Package Control",
+	],
+	"in_process_packages":
+	[
+	],
+}

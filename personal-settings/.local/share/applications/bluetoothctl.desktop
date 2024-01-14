@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Terminal=true
+Name=bluetoothctl
+Exec=xfce4-terminal --command "bluetoothctl"

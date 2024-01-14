@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 apps_to_remove=(
   "hexchat"
   "hypnotix"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Get Linux Mint version
 mint_version=$(cat /etc/os-release | grep VERSION_ID | cut -d= -f2 | tr -d '"')
 

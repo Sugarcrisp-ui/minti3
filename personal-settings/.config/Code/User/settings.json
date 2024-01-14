@@ -1,0 +1,9 @@
+{
+    "editor.inlineSuggest.suppressSuggestions": true,
+    "cody.experimental.chatPanel": true,
+    "window.zoomLevel": 2,
+    "cody.experimental.chatPredictions": true,
+    "git.autofetch": true,
+    "security.workspace.trust.untrustedFiles": "open",
+    "workbench.colorTheme": "i3 -- Dark+"
+}

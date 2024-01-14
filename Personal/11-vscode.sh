@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Check if VS Code is already installed
 if command -v code &> /dev/null
 then
