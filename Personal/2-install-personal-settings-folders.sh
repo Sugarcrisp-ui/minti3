@@ -1,50 +1,18 @@
 #!/bin/bash
+set -e
 
 # Source and destination directories
-source_directories=( "/etc" "/usr" "/var" )
-destination_directories=( "/" "/" "/" )
+source_dir=~/minti3/personal-settings
+destination_dir=~/
 
-# Files to copy from each directory
-files_to_copy=(
-    "/etc/rc.local"
-    "/etc/vconsole.conf"
-    "/var/spool/cron/brett"
-    "/var/spool/cron/root"
-    "/usr/share/gvfs/mounts/network.mount"
-)
+# Copy directories
+cp -r $source_dir/.bin-personal/ $destination_dir
+cp -r $source_dir/.config/ $destination_dir
+cp -r $source_dir/.local/ $destination_dir
 
-# Iterate through source directories and copy specified files to the destination
-for ((i=0; i<${#source_directories[@]}; i++)); do
-    source_directory="${source_directories[i]}"
-    destination_directory="${destination_directories[i]}"
+# Copy specific files
+cp $source_dir/.gtkrc-2.0.mine $destination_dir
+cp $source_dir/bash_aliases $destination_dir
 
-    for file in "${files_to_copy[@]}"; do
-        source_path="$source_directory$file"
-        destination_path="$destination_directory$file"
-
-        if [ -e "$source_path" ]; then
-            mkdir -p "$(dirname "$destination_path")"
-            cp "$source_path" "$destination_path"
-            echo "Copied $file to $destination_directory"
-
-            # Set correct permissions and ownership
-            if [[ "$file" == "/etc/rc.local" || "$file" == "/etc/vconsole.conf" ]]; then
-                chmod 644 "$destination_path"
-                chown root:root "$destination_path"
-                echo "Set permissions and ownership for $file"
-            elif [[ "$file" == "/var/spool/cron/brett" || "$file" == "/var/spool/cron/root" ]]; then
-                chmod 600 "$destination_path"
-                chown root:root "$destination_path"
-                echo "Set permissions and ownership for $file"
-            elif [[ "$file" == "/usr/share/gvfs/mounts/network.mount" ]]; then
-                mkdir -p "$(dirname "$destination_path")"
-                cp "$source_path" "$destination_path"
-                chmod 644 "$destination_path"
-                chown root:root "$destination_path"
-                echo "Set permissions and ownership for $file"
-            fi
-        else
-            echo "$file not found in $source_directory"
-        fi
-    done
-done
+# Copy JPEG files to Pictures directory
+cp $source_dir/*.jpg ~/Pictures/
