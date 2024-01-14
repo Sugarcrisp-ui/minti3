@@ -1,14 +1,16 @@
 #!/bin/bash
 set -e
 
-# Define the source and destination paths
-SOURCE_DIR=~/minti3/personal-settings
-DEST_DIR=/etc
+# Set the home directory explicitly
+HOME_DIR="/home/brett"
 
-# List of files and directories to copy
-FILES=("rc.local" "vconsole.conf" "usr/share/gvfs/mounts/network.mount")
+# Define the source and destination paths
+SOURCE_DIR="$HOME_DIR/minti3/personal-settings"
+DEST_DIR="/"
+
+# List of files to copy
+FILES=("etc/rc.local" "etc/vconsole.conf" "usr/share/gvfs/mounts/network.mount")
 CRON_DIR="var/spool/cron"
-NEW_DIR="/personal"
 
 # Copy files and set permissions
 for item in "${FILES[@]}"; do
@@ -28,23 +30,33 @@ done
 for user in "brett" "root"; do
     CRON_FILE="$SOURCE_DIR/$CRON_DIR/$user"
     if [ -e "$CRON_FILE" ]; then
-        DEST_CRON_FILE="$DEST_DIR/$CRON_DIR/$user"
+        DEST_CRON_FILE="$DEST_DIR/$CRON_DIR/crontabs/$user"
         sudo cp "$CRON_FILE" "$DEST_CRON_FILE"
         sudo chown "$user:$user" "$DEST_CRON_FILE"
         sudo chmod 600 "$DEST_CRON_FILE"
     fi
 done
 
-# Create /personal/ directory and subdirectories
-sudo mkdir -p "/$NEW_DIR/.config"
-sudo mkdir -p "/$NEW_DIR/.local"
+# Copy network.mount file with root ownership and permissions
+NETWORK_MOUNT_SOURCE="$SOURCE_DIR/usr/share/gvfs/mounts/network.mount"
+NETWORK_MOUNT_DEST="$DEST_DIR/usr/share/gvfs/mounts/network.mount"
+sudo cp "$NETWORK_MOUNT_SOURCE" "$NETWORK_MOUNT_DEST"
+sudo chown root:root "$NETWORK_MOUNT_DEST"
+sudo chmod 644 "$NETWORK_MOUNT_DEST"
 
-# Set ownership and permissions for /personal/ directory
-sudo chown "$USER:$USER" "/$NEW_DIR"
-sudo chmod 755 "/$NEW_DIR"
+# Create personal directory with brett ownership and permissions
+PERSONAL_DIR="$DEST_DIR/personal"
+sudo mkdir -p "$PERSONAL_DIR"
+sudo chown brett:brett "$PERSONAL_DIR"
+sudo chmod 755 "$PERSONAL_DIR"
 
-# Set ownership and permissions for /personal/.config/ and /personal/.local/
-sudo chown -R "$USER:$USER" "/$NEW_DIR/.config" "/$NEW_DIR/.local"
-sudo chmod -R 700 "/$NEW_DIR/.config" "/$NEW_DIR/.local"
+# Create .config and .local directories with brett ownership and permissions
+sudo mkdir -p "$PERSONAL_DIR/.config"
+sudo chown brett:brett "$PERSONAL_DIR/.config"
+sudo chmod 700 "$PERSONAL_DIR/.config"
 
-echo "Personal settings copied to /etc successfully."
+sudo mkdir -p "$PERSONAL_DIR/.local"
+sudo chown brett:brett "$PERSONAL_DIR/.local"
+sudo chmod 700 "$PERSONAL_DIR/.local"
+
+echo "Personal settings copied to the root directory successfully."

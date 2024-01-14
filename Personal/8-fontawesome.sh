@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 # Define the URLs for the Font Awesome files
 url1="https://use.fontawesome.com/releases/v6.5.1/fontawesome-free-6.5.1-desktop.zip"
 url2="https://use.fontawesome.com/releases/v5.15.4/fontawesome-free-5.15.4-desktop.zip"
@@ -66,4 +64,8 @@ if [ "$run_fc_cache" = true ]; then
     fc-cache -fv || handle_error "Failed to update font cache."
 fi
 
-echo "Font Awesome 5 and 6 installation completed."
+# Clean up unnecessary files
+rm "$dest_dir/fontawesome-free-6.5.1-desktop.zip"
+rm "$dest_dir/fontawesome-free-5.15.4-desktop.zip"
+
+echo "Font Awesome 5 and 6 installation completed, and installation files removed."

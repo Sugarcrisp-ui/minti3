@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 # Check if i3lock-fancy is already installed
 if command -v i3lock-fancy &> /dev/null
 then
@@ -15,6 +13,10 @@ else
     # Clean up installation files
     cd ..
     rm -rf i3lock-fancy
+
+    # Create i3lock-fancy directory and configuration file if they don't exist
+    mkdir -p ~/.config/i3lock-fancy
+    touch ~/.config/i3lock-fancy/lock
 
     # Update i3lock-fancy configuration
     sed -i 's/# default/rm -f "$IMAGE" \&\& /' ~/.config/i3lock-fancy/lock
