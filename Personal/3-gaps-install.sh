@@ -20,7 +20,8 @@ sudo apt-get install -y \
     meson \
     ninja-build \
     python3-setuptools \
-    python3-pip
+    python3-pip \
+    i3
 
 # Install autotiling dependencies
 sudo apt-get install -y \
