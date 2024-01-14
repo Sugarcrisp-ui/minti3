@@ -34,4 +34,4 @@ for script in "${install_scripts[@]}"; do
 done
 
 # Restart the system
-sudo reboot
+#sudo reboot
