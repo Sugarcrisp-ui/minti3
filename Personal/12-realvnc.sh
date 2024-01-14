@@ -11,7 +11,7 @@ then
     # Check if the download was successful
     if [ -e realvnc-viewer.deb ]
     then
-        sudo dpkg -i -y realvnc-viewer.deb
+        sudo dpkg -i realvnc-viewer.deb
         sudo apt install -f
 
         echo "RealVNC Viewer installation completed."
@@ -34,7 +34,7 @@ then
     # Check if the download was successful
     if [ -e realvnc-server.deb ]
     then
-        sudo dpkg -i -y realvnc-server.deb
+        sudo dpkg -i realvnc-server.deb
         sudo apt install -f
 
         echo "RealVNC Server installation completed."
