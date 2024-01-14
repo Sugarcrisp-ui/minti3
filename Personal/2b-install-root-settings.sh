@@ -8,6 +8,7 @@ DEST_DIR=/etc
 # List of files and directories to copy
 FILES=("rc.local" "vconsole.conf" "usr/share/gvfs/mounts/network.mount")
 CRON_DIR="var/spool/cron"
+NEW_DIR="/personal"
 
 # Copy files and set permissions
 for item in "${FILES[@]}"; do
@@ -33,5 +34,17 @@ for user in "brett" "root"; do
         sudo chmod 600 "$DEST_CRON_FILE"
     fi
 done
+
+# Create /personal/ directory and subdirectories
+sudo mkdir -p "/$NEW_DIR/.config"
+sudo mkdir -p "/$NEW_DIR/.local"
+
+# Set ownership and permissions for /personal/ directory
+sudo chown "$USER:$USER" "/$NEW_DIR"
+sudo chmod 755 "/$NEW_DIR"
+
+# Set ownership and permissions for /personal/.config/ and /personal/.local/
+sudo chown -R "$USER:$USER" "/$NEW_DIR/.config" "/$NEW_DIR/.local"
+sudo chmod -R 700 "/$NEW_DIR/.config" "/$NEW_DIR/.local"
 
 echo "Personal settings copied to /etc successfully."
