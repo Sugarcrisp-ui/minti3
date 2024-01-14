@@ -58,3 +58,10 @@ Type=Application
 X-LightDM-DesktopName=i3
 EOL
 
+# Update LightDM configuration to include i3 and xfce
+sudo nano /etc/lightdm/lightdm.conf
+
+# Add the following lines to update user-session
+echo "[SeatDefaults]" | sudo tee -a /etc/lightdm/lightdm.conf
+echo "user-session=i3" | sudo tee -a /etc/lightdm/lightdm.conf
+echo "greeter-session=lightdm-gtk-greeter" | sudo tee -a /etc/lightdm/lightdm.conf
