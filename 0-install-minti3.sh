@@ -6,8 +6,6 @@ cd "$(dirname "$0")/Personal"
 # Set execute permission on all .sh files
 chmod +x *.sh
 
-sudo apt update
-
 # List of install scripts in numerical order
 install_scripts=(
     "1-remove-software.sh"
@@ -30,18 +28,10 @@ install_scripts=(
     "18-expressvpn.sh"
 )
 
-# Install scripts based on user choice
+# Install scripts without user interaction
 for script in "${install_scripts[@]}"; do
-    read -p "Run $script? (y/n): " choice
-    if [ "$choice" == "y" ]; then
-        ./$script
-    else
-        echo "Skipping $script"
-    fi
+    ./$script
 done
 
-# Ask to restart the system
-read -p "Installation complete. Restart now? (y/n): " choice
-if [ "$choice" == "y" ]; then
-    sudo reboot
-fi
+# Restart the system
+sudo reboot
