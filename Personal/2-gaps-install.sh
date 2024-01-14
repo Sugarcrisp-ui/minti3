@@ -1,13 +1,11 @@
 # Install necessary packages
-
-set -e
-
-sudo apt install -y \
+sudo apt-get update
+sudo apt-get install -y \
     git \
     libxcb1 \
     libxcb-keysyms1 \
     libpango1.0-0 \
-    libxcb-util0 \
+    libxcb-util1 \
     libxcb-icccm4 \
     libyajl2 \
     libstartup-notification0 \
@@ -18,16 +16,18 @@ sudo apt install -y \
     libxcb-xkb1 \
     libxkbcommon-x11-0 \
     libxkbcommon0 \
-    libxcb-shape0
+    libxcb-shape0 \
+    meson \
+    ninja-build \
+    python3-setuptools \
+    python3-pip
 
-# Clone i3-gaps repository
-git clone https://www.github.com/Airblader/i3 i3-gaps
-cd i3-gaps
-
-# Build and install i3-gaps
-mkdir -p build && cd build
-meson ..
-sudo ninja install
+# Install autotiling dependencies
+sudo apt-get install -y \
+    libxcb-randr0-dev \
+    libxcb-xinerama0-dev \
+    libxcb-xtest0-dev \
+    libxcb-shape0-dev
 
 # Clone autotiling repository
 cd ~
@@ -39,7 +39,7 @@ sudo python3 setup.py install
 
 # Cleanup
 cd ~
-rm -rf i3-gaps autotiling
+sudo rm -rf i3-gaps autotiling
 
 # Create a custom LightDM configuration for i3
 sudo tee /etc/lightdm/lightdm.conf <<EOL
@@ -58,5 +58,3 @@ Type=Application
 X-LightDM-DesktopName=i3
 EOL
 
-# Add execution permissions to the script
-chmod +x i3-gaps-install.sh

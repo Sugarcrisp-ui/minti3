@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 # Add flathub remote if not exists
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
@@ -13,6 +11,7 @@ flatpaks=(
     "org.cryptomator.Cryptomator"
     "io.github.shiftey.Desktop"
     "net.cozic.joplin_desktop"
+    "com.google.Chrome"
 )
 
 # Install or check and echo

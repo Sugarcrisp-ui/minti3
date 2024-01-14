@@ -6,8 +6,7 @@ set -e
 list=(
     # Web Browsers
     chromium-browser
-    google-chrome-stable     
-
+    
     # Multimedia
     celluloid
     ffmpeg

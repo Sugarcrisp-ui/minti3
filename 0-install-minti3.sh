@@ -6,6 +6,9 @@ cd "$(dirname "$0")/Personal"
 # Set execute permission on all .sh files
 chmod +x *.sh
 
+# Step 0: Change xfce4-terminal setting for unlimited scrolling
+xfconf-query -c xfce4-terminal -p /general/ScrollingLimit -n -t int -s 0
+
 # List of install scripts in numerical order
 install_scripts=(
     "1-remove-software.sh"
