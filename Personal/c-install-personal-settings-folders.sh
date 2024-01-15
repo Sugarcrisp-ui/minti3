@@ -11,6 +11,9 @@ chmod +x $source_dir/.bin-personal/*.sh
 # Run chmod +x on all .sh files in .config/polybar
 chmod +x $source_dir/.config/polybar/*.sh
 
+# Make Polybar scripts executable
+chmod +x $source_dir/.config/polybar/scripts/*.sh
+
 # Run chmod +x on autotiling in .local directory
 chmod +x $source_dir/.local/bin/autotiling
 

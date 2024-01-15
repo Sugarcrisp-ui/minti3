@@ -6,7 +6,7 @@ cd "$(dirname "$0")/Personal"
 # Set execute permission on all .sh files
 sudo chmod +x *.sh
 
-# List of install scripts in corrected numerical order
+# List of install scripts in corrected alphabetical order
 install_scripts=(
     a-remove-software.sh
     b-install-i3.sh
@@ -31,9 +31,14 @@ install_scripts=(
     u-expressvpn.sh
 )
 
-# Install scripts without user interaction
+# Install scripts with user confirmation
 for script in "${install_scripts[@]}"; do
-    sudo ./$script
+    read -p "Run $script? (y/n): " choice
+    if [ "$choice" == "y" ]; then
+        sudo ./$script
+    else
+        echo "Skipping $script"
+    fi
 done
 
 # Display completion message

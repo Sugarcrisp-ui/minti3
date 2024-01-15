@@ -19,7 +19,4 @@ echo "$PASSWORD" | sudo -S apt install i3 -y
 echo "Installing Polybar..."
 echo "$PASSWORD" | sudo -S apt install polybar -y
 
-# Make Polybar scripts executable
-chmod +x ~/.config/polybar/scripts/*.sh
-
 echo "i3 and Polybar have been successfully installed."
