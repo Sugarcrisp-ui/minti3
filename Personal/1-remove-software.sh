@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 apps_to_remove=(
   "hexchat"
   "hypnotix"
@@ -17,6 +15,8 @@ for app in "${apps_to_remove[@]}"; do
     if command -v "$app" &> /dev/null; then
         echo "Removing $app..."
         sudo apt-get remove --purge "$app" -y
+        # Remove related directories in ~/.config
+        rm -rf "$HOME/.config/$app"
     else
         echo "$app is not installed."
     fi
