@@ -20,6 +20,7 @@ flatpaks=(
     "io.github.shiftey.Desktop"
     "net.cozic.joplin_desktop"
     "com.google.Chrome"
+    "no.mifi.losslesscut"
 )
 
 # Install or check and echo

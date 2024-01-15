@@ -1,9 +1,6 @@
 #!/bin/bash
-set -e
 
 apps_to_remove=(
-  "caja"
-  "evolution"  
   "hexchat"
   "hypnotix"
   "libreoffice-base"
@@ -15,11 +12,12 @@ apps_to_remove=(
 )
 
 for app in "${apps_to_remove[@]}"; do
+    echo "Checking and removing $app..."
+    # Remove related directories in ~/.config regardless of installation status
+    rm -rf "$HOME/.config/$app"
     if command -v "$app" &> /dev/null; then
         echo "Removing $app..."
         sudo apt-get remove --purge "$app" -y
-        # Remove related directories in ~/.config
-        rm -rf "$HOME/.config/$app"
     else
         echo "$app is not installed."
     fi

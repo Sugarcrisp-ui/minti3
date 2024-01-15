@@ -126,7 +126,7 @@ bindsym $mod+Shift+Return exec --no-startup-id thunar
 bindsym $mod+w exec --no-startup-id exo-open --launch webbrowser
 bindsym Ctrl+mod1+f exec --no-startup-id firefox
 #bindsym Ctrl+mod1+c exec --no-startup-id chromium
-bindsym Ctrl+mod1+g exec --no-startup-id google-chrome-stable
+bindsym Ctrl+mod1+g exec --no-startup-id google-chrome
 bindsym --release $mod+Escape exec xkill
 bindsym Ctrl+Shift+p exec --no-startup-id xfce4-screenshooter
 # Add more application keyboard shortcuts here

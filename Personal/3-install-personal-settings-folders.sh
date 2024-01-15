@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -e
+# Fix the MIME type in xreader.desktop
+sudo sed -i 's/MimeType=application\/x-ext-cbzapplication\/oxps/MimeType=application\/oxps/' /usr/share/applications/xreader.desktop
 
 # Check if VS Code is already installed
 if command -v code &> /dev/null

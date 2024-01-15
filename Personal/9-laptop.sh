@@ -4,6 +4,7 @@ set -e
 
 # List of fonts to install
 fonts_to_install=(
+    ttf-mscorefonts-installer
     fonts-dejavu
     fonts-font-awesome
     fonts-inconsolata
@@ -13,8 +14,7 @@ fonts_to_install=(
     fonts-ubuntu
     fonts-ubuntu-console
     fonts-ubuntu-title
-    ttf-mscorefonts-installer
-)
+    )
 
 # Check and install fonts
 for font in "${fonts_to_install[@]}"; do

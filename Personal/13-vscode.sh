@@ -8,9 +8,8 @@ destination_dir=~/
 # Run chmod +x on *.sh files in .bin-personal
 chmod +x $source_dir/.bin-personal/*.sh
 
-# Run chmod +x on all .sh files in .config/polybar and .local/bin/
+# Run chmod +x on all .sh files in .config/polybar
 chmod +x $source_dir/.config/polybar/*.sh
-chmod +x $source_dir/.local/bin/*.sh
 
 # Run chmod +x on autotiling in .local directory
 chmod +x $source_dir/.local/bin/autotiling
@@ -29,3 +28,5 @@ cp -f $source_dir/bash_aliases $destination_dir
 
 # Copy JPEG files to Pictures directory with overwriting existing files
 cp -f $source_dir/*.jpg ~/Pictures/
+
+echo "Successfully Copied."

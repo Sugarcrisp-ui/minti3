@@ -10,7 +10,6 @@ list=(
     # Multimedia
     celluloid
     ffmpeg
-    losslesscut
     simplescreenrecorder
     spotify-client
     vlc
@@ -29,9 +28,13 @@ list=(
     paprefs
     pavucontrol
     pinta
+    pip
 #    polybar
     qbittorrent
-    qt5-default
+    qtbase5-dev 
+    qtchooser 
+    qt5-qmake 
+    qtbase5-dev-tools
     rofi
     seahorse
     sshfs

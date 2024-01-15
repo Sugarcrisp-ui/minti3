@@ -59,4 +59,4 @@ sudo mkdir -p "$PERSONAL_DIR/.local"
 sudo chown brett:brett "$PERSONAL_DIR/.local"
 sudo chmod 700 "$PERSONAL_DIR/.local"
 
-echo "Personal settings copied to the root directory successfully."
+echo "Successfully Copied."
