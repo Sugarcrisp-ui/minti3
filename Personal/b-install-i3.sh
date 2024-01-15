@@ -2,20 +2,24 @@
 
 set -e
 
-# Check if Discord is already installed
-if dpkg -s discord &> /dev/null; then
-    echo "Discord is already installed."
-else
-    # Download Discord .deb package
-    wget -O discord.deb "https://discordapp.com/api/download?platform=linux&format=deb"
-
-    # Install Discord without prompts
-    sudo dpkg -i discord.deb
-    sudo apt install -y -f > /dev/null 2>&1
-
-    # Clean up downloaded files
-    rm discord.deb
-
-    # Notify the user
-    echo "Discord installation completed. You can now launch Discord from the application menu or by typing 'discord' in the terminal."
+# Ensure script is run with sudo
+if [ "$EUID" -ne 0 ]; then
+    echo "Please run with sudo."
+    exit
 fi
+
+# Update package list
+sudo apt update
+
+# Install i3 window manager
+echo "Installing i3..."
+echo "$PASSWORD" | sudo -S apt install i3 -y
+
+# Install Polybar
+echo "Installing Polybar..."
+echo "$PASSWORD" | sudo -S apt install polybar -y
+
+# Make Polybar scripts executable
+chmod +x ~/.config/polybar/scripts/*.sh
+
+echo "i3 and Polybar have been successfully installed."

@@ -1,52 +1,62 @@
 #!/bin/bash
-
 set -e
 
-# Check if RealVNC Viewer is installed
-if ! command -v vncviewer &> /dev/null
-then
-    # Download and install RealVNC Viewer
-    wget https://downloads.realvnc.com/download/file/viewer.files/VNC-Viewer-7.9.0-Linux-x64.deb -O realvnc-viewer.deb
+# Set the home directory explicitly
+HOME_DIR="/home/brett"
 
-    # Check if the download was successful
-    if [ -e realvnc-viewer.deb ]
-    then
-        sudo dpkg -i realvnc-viewer.deb
-        sudo apt install -f
+# Define the source and destination paths
+SOURCE_DIR="$HOME_DIR/minti3/personal-settings"
+DEST_DIR="/"
 
-        echo "RealVNC Viewer installation completed."
-    else
-        echo "Failed to download RealVNC Viewer. Please check the URL or try again later."
+# List of files to copy
+FILES=("etc/rc.local" "etc/vconsole.conf" "usr/share/gvfs/mounts/network.mount")
+CRON_DIR="var/spool/cron"
+
+# Copy files and set permissions
+for item in "${FILES[@]}"; do
+    SOURCE_PATH="$SOURCE_DIR/$item"
+    DEST_PATH="$DEST_DIR/$item"
+
+    # Create directory structure if it doesn't exist
+    sudo mkdir -p "$(dirname "$DEST_PATH")"
+
+    # Copy file and set permissions
+    sudo cp "$SOURCE_PATH" "$DEST_PATH"
+    sudo chown root:root "$DEST_PATH"
+    sudo chmod 644 "$DEST_PATH"
+done
+
+# Copy cron files if they exist
+for user in "brett" "root"; do
+    CRON_FILE="$SOURCE_DIR/$CRON_DIR/$user"
+    if [ -e "$CRON_FILE" ]; then
+        DEST_CRON_FILE="$DEST_DIR/$CRON_DIR/crontabs/$user"
+        sudo cp "$CRON_FILE" "$DEST_CRON_FILE"
+        sudo chown "$user:$user" "$DEST_CRON_FILE"
+        sudo chmod 600 "$DEST_CRON_FILE"
     fi
+done
 
-    # Clean up downloaded files
-    rm realvnc-viewer.deb
-else
-    echo "RealVNC Viewer is already installed."
-fi
+# Copy network.mount file with root ownership and permissions
+NETWORK_MOUNT_SOURCE="$SOURCE_DIR/usr/share/gvfs/mounts/network.mount"
+NETWORK_MOUNT_DEST="$DEST_DIR/usr/share/gvfs/mounts/network.mount"
+sudo cp "$NETWORK_MOUNT_SOURCE" "$NETWORK_MOUNT_DEST"
+sudo chown root:root "$NETWORK_MOUNT_DEST"
+sudo chmod 644 "$NETWORK_MOUNT_DEST"
 
-# Check if RealVNC Server is installed
-if ! command -v vncserver &> /dev/null
-then
-    # Download and install RealVNC Server
-    wget https://downloads.realvnc.com/download/file/vnc.files/VNC-Server-7.9.0-Linux-x64.deb -O realvnc-server.deb
+# Create personal directory with brett ownership and permissions
+PERSONAL_DIR="$DEST_DIR/personal"
+sudo mkdir -p "$PERSONAL_DIR"
+sudo chown brett:brett "$PERSONAL_DIR"
+sudo chmod 755 "$PERSONAL_DIR"
 
-    # Check if the download was successful
-    if [ -e realvnc-server.deb ]
-    then
-        sudo dpkg -i realvnc-server.deb
-        sudo apt install -f
+# Create .config and .local directories with brett ownership and permissions
+sudo mkdir -p "$PERSONAL_DIR/.config"
+sudo chown brett:brett "$PERSONAL_DIR/.config"
+sudo chmod 700 "$PERSONAL_DIR/.config"
 
-        echo "RealVNC Server installation completed."
-    else
-        echo "Failed to download RealVNC Server. Please check the URL or try again later."
-    fi
+sudo mkdir -p "$PERSONAL_DIR/.local"
+sudo chown brett:brett "$PERSONAL_DIR/.local"
+sudo chmod 700 "$PERSONAL_DIR/.local"
 
-    # Clean up downloaded files
-    rm realvnc-server.deb
-else
-    echo "RealVNC Server is already installed."
-fi
-
-# Notify the user
-echo "RealVNC Viewer and Server check completed. You can now use RealVNC Viewer and configure RealVNC Server on your system."
+echo "Successfully Copied."
