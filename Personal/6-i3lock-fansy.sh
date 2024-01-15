@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Check if i3lock-fancy is already installed
 if command -v i3lock-fancy &> /dev/null

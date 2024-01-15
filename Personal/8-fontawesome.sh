@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Define the URLs for the Font Awesome files
 url1="https://use.fontawesome.com/releases/v6.5.1/fontawesome-free-6.5.1-desktop.zip"

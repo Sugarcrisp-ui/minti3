@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Correct xreader.desktop
 XREADER_DESKTOP_PATH="/usr/share/applications/xreader.desktop"

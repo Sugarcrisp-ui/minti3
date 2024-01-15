@@ -2,10 +2,6 @@
 
 set -e
 
-# The set command is used to determine action if an error is encountered.
-# (-e) will stop and exit, and (+e) will continue with the script.
-set -e
-
 ##################################################################################################################
 # Settings for a Bluetooth headset.
 # After reboot, switch off and on your device to get connected automatically and to the right channel.
