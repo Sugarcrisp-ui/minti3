@@ -2,6 +2,10 @@
 
 set -e
 
+# Define colors
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
 # List of packages to install.
 list=(
     # Web Browsers
@@ -68,11 +72,12 @@ for package in "${list[@]}"; do
     if ! dpkg -l | grep -q $package; then
         sudo apt-get install -y $package
         if [ $? -eq 0 ]; then
-            echo "$package successfully installed."
+            echo -e "${GREEN}$package successfully installed.${NC}"
         else
-            echo "Error installing $package."
+            echo -e "${GREEN}Error installing $package.${NC}"
+            exit 1
         fi
     else
-        echo "$package is already installed."
+        echo -e "${GREEN}$package is already installed.${NC}"
     fi
 done

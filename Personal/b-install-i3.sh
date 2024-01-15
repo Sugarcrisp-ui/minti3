@@ -12,11 +12,14 @@ fi
 sudo apt update
 
 # Install i3 window manager
-echo "Installing i3..."
+echo -e "\e[32mInstalling i3...\e[0m"
 echo "$PASSWORD" | sudo -S apt install i3 -y
 
 # Install Polybar
-echo "Installing Polybar..."
+echo -e "\e[32mInstalling Polybar...\e[0m"
 echo "$PASSWORD" | sudo -S apt install polybar -y
 
-echo "i3 and Polybar have been successfully installed."
+# Make Polybar scripts executable
+chmod +x ~/.config/polybar/scripts/*.sh
+
+echo -e "\e[32mi3 and Polybar have been successfully installed.\e[0m"

@@ -12,32 +12,34 @@ install_scripts=(
     b-install-i3.sh
     c-install-personal-settings-folders.sh
     d-install-root-settings.sh
-    e-gaps-install.sh
-    f-install-core-software.sh
-    g-insync.sh
-    h-i3lock-fansy.sh
-    i-laptop.sh
-    j-fontawesome.sh
-    k-install-picom.sh
-    l-discord.sh
-    m-vscode.sh
-    n-realvnc.sh
-    o-install-personal-settings-bookmarks.sh
-    p-cryptomator-settings-for-thunar.sh
-    q-install-settings-autoconnect-to-bluetooth-headset.sh
-    r-software-flatpak.sh
-    s-installing-fonts.sh
-    t-autotiling.sh
-    u-expressvpn.sh
+    e-install-core-software.sh
+    f-insync.sh
+    g-i3lock-fansy.sh
+    h-laptop.sh
+    i-fontawesome.sh
+    j-install-picom.sh
+    k-vscode.sh
+    l-realvnc.sh
+    m-install-personal-settings-bookmarks.sh
+    n-cryptomator-settings-for-thunar.sh
+    o-install-settings-autoconnect-to-bluetooth-headset.sh
+    p-software-flatpak.sh
+    q-installing-fonts.sh
+    r-autotiling.sh
+    s-discord.sh
+    t-expressvpn.sh
+    # u-gaps-install.sh (commented out)
 )
 
-# Install scripts with user confirmation
+# Prompt user for password once
+sudo echo "Prompting for password..."
+
+# Install scripts without user confirmation
 for script in "${install_scripts[@]}"; do
-    read -p "Run $script? (y/n): " choice
-    if [ "$choice" == "y" ]; then
-        sudo ./$script
-    else
-        echo "Skipping $script"
+    sudo ./$script
+    if [ $? -ne 0 ]; then
+        echo "Error executing $script. Exiting..."
+        exit 1
     fi
 done
 

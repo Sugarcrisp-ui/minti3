@@ -1,9 +1,10 @@
 #!/bin/bash
-set -e
+
+# ANSI color codes
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
 
 apps_to_remove=(
-  "caja"
-  "evolution"  
   "hexchat"
   "hypnotix"
   "libreoffice-base"
@@ -15,14 +16,14 @@ apps_to_remove=(
 )
 
 for app in "${apps_to_remove[@]}"; do
-    echo "Checking and removing $app..."
+    echo -e "Checking and removing $app..."
     # Remove related directories in ~/.config regardless of installation status
     rm -rf "$HOME/.config/$app"
     if command -v "$app" &> /dev/null; then
-        echo "Removing $app..."
         sudo apt-get remove --purge "$app" -y
+        echo -e "${GREEN}$app was successfully removed.${NC}"
     else
-        echo "$app is not installed."
+        echo -e "$app is not installed."
     fi
 done
 
