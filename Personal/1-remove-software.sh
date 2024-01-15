@@ -1,6 +1,8 @@
 #!/bin/bash
 
 apps_to_remove=(
+  "caja"
+  "evolution"  
   "hexchat"
   "hypnotix"
   "libreoffice-base"

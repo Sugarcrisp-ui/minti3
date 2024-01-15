@@ -18,45 +18,29 @@ handle_error() {
     exit 1
 }
 
-# Check if Font Awesome 6 is already installed
-if check_font_installed "Font Awesome 6"; then
-    echo "Font Awesome 6 is already installed."
-else
-    # Download Font Awesome 6
-    wget -P "$dest_dir" "$url1" || handle_error "Failed to download Font Awesome 6 archive."
+# Function to install Font Awesome
+install_font_awesome() {
+    # Download Font Awesome
+    wget -P "$dest_dir" "$1" || handle_error "Failed to download Font Awesome archive."
 
-    # Unzip Font Awesome 6
-    unzip "$dest_dir/fontawesome-free-6.5.1-desktop.zip" -d "$dest_dir" || handle_error "Failed to unzip Font Awesome 6 archive."
+    # Unzip Font Awesome
+    unzip "$dest_dir/$(basename "$1")" -d "$dest_dir" || handle_error "Failed to unzip Font Awesome archive."
 
     # Move the fonts to /usr/share/fonts/
-    sudo mv "$dest_dir/fontawesome-free-6.5.1-desktop" /usr/share/fonts/ || handle_error "Failed to move Font Awesome 6 fonts."
+    sudo mv "$dest_dir/fontawesome-free-$(echo "$1" | grep -oP '(?<=releases/)[^/]+')" /usr/share/fonts/ || handle_error "Failed to move Font Awesome fonts."
 
     # Change ownership to $USER:$USER
-    sudo chown -R $USER:$USER /usr/share/fonts/fontawesome-free-6.5.1-desktop || handle_error "Failed to change ownership for Font Awesome 6."
+    sudo chown -R $USER:$USER /usr/share/fonts/fontawesome-free-$(echo "$1" | grep -oP '(?<=releases/)[^/]+') || handle_error "Failed to change ownership for Font Awesome."
 
-    echo "Font Awesome 6 installed successfully."
+    echo "Font Awesome installed successfully."
     run_fc_cache=true
-fi
+}
 
-# Check if Font Awesome 5 is already installed
-if check_font_installed "Font Awesome 5"; then
-    echo "Font Awesome 5 is already installed."
-else
-    # Download Font Awesome 5
-    wget -P "$dest_dir" "$url2" || handle_error "Failed to download Font Awesome 5 archive."
+# Install Font Awesome 6
+install_font_awesome "$url1"
 
-    # Unzip Font Awesome 5
-    unzip "$dest_dir/fontawesome-free-5.15.4-desktop.zip" -d "$dest_dir" || handle_error "Failed to unzip Font Awesome 5 archive."
-
-    # Move the fonts to /usr/share/fonts/
-    sudo mv "$dest_dir/fontawesome-free-5.15.4-desktop" /usr/share/fonts/ || handle_error "Failed to move Font Awesome 5 fonts."
-
-    # Change ownership to $USER:$USER
-    sudo chown -R $USER:$USER /usr/share/fonts/fontawesome-free-5.15.4-desktop || handle_error "Failed to change ownership for Font Awesome 5."
-
-    echo "Font Awesome 5 installed successfully."
-    run_fc_cache=true
-fi
+# Install Font Awesome 5
+install_font_awesome "$url2"
 
 # Run fc-cache only if fonts were installed
 if [ "$run_fc_cache" = true ]; then
