@@ -1,21 +1,15 @@
 #!/bin/bash
-
 set -e
 
-# Download and install ExpressVPN
-echo -e "\e[32mDownloading ExpressVPN\e[0m"
-wget https://www.expressvpn.works/clients/linux/expressvpn_3.61.0.12-1_amd64.deb
+# Install pip
+sudo apt update
+sudo apt install python3-pip
 
-echo -e "\e[32mInstalling ExpressVPN\e[0m"
-sudo dpkg --force-confold -i expressvpn_3.61.0.12-1_amd64.deb
+# Install autotiling using pip
+pip3 install autotiling
 
-# Activate ExpressVPN
-echo -e "\e[32mActivating ExpressVPN\e[0m"
-sudo expressvpn activate
+# Run chmod +x on autotiling in .local directory
+chmod +x $source_dir/.local/bin/autotiling
 
-# Connect to a server (optional)
-# Uncomment the line below and replace "<SERVER_LOCATION>" with the desired server location.
-# sudo expressvpn connect <SERVER_LOCATION>
-
-# Success message
-echo -e "\e[32mExpressVPN has been installed and activated successfully.\e[0m"
+# Output a message
+echo "autotiling has been installed successfully!"

@@ -14,9 +14,6 @@ chmod +x $source_dir/.config/polybar/*.sh
 # Make Polybar scripts executable
 chmod +x $source_dir/.config/polybar/scripts/*.sh
 
-# Run chmod +x on autotiling in .local directory
-chmod +x $source_dir/.local/bin/autotiling
-
 # Run chmod +x on .desktop files in .local/share/applications
 chmod +x $source_dir/.local/share/applications/*.desktop
 

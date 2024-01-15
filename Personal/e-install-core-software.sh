@@ -28,8 +28,8 @@ list=(
     paprefs
     pavucontrol
     pinta
-    pip
-#    polybar
+    python3-pip
+    # polybar
     qbittorrent
     qtbase5-dev 
     qtchooser 
@@ -67,6 +67,11 @@ list=(
 for package in "${list[@]}"; do
     if ! dpkg -l | grep -q $package; then
         sudo apt-get install -y $package
+        if [ $? -eq 0 ]; then
+            echo "$package successfully installed."
+        else
+            echo "Error installing $package."
+        fi
     else
         echo "$package is already installed."
     fi
