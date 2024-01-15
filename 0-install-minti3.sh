@@ -9,7 +9,8 @@ chmod +x *.sh
 # List of install scripts in numerical order
 install_scripts=(
     "1-remove-software.sh"
-    "2-gaps-install.sh"
+    "1b-install-i3.sh"
+#    "2-gaps-install.sh"
     "3-install-core-software.sh"
     "4-insync.sh"
     "5-i3lock-fansy.sh"

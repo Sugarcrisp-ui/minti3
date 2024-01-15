@@ -29,7 +29,7 @@ list=(
     paprefs
     pavucontrol
     pinta
-    polybar
+#    polybar
     qbittorrent
     qt5-default
     rofi

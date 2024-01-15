@@ -20,8 +20,7 @@ sudo apt-get install -y \
     meson \
     ninja-build \
     python3-setuptools \
-    python3-pip \
-    i3
+    python3-pip
 
 # Install autotiling dependencies
 sudo apt-get install -y \
@@ -41,28 +40,3 @@ sudo python3 setup.py install
 # Cleanup
 cd ~
 sudo rm -rf i3-gaps autotiling
-
-# Create a custom LightDM configuration for i3
-sudo tee /etc/lightdm/lightdm.conf <<EOL
-[SeatDefaults]
-user-session=i3
-EOL
-
-# Create a custom Xsession file for i3
-sudo tee /usr/share/xsessions/i3.desktop <<EOL
-[Desktop Entry]
-Name=i3
-Comment=improved dynamic tiling window manager
-Exec=i3
-TryExec=i3
-Type=Application
-X-LightDM-DesktopName=i3
-EOL
-
-# Update LightDM configuration to include i3 and xfce
-sudo nano /etc/lightdm/lightdm.conf
-
-# Add the following lines to update user-session
-echo "[SeatDefaults]" | sudo tee -a /etc/lightdm/lightdm.conf
-echo "user-session=i3" | sudo tee -a /etc/lightdm/lightdm.conf
-echo "greeter-session=lightdm-gtk-greeter" | sudo tee -a /etc/lightdm/lightdm.conf
