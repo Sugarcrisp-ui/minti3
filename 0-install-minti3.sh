@@ -8,27 +8,27 @@ sudo chmod +x *.sh
 
 # List of install scripts in corrected numerical order
 install_scripts=(
-    "1-remove-software.sh"
-    "2-install-i3.sh"
-    "3-install-personal-settings-folders.sh"
-    "4-install-root-settings.sh"
-#    "5-gaps-install.sh"
-    "6-install-core-software.sh"
-    "7-insync.sh"
-    "8-i3lock-fansy.sh"
-    "9-laptop.sh"
-    "10-fontawesome.sh"
-    "11-install-picom.sh"
-    "12-discord.sh"
-    "13-vscode.sh"
-    "14-realvnc.sh"
-    "15-install-personal-settings-bookmarks.sh"
-    "16-cryptomator-settings-for-thunar.sh"
-    "17-install-settings-autoconnect-to-bluetooth-headset.sh"
-    "18-software-flatpak.sh"
-    "19-installing-fonts.sh"
-    "20-autotiling.sh"
-"21-expressvpn.sh"
+    a-remove-software.sh
+    b-install-i3.sh
+    c-install-personal-settings-folders.sh
+    d-install-root-settings.sh
+    e-gaps-install.sh
+    f-install-core-software.sh
+    g-insync.sh
+    h-i3lock-fansy.sh
+    i-laptop.sh
+    j-fontawesome.sh
+    k-install-picom.sh
+    l-discord.sh
+    m-vscode.sh
+    n-realvnc.sh
+    o-install-personal-settings-bookmarks.sh
+    p-cryptomator-settings-for-thunar.sh
+    q-install-settings-autoconnect-to-bluetooth-headset.sh
+    r-software-flatpak.sh
+    s-installing-fonts.sh
+    t-autotiling.sh
+    u-expressvpn.sh
 )
 
 # Install scripts without user interaction
