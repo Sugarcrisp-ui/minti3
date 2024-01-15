@@ -29,10 +29,15 @@ install_scripts=(
     "18-expressvpn.sh"
 )
 
-# Install scripts without user interaction
+# Install scripts with user confirmation
 for script in "${install_scripts[@]}"; do
-    ./$script
+    read -p "Run $script? (y/n): " choice
+    if [ "$choice" == "y" ]; then
+        ./$script
+    else
+        echo "Skipping $script"
+    fi
 done
 
-# Restart the system
-sudo reboot
+# Display completion message
+echo "Mint i3 Install Complete"
