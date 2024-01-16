@@ -1,33 +1,32 @@
 #!/bin/bash
 set -e
 
-# Source and destination directories with full paths
-source_dir=/home/brett/minti3/personal-settings
-destination_dir=/home/brett/
+# Copy contents of directories with overwriting existing files and preserving ownership
+cp -r "$HOME"/minti3/personal-settings/.bin-personal/* "$HOME"/.bin-personal
+chmod +x "$HOME"/.bin-personal/*.sh 2>/dev/null || true  # Ignore errors if no files match
 
-# Change directory to the source directory
-cd "$source_dir"
+cp -r "$HOME"/minti3/personal-settings/.config/* "$HOME"/.config
+chmod +x "$HOME"/polybar/scripts/*.sh 2>/dev/null || true  # Ignore errors if no files match
+chmod +x "$HOME"/polybar/scripts/*.py 2>/dev/null || true  # Ignore errors if no files match
 
-# Run chmod +x on *.sh files in .bin-personal
-chmod +x .bin-personal/*.sh
-
-# Run chmod +x on all .sh files in .config/polybar
-chmod +x .config/polybar/*.sh
-
-# Set ownership to $USER:$USER for .config/polybar/scripts/
-chown -R $USER:$USER .config/polybar/scripts/
-
-# Run chmod +x on autotiling in .local directory
-chmod +x .local/bin/autotiling
-
-# Run chmod +x on .desktop files in .local/share/applications
-chmod +x .local/share/applications/*.desktop
-
-# Copy directories with overwriting existing files and preserving ownership
-cp -r --preserve=ownership .bin-personal/ .config/ .local/ "$destination_dir"
+cp -r "$HOME"/minti3/personal-settings/.local/* "$HOME"/.local
 
 # Copy specific files with overwriting existing files and preserving ownership
-cp --preserve=ownership .gtkrc-2.0.mine .bash_aliases "$destination_dir"
+cp "$HOME"/minti3/personal-settings/.gtkrc-2.0.mine "$HOME"
+cp "$HOME"/minti3/personal-settings/.bash_aliases "$HOME"
 
 # Copy JPEG files to Pictures directory with overwriting existing files
-cp --preserve=ownership *.jpg "$destination_dir/Pictures/"
+cp "$HOME"/minti3/personal-settings/*.jpg "$HOME"/Pictures
+
+# Remove directories (if needed) and remove executable permissions
+if [ -d "$HOME"/.config/caja ]; then
+    rm -r "$HOME"/.config/caja
+fi
+
+if [ -d "$HOME"/.config/evolution ]; then
+    rm -r "$HOME"/.config/evolution
+fi
+
+if [ -d "$HOME"/.config/hexchat ]; then
+    rm -r "$HOME"/.config/hexchat
+fi
