@@ -22,6 +22,7 @@ list=(
     baobab
     catfish
     copyq
+    feh
     fish
     flatpak
     font-manager
