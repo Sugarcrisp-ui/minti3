@@ -14,16 +14,16 @@ fonts_to_install=(
     fonts-ubuntu-title
 )
 
-# Download and install Comic Sans MS directly
+# Download Comic Sans MS directly
 comic_sans_url="https://www.dafontfree.io/download/comic-sans-ms/?wpdmdl=71924&refresh=65a56a4b320751705339467&ind=1612711028804&filename=comic-sans-ms-font-family.zip"
 comic_sans_file="/tmp/comic-sans-ms.zip"
 comic_sans_install_dir="/usr/share/fonts/truetype/"
 
-# Step 1: Download Comic Sans MS ZIP file using curl
-curl -o "$comic_sans_file" "$comic_sans_url"
+# Step 1: Download Comic Sans MS ZIP file using wget
+wget -O "$comic_sans_file" "$comic_sans_url"
 
 # Step 2: Extract the ZIP file
-unzip "$comic_sans_file" -d /tmp/
+unzip -j "$comic_sans_file" -d "$comic_sans_install_dir"
 
 # Step 3: Install fonts
 for font in "${fonts_to_install[@]}"; do
@@ -36,13 +36,10 @@ for font in "${fonts_to_install[@]}"; do
 done
 
 # Step 4: Install Comic Sans MS
-if [ ! -f "$comic_sans_install_dir/COMIC.TTF" ]; then
-    echo "Installing Comic Sans MS..."
-    sudo cp /tmp/COMIC.TTF "$comic_sans_install_dir"
-    
-    # Additional steps to refresh font cache may be required
-    sudo fc-cache -f -v
-fi
+sudo cp /tmp/COMIC.TTF "$comic_sans_install_dir"
+
+# Additional steps to refresh font cache
+sudo fc-cache -f -v
 
 # Cleanup: Remove temporary ZIP file
 rm "$comic_sans_file"
