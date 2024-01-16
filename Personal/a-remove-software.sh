@@ -18,9 +18,13 @@ apps_to_remove=(
 # Function to remove directories
 remove_directory() {
     local dir_to_remove="$1"
-    if [ -d "$HOME/.config/$dir_to_remove" ]; then
-        rm -rf "$HOME/.config/$dir_to_remove"
+    local full_path="$HOME/.config/$dir_to_remove"
+    
+    if [ -d "$full_path" ]; then
+        rm -rf "$full_path"
         echo -e "${GREEN}Configuration directory for $dir_to_remove removed.${NC}"
+    else
+        echo -e "Configuration directory for $dir_to_remove not found."
     fi
 }
 
