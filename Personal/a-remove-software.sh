@@ -42,8 +42,8 @@ for app in "${apps_to_remove[@]}"; do
 done
 
 # Explicitly remove directories for hexchat, evolution, and caja
-remove_directory "hexchat"
-remove_directory "evolution"
-remove_directory "caja"
+rm -r $USER/config/hexchat
+rm -r $USER/config/evolution
+rm -r $USER/config/caja
 
-sudo apt-get autoremove -y
+sudo apt autoremove -y
