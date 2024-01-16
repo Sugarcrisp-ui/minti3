@@ -13,7 +13,6 @@ sudo chmod +x *.sh
 
 # List of install scripts in corrected alphabetical order
 install_scripts=(
-    0-install-minti3.sh
     a-remove-software.sh
     b-install-i3.sh
     c-install-personal-settings-folders.sh
