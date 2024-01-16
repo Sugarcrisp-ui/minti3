@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Function to display text in green
+print_green() {
+    echo -e "\e[32m$1\e[0m"
+}
+
 # Change directory to the scripts' location
 cd "$(dirname "$0")/Personal"
 
@@ -8,6 +13,7 @@ sudo chmod +x *.sh
 
 # List of install scripts in corrected alphabetical order
 install_scripts=(
+    0-install-minti3.sh
     a-remove-software.sh
     b-install-i3.sh
     c-install-personal-settings-folders.sh
@@ -36,12 +42,24 @@ sudo echo "Prompting for password..."
 
 # Install scripts without user confirmation
 for script in "${install_scripts[@]}"; do
-    sudo ./$script
+    print_green "Running $script"
+    if [ "$script" = "0-install-minti3.sh" ]; then
+        # Run Polybar installation without sudo to maintain user's home directory
+        ./$script
+        # Create Polybar scripts directory
+        mkdir -p $HOME/.config/polybar/scripts
+        # Make Polybar scripts executable
+        chmod +x $HOME/.config/polybar/scripts/*.sh
+        print_green "Polybar scripts have been made executable."
+    else
+        # Run other scripts with sudo
+        sudo ./$script
+    fi
     if [ $? -ne 0 ]; then
-        echo "Error executing $script. Exiting..."
+        echo -e "\e[31mError executing $script. Exiting...\e[0m"
         exit 1
     fi
 done
 
 # Display completion message
-echo "Mint i3 Install Complete"
+print_green "Mint i3 Install Complete"

@@ -1,8 +1,15 @@
 #!/bin/bash
 set -e
 
-# Fix the MIME type in xreader.desktop
-sudo sed -i 's/MimeType=application\/x-ext-cbzapplication\/oxps/MimeType=application\/oxps/' /usr/share/applications/xreader.desktop
+# Create a temporary file for the corrected MIME type
+temp_file=$(mktemp)
+echo "MimeType=application/pdf;application/x-bzpdf;application/x-gzpdf;application/x-xzpdf;application/postscript;application/x-bzpostscript;application/x-gzpostscript;image/x-eps;image/x-bzeps;image/x-gzeps;application/illustrator;application/x-dvi;application/x-bzdvi;application/x-gzdvi;image/vnd.djvu;image/vnd.djvu+multipage;image/tiff;application/vnd.comicbook-rar;application/vnd.comicbook+zip;application/x-cb7;application/x-cbr;application/x-cbt;application/x-cbz;application/x-ext-cb7;application/x-ext-cbr;application/x-ext-cbt;application/x-ext-cbz;application/oxps;application/vnd.ms-xpsdocument;application/epub+zip;" > "$temp_file"
+
+# Replace the contents of xreader.desktop with the corrected MIME type
+sudo cp "$temp_file" /usr/share/applications/xreader.desktop
+
+# Remove the temporary file
+rm "$temp_file"
 
 # Check if VS Code is already installed
 if command -v code &> /dev/null

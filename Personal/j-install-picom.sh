@@ -1,16 +1,10 @@
 #!/bin/bash
 
-set -e
+# Set noninteractive mode
+export DEBIAN_FRONTEND=noninteractive
 
-# Check if picom is already installed
-if command -v picom &> /dev/null
-then
-    echo "Picom is already installed."
-    exit
-fi
-
-# Install picom
-sudo apt install picom
+# Install picom without prompts
+sudo apt install -y picom
 
 # Create picom configuration directory
 mkdir -p ~/.config/picom

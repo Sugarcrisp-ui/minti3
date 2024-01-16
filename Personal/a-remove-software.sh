@@ -18,7 +18,11 @@ apps_to_remove=(
 for app in "${apps_to_remove[@]}"; do
     echo -e "Checking and removing $app..."
     # Remove related directories in ~/.config regardless of installation status
-    rm -rf "$HOME/.config/$app"
+    if [ -d "$HOME/.config/$app" ]; then
+        rm -rf "$HOME/.config/$app"
+        echo -e "${GREEN}Configuration directory for $app removed.${NC}"
+    fi
+
     if command -v "$app" &> /dev/null; then
         sudo apt-get remove --purge "$app" -y
         echo -e "${GREEN}$app was successfully removed.${NC}"

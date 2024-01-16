@@ -2,24 +2,34 @@
 
 set -e
 
-# Ensure script is run with sudo
-if [ "$EUID" -ne 0 ]; then
-    echo "Please run with sudo."
-    exit
-fi
+# Function to display text in green
+print_green() {
+    echo -e "\e[32m$1\e[0m"
+}
 
-# Update package list
-sudo apt update
+# Check if running with sudo
+if [ "$EUID" -eq 0 ]; then
+    # If running with sudo, restart the script without sudo
+    echo "Running with sudo. Restarting without sudo..."
+    sudo -u "$SUDO_USER" bash "$0" "$@"
+    exit $?
+fi
 
 # Install i3 window manager
 echo -e "\e[32mInstalling i3...\e[0m"
-echo "$PASSWORD" | sudo -S apt install i3 -y
+sudo apt install i3 -y
 
 # Install Polybar
 echo -e "\e[32mInstalling Polybar...\e[0m"
-echo "$PASSWORD" | sudo -S apt install polybar -y
+sudo apt install polybar -y
+
+# Create Polybar scripts directory
+mkdir -p $HOME/.config/polybar/scripts
+
+# Transfer Polybar scripts
+cp $HOME/minti3/personal-settings/.config/polybar/scripts/* $HOME/.config/polybar/scripts/
 
 # Make Polybar scripts executable
-chmod +x ~/.config/polybar/scripts/*.sh
+chmod +x $HOME/.config/polybar/scripts/*.sh
 
-echo -e "\e[32mi3 and Polybar have been successfully installed.\e[0m"
+print_green "i3 and Polybar have been successfully installed."
