@@ -11,4 +11,4 @@ print_green() {
 echo -e "\e[32mInstalling i3 and Polybar...\e[0m"
 sudo apt install i3 polybar -y
 
-print_green "i3 and Polybar have been successfully installed."
+print_green "Polybar has been successfully installed."

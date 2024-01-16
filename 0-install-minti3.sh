@@ -24,7 +24,6 @@ root_scripts=(
     j-install-picom.sh
     k-vscode.sh
     l-realvnc.sh
-    p-software-flatpak.sh
     q-installing-fonts.sh
     r-autotiling.sh
     s-discord.sh
@@ -38,6 +37,7 @@ user_scripts=(
     m-install-personal-settings-bookmarks.sh
     n-cryptomator-settings-for-thunar.sh
     o-install-settings-autoconnect-to-bluetooth-headset.sh
+    p-software-flatpak.sh
 )
 
 # Prompt user for password once
