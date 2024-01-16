@@ -7,21 +7,9 @@ print_green() {
     echo -e "\e[32m$1\e[0m"
 }
 
-# Check if running with sudo
-if [ "$EUID" -eq 0 ]; then
-    # If running with sudo, restart the script without sudo
-    echo "Running with sudo. Restarting without sudo..."
-    sudo -u "$SUDO_USER" bash "$0" "$@"
-    exit $?
-fi
-
-# Install i3 window manager
-echo -e "\e[32mInstalling i3...\e[0m"
-sudo apt install i3 -y
-
-# Install Polybar
-echo -e "\e[32mInstalling Polybar...\e[0m"
-sudo apt install polybar -y
+# Install i3 window manager and Polybar
+echo -e "\e[32mInstalling i3 and Polybar...\e[0m"
+sudo apt install i3 polybar -y
 
 # Create Polybar scripts directory
 mkdir -p $HOME/.config/polybar/scripts

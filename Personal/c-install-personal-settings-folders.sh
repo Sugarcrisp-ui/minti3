@@ -24,13 +24,10 @@ chmod +x .local/bin/autotiling
 chmod +x .local/share/applications/*.desktop
 
 # Copy directories with overwriting existing files and preserving ownership
-cp -r --preserve=ownership .bin-personal/ "$destination_dir"
-cp -r --preserve=ownership .config/ "$destination_dir"
-cp -r --preserve=ownership .local/ "$destination_dir"
+cp -r --preserve=ownership .bin-personal/ .config/ .local/ "$destination_dir"
 
 # Copy specific files with overwriting existing files and preserving ownership
-cp --preserve=ownership .gtkrc-2.0.mine "$destination_dir"
-cp --preserve=ownership .bash_aliases "$destination_dir"
+cp --preserve=ownership .gtkrc-2.0.mine .bash_aliases "$destination_dir"
 
 # Copy JPEG files to Pictures directory with overwriting existing files
 cp --preserve=ownership *.jpg "$destination_dir/Pictures/"
