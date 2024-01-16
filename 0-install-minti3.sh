@@ -9,12 +9,12 @@ print_green() {
 cd "$(dirname "$0")/Personal"
 
 # Set execute permission on all .sh files
-chmod +x *.sh
+sudo chmod +x *.sh
 
 # List of root-level install scripts in corrected alphabetical order
 root_scripts=(
     a-remove-software.sh
-    b-install-i3.sh
+    b-install-polybar.sh
     d-install-root-settings.sh
     e-install-core-software.sh
     f-insync.sh
