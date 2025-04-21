@@ -1,0 +1,16 @@
+Updating i3ipc Mon Apr 21 08:10:09 PM +07 2025
+Requirement already satisfied: pip in ./i3ipc-venv/lib/python3.12/site-packages (24.0)
+Collecting pip
+  Using cached pip-25.0.1-py3-none-any.whl.metadata (3.7 kB)
+Using cached pip-25.0.1-py3-none-any.whl (1.8 MB)
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 24.0
+    Uninstalling pip-24.0:
+      Successfully uninstalled pip-24.0
+Successfully installed pip-25.0.1
+Requirement already satisfied: i3ipc in ./i3ipc-venv/lib/python3.12/site-packages (2.2.1)
+Requirement already satisfied: python-xlib in ./i3ipc-venv/lib/python3.12/site-packages (from i3ipc) (0.33)
+Requirement already satisfied: six>=1.10.0 in ./i3ipc-venv/lib/python3.12/site-packages (from python-xlib->i3ipc) (1.17.0)
+i3ipc updated successfully
+i3ipc update complete

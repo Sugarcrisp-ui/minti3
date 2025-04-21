@@ -1,8 +1,0 @@
-# this ensures that all the usb's are enabled to allow wake 
-# from suspend
-echo enabled > /sys/bus/usb/devices/1-3/power/wakeup
-echo enabled > /sys/bus/usb/devices/usb1/power/wakeup
-echo enabled > /sys/bus/usb/devices/usb2/power/wakeup
-
-# this runs my start-apps script on startup
-/home/brett/.bin-personal/start-apps.sh &

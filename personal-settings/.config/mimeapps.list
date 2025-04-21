@@ -1,9 +1,0 @@
-[Added Associations]
-application/x-shellscript=sublime_text.desktop;
-text/x-python3=sublime_text.desktop;
-text/plain=sublime_text.desktop;
-text/x-python=sublime_text.desktop;
-application/xml=sublime_text.desktop;
-
-[Default Applications]
-text/plain=sublime_text.desktop

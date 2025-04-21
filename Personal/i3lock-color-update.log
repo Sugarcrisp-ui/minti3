@@ -1,0 +1,301 @@
+Error: i3lock-color source directory /root/i3lock-color not found
+Installing build dependencies Mon Apr 21 08:16:28 PM +07 2025
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Reading package lists...
+Building dependency tree...
+Reading state information...
+autoconf is already the newest version (2.71-3).
+gcc is already the newest version (4:13.2.0-7ubuntu1).
+make is already the newest version (4.3-4.1build2).
+pkg-config is already the newest version (1.8.1-2build1).
+libpam0g-dev is already the newest version (1.5.3-5ubuntu5.1).
+libcairo2-dev is already the newest version (1.18.0-3build1).
+libfontconfig1-dev is already the newest version (2.15.0-1.1ubuntu2).
+libxcb-composite0-dev is already the newest version (1.15-1ubuntu2).
+libev-dev is already the newest version (1:4.33-2.1build1).
+libxcb-xkb-dev is already the newest version (1.15-1ubuntu2).
+libxcb-xinerama0-dev is already the newest version (1.15-1ubuntu2).
+libxcb-randr0-dev is already the newest version (1.15-1ubuntu2).
+libxcb-image0-dev is already the newest version (0.4.0-2build1).
+libxcb-util-dev is already the newest version (0.4.0-1build3).
+libxcb-xrm-dev is already the newest version (1.0-3).
+libxkbcommon-dev is already the newest version (1.6.0-1build1).
+libxkbcommon-x11-dev is already the newest version (1.6.0-1build1).
+libjpeg-dev is already the newest version (8c-2ubuntu11).
+libgif-dev is already the newest version (5.2.2-1ubuntu1).
+The following NEW packages will be installed:
+  libx11-xcb-dev
+0 upgraded, 1 newly installed, 0 to remove and 1 not upgraded.
+Need to get 9.950 B of archives.
+After this operation, 71,7 kB of additional disk space will be used.
+Get:1 http://opensource.xtdv.net/ubuntu noble/main amd64 libx11-xcb-dev amd64 2:1.8.7-1build1 [9.950 B]
+Fetched 9.950 B in 1s (15,9 kB/s)
+Selecting previously unselected package libx11-xcb-dev:amd64.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 524121 files and directories currently installed.)
+Preparing to unpack .../libx11-xcb-dev_2%3a1.8.7-1build1_amd64.deb ...
+Unpacking libx11-xcb-dev:amd64 (2:1.8.7-1build1) ...
+Setting up libx11-xcb-dev:amd64 (2:1.8.7-1build1) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+Updating i3lock-color source Mon Apr 21 08:16:32 PM +07 2025
+Cloning into '.'...
+Note: switching to '2.13.c.5'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 7b2badb Bump version to 2.13.0.5
+Building and installing i3lock-color Mon Apr 21 08:16:36 PM +07 2025
+configure.ac:118: installing './ar-lib'
+configure.ac:53: installing './compile'
+configure.ac:7: installing './config.guess'
+configure.ac:7: installing './config.sub'
+configure.ac:8: installing './install-sh'
+configure.ac:8: installing './missing'
+Makefile.am: installing './depcomp'
+checking build system type... x86_64-pc-linux-gnu
+checking host system type... x86_64-pc-linux-gnu
+checking target system type... x86_64-pc-linux-gnu
+continue configure in default builddir "./x86_64-pc-linux-gnu"
+....exec /bin/bash .././configure "--srcdir=.." "--enable-builddir=x86_64-pc-linux-gnu" "linux
+gnu"
+checking build system type... x86_64-pc-linux-gnu
+checking host system type... x86_64-pc-linux-gnu
+checking target system type... x86_64-pc-linux-gnu
+checking for gsed... sed
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for a race-free mkdir -p... /usr/bin/mkdir -p
+checking for gawk... no
+checking for mawk... mawk
+checking whether make sets $(MAKE)... yes
+checking whether make supports nested variables... yes
+checking whether make supports nested variables... (cached) yes
+checking whether to enable maintainer-specific portions of Makefiles... yes
+checking for gawk... (cached) mawk
+checking for GNU make... make
+checking for a sed that does not truncate output... /usr/bin/sed
+checking whether to build with code coverage support... no
+checking whether to enable debugging... no
+checking for gcc... gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+checking whether the compiler supports GNU C... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to enable C11 features... none needed
+checking whether gcc understands -c and -o together... yes
+checking whether make supports the include directive... yes (GNU style)
+checking dependency style of gcc... gcc3
+checking for stdio.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for strings.h... yes
+checking for sys/stat.h... yes
+checking for sys/types.h... yes
+checking for unistd.h... yes
+checking for wchar.h... yes
+checking for minix/config.h... no
+checking for vfork.h... no
+checking whether it is safe to define __EXTENSIONS__... yes
+checking whether _XOPEN_SOURCE should be defined... no
+checking for _Bool... yes
+checking for stdbool.h that conforms to C99... yes
+checking for mode_t... yes
+checking for off_t... yes
+checking for pid_t... yes
+checking for size_t... yes
+checking for ssize_t... yes
+checking for pid_t... (cached) yes
+checking for fork... yes
+checking for vfork... yes
+checking for working fork... yes
+checking for working vfork... (cached) yes
+checking whether lstat correctly handles trailing slash... yes
+checking for working strnlen... yes
+checking for atexit... yes
+checking for dup2... yes
+checking for ftruncate... yes
+checking for getcwd... yes
+checking for gettimeofday... yes
+checking for localtime_r... yes
+checking for memchr... yes
+checking for memset... yes
+checking for mkdir... yes
+checking for rmdir... yes
+checking for setlocale... yes
+checking for socket... yes
+checking for strcasecmp... yes
+checking for strchr... yes
+checking for strdup... yes
+checking for strerror... yes
+checking for strncasecmp... yes
+checking for strndup... yes
+checking for strrchr... yes
+checking for strspn... yes
+checking for strstr... yes
+checking for strtol... yes
+checking for strtoul... yes
+checking for explicit_bzero... yes
+checking for library containing floor... -lm
+checking for library containing ev_run... -lev
+checking for library containing shm_open... none required
+checking for library containing pam_authenticate... -lpam
+checking for library containing iconv_open... none required
+checking for pkg-config... /usr/bin/pkg-config
+checking pkg-config is at least version 0.9.0... yes
+checking for xcb xcb-xkb xcb-xinerama xcb-randr xcb-composite... yes
+checking for xcb-image... yes
+checking for xcb-event xcb-util xcb-atom... yes
+checking for xcb-xrm... yes
+checking for xkbcommon xkbcommon-x11... yes
+checking for cairo... yes
+checking for libjpeg... yes
+checking for fontconfig... yes
+checking for gawk... (cached) mawk
+checking how to run the C preprocessor... gcc -E
+checking whether make sets $(MAKE)... (cached) yes
+checking for ranlib... ranlib
+checking whether ln -s works... yes
+checking for ar... ar
+checking the archiver (ar) interface... ar
+checking CFLAGS for maximum warnings... -Wall
+checking whether C compiler accepts -Wunused-value... yes
+checking for bash-completion >= 2.0... yes
+checking for zsh... no
+checking for fcntl.h... yes
+checking for float.h... yes
+checking for inttypes.h... (cached) yes
+checking for limits.h... yes
+checking for locale.h... yes
+checking for netinet/in.h... yes
+checking for paths.h... yes
+checking for stddef.h... yes
+checking for stdint.h... (cached) yes
+checking for stdlib.h... (cached) yes
+checking for string.h... (cached) yes
+checking for sys/param.h... yes
+checking for sys/socket.h... yes
+checking for sys/time.h... yes
+checking for unistd.h... (cached) yes
+checking that generated files are newer than configure... done
+configure: creating ./config.status
+config.status: creating Makefile
+config.status: creating config.h
+config.status: executing buildir commands
+config.status: create top_srcdir/Makefile guessed from local Makefile
+config.status: build in x86_64-pc-linux-gnu (HOST=)
+config.status: executing depfiles commands
+--------------------------------------------------------------------------------
+build configured:
+
+  i3lock version:         2.13.c.5 (2023-07-28)
+  is release version:     yes
+
+  enable debug flags:     no
+  code coverage:          no
+  enabled sanitizers:     
+--------------------------------------------------------------------------------
+Makefile:2069: warning: overriding recipe for target 'clean'
+Makefile:1578: warning: ignoring old recipe for target 'clean'
+Makefile:2069: warning: overriding recipe for target 'clean-all'
+Makefile:1578: warning: ignoring old recipe for target 'clean-all'
+MAKE x86_64-pc-linux-gnu : 0 * all-all
+make[1]: Entering directory '/tmp/i3lock-color-update/x86_64-pc-linux-gnu'
+make  all-am
+make[2]: Entering directory '/tmp/i3lock-color-update/x86_64-pc-linux-gnu'
+  CC       i3lock-blur.o
+  CC       i3lock-blur_simd.o
+  CC       i3lock-dpi.o
+  CC       i3lock-jpg.o
+  CC       i3lock-i3lock.o
+../../i3lock-color-update/i3lock.c: In function ‘handle_key_press’:
+../../i3lock-color-update/i3lock.c:730:21: warning: ignoring return value of ‘system’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  730 |                     system(cmd_brightness_up);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~
+../../i3lock-color-update/i3lock.c:736:21: warning: ignoring return value of ‘system’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  736 |                     system(cmd_brightness_down);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../i3lock-color-update/i3lock.c:742:21: warning: ignoring return value of ‘system’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  742 |                     system(cmd_media_play);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~
+../../i3lock-color-update/i3lock.c:748:21: warning: ignoring return value of ‘system’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  748 |                     system(cmd_media_pause);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~
+../../i3lock-color-update/i3lock.c:754:21: warning: ignoring return value of ‘system’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  754 |                     system(cmd_media_stop);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~
+../../i3lock-color-update/i3lock.c:760:21: warning: ignoring return value of ‘system’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  760 |                     system(cmd_media_prev);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~
+../../i3lock-color-update/i3lock.c:766:21: warning: ignoring return value of ‘system’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  766 |                     system(cmd_media_next);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~
+../../i3lock-color-update/i3lock.c:772:21: warning: ignoring return value of ‘system’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  772 |                     system(cmd_audio_mute);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~
+../../i3lock-color-update/i3lock.c:778:21: warning: ignoring return value of ‘system’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  778 |                     system(cmd_volume_down);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~
+../../i3lock-color-update/i3lock.c:784:21: warning: ignoring return value of ‘system’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  784 |                     system(cmd_volume_up);
+      |                     ^~~~~~~~~~~~~~~~~~~~~
+../../i3lock-color-update/i3lock.c:790:21: warning: ignoring return value of ‘system’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  790 |                     system(cmd_mic_mute);
+      |                     ^~~~~~~~~~~~~~~~~~~~
+../../i3lock-color-update/i3lock.c:796:21: warning: ignoring return value of ‘system’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  796 |                     system(cmd_power_down);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~
+../../i3lock-color-update/i3lock.c:802:21: warning: ignoring return value of ‘system’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  802 |                     system(cmd_power_off);
+      |                     ^~~~~~~~~~~~~~~~~~~~~
+../../i3lock-color-update/i3lock.c:808:21: warning: ignoring return value of ‘system’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  808 |                     system(cmd_power_sleep);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~
+  CC       i3lock-randr.o
+  CC       i3lock-tinyexpr.o
+  CC       i3lock-unlock_indicator.o
+  CC       i3lock-xcb.o
+  CCLD     i3lock
+make[2]: Leaving directory '/tmp/i3lock-color-update/x86_64-pc-linux-gnu'
+make[1]: Leaving directory '/tmp/i3lock-color-update/x86_64-pc-linux-gnu'
+Makefile:2069: warning: overriding recipe for target 'clean'
+Makefile:1578: warning: ignoring old recipe for target 'clean'
+Makefile:2069: warning: overriding recipe for target 'clean-all'
+Makefile:1578: warning: ignoring old recipe for target 'clean-all'
+MAKE x86_64-pc-linux-gnu : 0 * install
+make[1]: Entering directory '/tmp/i3lock-color-update/x86_64-pc-linux-gnu'
+make[2]: Entering directory '/tmp/i3lock-color-update/x86_64-pc-linux-gnu'
+ /usr/bin/mkdir -p '/usr/local/bin'
+  /usr/bin/install -c i3lock '/usr/local/bin'
+ /usr/bin/mkdir -p '/usr/local/share/bash-completion/completions'
+ /usr/bin/install -c -m 644 ../../i3lock-color-update/i3lock-bash '/usr/local/share/bash-completion/completions'
+ /usr/bin/mkdir -p '/usr/local/share/man/man1'
+ /usr/bin/install -c -m 644 ../../i3lock-color-update/i3lock.1 '/usr/local/share/man/man1'
+ /usr/bin/mkdir -p '/usr/local/etc/pam.d'
+ /usr/bin/install -c -m 644 ../../i3lock-color-update/pam/i3lock '/usr/local/etc/pam.d'
+make  install-data-hook
+make[3]: Entering directory '/tmp/i3lock-color-update/x86_64-pc-linux-gnu'
+test -f "/usr/local/share/bash-completion/completions/i3lock-bash" && mv -f "/usr/local/share/bash-completion/completions/i3lock-bash" "/usr/local/share/bash-completion/completions/i3lock" || true
+make[3]: Leaving directory '/tmp/i3lock-color-update/x86_64-pc-linux-gnu'
+make[2]: Leaving directory '/tmp/i3lock-color-update/x86_64-pc-linux-gnu'
+make[1]: Leaving directory '/tmp/i3lock-color-update/x86_64-pc-linux-gnu'
+i3lock-color updated successfully to 2.13.c.5
+i3lock-color update complete
