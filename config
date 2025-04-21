@@ -1,0 +1,169 @@
+# Color Definitions
+set $focusedBorderColor #6790EB #Sky blue
+set $unfocusedBorderColor #222222 #Dark gray, nearly black
+set $textColor #e5e5e5 #Light gray or platinum
+
+# Set mod keys
+set $mod Mod4
+set $alt Mod1
+
+# Basic Settings
+set $terminal xfce4-terminal
+
+# Set your preferred browser (brave, firefox, chromium)
+#set $browser brave --profile-directory="Default"
+set $browser sh -c '[ -f /etc/arch-release ] && brave --profile-directory="Default" || brave-browser --profile-directory="Default"'
+
+# Set your preferred file manager (thunar, nemo, nautilus)
+set $fileManager thunar
+
+# Gaps Definitions
+gaps inner 5
+gaps outer 0
+smart_gaps on
+
+# Dynamically set firstMonitor
+exec --no-startup-id sh -c 'i3-msg "set $firstMonitor $(xrandr --query | grep \" connected\" | head -n1 | cut -d\" \" -f1)"'
+
+# Workspaces
+workspace 1 output $firstMonitor
+workspace 2 output $firstMonitor
+workspace 3 output $firstMonitor
+workspace 4 output $firstMonitor
+workspace 5 output $firstMonitor
+workspace 6 output $firstMonitor
+workspace 7 output $firstMonitor
+workspace 8 output $firstMonitor
+workspace 9 output $firstMonitor
+workspace 10 output $firstMonitor
+
+# Workspace Switching
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+bindsym $mod+0 workspace number 10
+
+# Move Window to Workspace
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8
+bindsym $mod+Shift+9 move container to workspace number 9
+bindsym $mod+Shift+0 move container to workspace number 10
+
+# Xfce Application Launcher
+bindsym $alt+d exec --no-startup-id xfce4-appfinder
+
+# Rofi Application Launcher
+bindsym $mod+d exec rofi -show drun -font "Noto Sans 13"
+
+# Xfce settings manager
+bindsym Control+$alt+m exec --no-startup-id xfce4-settings-manager
+
+# Logout
+bindsym $mod+x exec --no-startup-id archlinux-logout
+#bindsym $mod+x exec --no-startup-id sh -c '[ -f /etc/arch-release ] && archlinux-logout || xfce4-session-logout'
+
+# Screen Lock
+bindsym Control+Mod1+k exec --no-startup-id /home/brett/.bin-personal/lock-screen.sh
+
+# Suspend
+bindsym Control+Mod1+l exec --no-startup-id ~/.bin-personal/suspend-lock.sh
+
+# Reload Configuration
+bindsym $mod+Shift+c reload
+
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r exec --no-startup-id i3-msg restart
+
+# Kill Window
+bindsym $mod+q kill
+bindsym --release $mod+Escape exec xkill
+
+# Set default size and position for floating windows
+for_window[floating] resize set 800px 500px
+for_window[floating] move position center
+
+# Tiling Parameters
+default_orientation horizontal
+bindsym $mod+h split h
+bindsym $mod+v split v
+bindsym $mod+f fullscreen toggle
+
+# Autostart
+exec --no-startup-id $browser
+exec --no-startup-id nm-applet &
+exec --no-startup-id bluetooth-autoconnect &
+exec --no-startup-id ~/.config/polybar/launch.sh
+#exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+exec --no-startup-id sh -c '[ -f /etc/arch-release ] && /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 || /usr/lib/x86_64-linux-gnu/libexec/polkit-gnome-authentication-agent-1' &
+exec --no-startup-id dunst &
+exec --no-startup-id ~/.bin-personal/set-wallpaper.sh
+exec --no-startup-id eval "$(ssh-agent -s)"
+# Run autotiling script only on Linux Mint
+exec --no-startup-id bash -c '[ "$(grep -i "^NAME=" /etc/os-release)" = "NAME=\"Linux Mint\"" ] && ~/i3ipc-venv/bin/python ~/.bin-personal/autotiling.py'
+exec --no-startup-id ~/.bin-personal/set-monitor.sh
+exec --no-startup-id sh -c '[ ! -f /etc/arch-release ] && ibus exit'
+
+# Delayed non-critical apps
+exec --no-startup-id sh -c "sleep 2 && protonvpn-app --start-minimized &"
+exec --no-startup-id sh -c "sleep 3 && copyq &"
+exec --no-startup-id sh -c "sleep 4 && blueman-applet &"
+exec --no-startup-id sh -c "sleep 5 && pamac-tray &"
+exec --no-startup-id sh -c "sleep 6 && pasystray &"
+exec --no-startup-id sh -c "sleep 7 && insync start & disown"
+exec --no-startup-id numlockx on
+
+# Application Keyboard Shortcuts
+# -------------------------------
+bindsym $mod+Return exec --no-startup-id $terminal;focus
+bindsym $mod+$alt+Return exec warp-terminal
+bindsym $mod+s exec --no-startup-id subl
+bindsym Control+$alt+j exec --no-startup-id joplin-desktop
+bindsym $mod+Shift+Return exec --no-startup-id $fileManager
+bindsym $mod+w exec --no-startup-id $browser
+#bindsym Control+$alt+f exec --no-startup-id firefox
+bindsym Control+$alt+p exec --no-startup-id xfce4-screenshooter
+#bindsym Control+$alt+v exec --no-startup-id xfce4-terminal -e "bash /home/brett/.bin-personal/realvnc-viewer.sh"
+
+# Audio Control
+bindsym XF86AudioRaiseVolume exec --no-startup-id "amixer -D pulse set Master '5%+'"
+bindsym XF86AudioLowerVolume exec --no-startup-id "amixer -D pulse set Master '5%-'"
+bindsym XF86AudioMute exec --no-startup-id "amixer -D pulse set Master toggle"
+#bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
+#bindsym XF86AudioNext exec --no-startup-id playerctl next
+#bindsym XF86AudioPrev exec --no-startup-id playerctl previous
+#bindsym XF86AudioStop exec --no-startup-id playerctl stop
+
+# Screen Brightness Control
+bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 20
+bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 20
+
+# Set default window border size
+for_window[class=".*"] border pixel 4
+
+# Enable smart borders
+smart_borders on
+
+# Picom Transparency Control (if you use picom)
+# Commented out as it might not be needed
+# exec_always --no-startup-id picom --config ~/.config/i3/picom.conf
+
+# Border Color Settings
+client.focused          #6790EB #6790EB #e5e5e5 #6790EB
+client.unfocused        #222222 #222222 #e5e5e5 #222222
+client.focused_inactive #222222 #222222 #e5e5e5 #222222
+client.background       #242424
+
+# Floating Window Modifier
+floating_modifier $alt
