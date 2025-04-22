@@ -50,12 +50,18 @@ fi
 # Install RealVNC Server
 echo "Installing RealVNC Server..."
 dpkg -i "$SERVER_DEB_FILE"
-apt install -f -y
+if ! apt install -f -y; then
+    echo "Error: Failed to fix dependencies for RealVNC Server"
+    exit 1
+fi
 
 # Install RealVNC Viewer
 echo "Installing RealVNC Viewer..."
 dpkg -i "$VIEWER_DEB_FILE"
-apt install -f -y
+if ! apt install -f -y; then
+    echo "Error: Failed to fix dependencies for RealVNC Viewer"
+    exit 1
+fi
 
 # Verify installation
 if command -v vncserver-x11 >/dev/null && command -v vncviewer >/dev/null; then

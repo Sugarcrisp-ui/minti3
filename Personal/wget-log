@@ -1,0 +1,11 @@
+--2025-04-22 12:22:28--  https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.3-3_all.deb
+Resolving repo.protonvpn.com (repo.protonvpn.com)... 2606:4700:20::681a:523, 2606:4700:20::ac43:4672, 2606:4700:20::681a:423, ...
+Connecting to repo.protonvpn.com (repo.protonvpn.com)|2606:4700:20::681a:523|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 4554 (4,4K) [application/octet-stream]
+Saving to: ‘protonvpn-stable-release.deb’
+
+     0K ....                                                  100%  373K=0,01s
+
+2025-04-22 12:22:29 (373 KB/s) - ‘protonvpn-stable-release.deb’ saved [4554/4554]
+
