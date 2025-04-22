@@ -1,59 +1,82 @@
 #!/bin/bash
 
-# Ensure dotfiles directory exists
-if [ ! -d "~/dotfiles" ]; then
-    echo "Error: ~/dotfiles directory not found. Please ensure it exists."
+# Set paths
+DOTFILES_DIR="/home/brett/dotfiles-minti3"
+USER_HOME="/home/brett"
+
+# Check dotfiles directory
+if [ ! -d "$DOTFILES_DIR" ]; then
+    echo "Error: $DOTFILES_DIR does not exist."
     exit 1
 fi
 
-# Create symlinks for files in ~/
+# Create symlinks in home directory
 for file in .bashrc .bashrc-personal .fehbg .gtkrc-2.0.mine sddm.conf; do
-    if [ -f "~/dotfiles/$file" ]; then
-        ln -sf ~/dotfiles/$file ~/$file
-        echo "Created symlink for ~/$file"
-    else
-        echo "Warning: ~/dotfiles/$file not found, skipping"
+    if [ -f "$DOTFILES_DIR/$file" ]; then
+        target="$USER_HOME/$file"
+        if [ -L "$target" ] && [ "$(readlink "$target")" = "$DOTFILES_DIR/$file" ]; then
+            echo "Symlink for $target already exists and is correct, skipping"
+        else
+            ln -sf "$DOTFILES_DIR/$file" "$target"
+            echo "Created symlink for $target"
+        fi
     fi
 done
 
-# Create symlink for .fonts directory
-if [ -d "~/dotfiles/.fonts" ]; then
-    ln -sf ~/dotfiles/.fonts ~/.fonts
-    echo "Created symlink for ~/.fonts"
-else
-    echo "Warning: ~/dotfiles/.fonts not found, skipping"
+# Symlink .fonts directory
+if [ -d "$DOTFILES_DIR/.fonts" ]; then
+    target="$USER_HOME/.fonts"
+    if [ -L "$target" ] && [ "$(readlink "$target")" = "$DOTFILES_DIR/.fonts" ]; then
+        echo "Symlink for $target already exists and is correct, skipping"
+    else
+        ln -sf "$DOTFILES_DIR/.fonts" "$target"
+        echo "Created symlink for $target"
+    fi
 fi
 
-# Create .config directory if it doesn't exist
-mkdir -p ~/.config
+# Ensure .config exists
+mkdir -p "$USER_HOME/.config"
 
-# Create symlinks for .config subdirectories and files
-for item in archlinux-betterlockscreen archlinux-logout bluetooth-connect dunst geany gtk-3.0 i3 micro paru polybar qBittorrent rofi Thunar mimeapps.list; do
-    if [ -e "~/dotfiles/.config/$item" ]; then
-        ln -sf ~/dotfiles/.config/$item ~/.config/$item
-        echo "Created symlink for ~/.config/$item"
-    else
-        echo "Warning: ~/dotfiles/.config/$item not found, skipping"
+# Symlink each .config item
+for item in betterlockscreen i3-logout bluetooth-connect dunst geany gtk-3.0 i3 micro polybar qBittorrent rofi Thunar mimeapps.list; do
+    if [ -e "$DOTFILES_DIR/.config/$item" ]; then
+        target="$USER_HOME/.config/$item"
+        if [ -L "$target" ] && [ "$(readlink "$target")" = "$DOTFILES_DIR/.config/$item" ]; then
+            echo "Symlink for $target already exists and is correct, skipping"
+        else
+            ln -sf "$DOTFILES_DIR/.config/$item" "$target"
+            echo "Created symlink for $target"
+        fi
     fi
 done
 
-# Create .local/share/applications directory if it doesn't exist
-mkdir -p ~/.local/share/applications
+# Ensure local applications dir exists
+mkdir -p "$USER_HOME/.local/share/applications"
 
-# Create symlinks for .desktop files in ~/.local/share/applications/
-for file in ~/dotfiles/.local/share/applications/*.desktop; do
+# Symlink .desktop files
+for file in "$DOTFILES_DIR/.local/share/applications/"*.desktop; do
     if [ -f "$file" ]; then
         filename=$(basename "$file")
-        ln -sf "$file" ~/.local/share/applications/"$filename"
-        echo "Created symlink for ~/.local/share/applications/$filename"
-    else
-        echo "Warning: No .desktop files found in ~/dotfiles/.local/share/applications/"
-        break
+        target="$USER_HOME/.local/share/applications/$filename"
+        if [ -L "$target" ] && [ "$(readlink "$target")" = "$file" ]; then
+            echo "Symlink for $target already exists and is correct, skipping"
+        else
+            ln -sf "$file" "$target"
+            echo "Created symlink for $target"
+        fi
     fi
 done
 
-# Verify symlinks
-echo "Verifying symlinks..."
-ls -l ~/.bashrc ~/.bashrc-personal ~/.fehbg ~/.gtkrc-2.0.mine ~/.sddm.conf ~/.fonts ~/.config/ ~/.local/share/applications/
+# Ensure X11 config dir exists and symlink touchpad config
+sudo mkdir -p /etc/X11/xorg.conf.d
+if [ -f "$DOTFILES_DIR/etc/X11/xorg.conf.d/40-libinput.conf" ]; then
+    target="/etc/X11/xorg.conf.d/40-libinput.conf"
+    if [ -L "$target" ] && [ "$(readlink "$target")" = "$DOTFILES_DIR/etc/X11/xorg.conf.d/40-libinput.conf" ]; then
+        echo "Symlink for $target already exists and is correct, skipping"
+    else
+        sudo ln -sf "$DOTFILES_DIR/etc/X11/xorg.conf.d/40-libinput.conf" "$target"
+        echo "Created symlink for $target"
+    fi
+fi
 
-echo "Symlink creation complete."
+echo "Symlinks set up successfully."
