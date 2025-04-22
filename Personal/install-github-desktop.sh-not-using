@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Script to install GitHub Desktop on Linux Mint using the packagecloud.io repository
+
+# Variables
+USER="brett"
+USER_HOME="/home/$USER"
+REPO_URL="deb [arch=amd64 signed-by=/usr/share/keyrings/shiftkey-packages.gpg] https://packagecloud.io/shiftkey/desktop/ubuntu/ any main"
+KEY_URL="https://packagecloud.io/shiftkey/desktop/gpgkey"
+KEYRING="/usr/share/keyrings/shiftkey-packages.gpg"
+
+# Install dependencies
+echo "Installing dependencies..."
+sudo apt-get update
+sudo apt-get install -y wget apt-transport-https
+
+# Add the GPG key
+echo "Adding GPG key for packagecloud.io..."
+wget -qO- "$KEY_URL" | sudo gpg --dearmor -o "$KEYRING"
+
+# Add the repository
+echo "Adding GitHub Desktop repository..."
+echo "$REPO_URL" | sudo tee /etc/apt/sources.list.d/shiftkey-desktop.list
+
+# Update package lists with retries
+echo "Updating package lists..."
+for i in {1..3}; do
+    sudo apt-get update && break
+    echo "Failed to update package lists, retrying ($i/3)..."
+    sleep 10
+done
+
+# Install GitHub Desktop
+echo "Installing GitHub Desktop..."
+sudo apt-get install -y github-desktop
+
+# Verify installation
+if command -v github-desktop >/dev/null 2>&1; then
+    echo "GitHub Desktop installed successfully."
+else
+    echo "GitHub Desktop installation failed."
+    exit 1
+fi
+
+echo "GitHub Desktop installation complete. Launch it from the menu or run 'github-desktop'."
