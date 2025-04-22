@@ -1,82 +1,133 @@
 #!/bin/bash
 
-# Set paths
+# Script to create symlinks for dotfiles in Linux Mint i3 setup
+set -e
+
+# Define paths (hardcoded to avoid sudo changing $HOME to /root)
 DOTFILES_DIR="/home/brett/dotfiles-minti3"
 USER_HOME="/home/brett"
+LOG_FILE="$USER_HOME/dotfiles-symlinks-install.log"
+
+# Log function
+log() {
+    echo "$(date +'%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+    echo "$1"
+}
+
+# Check if a path is within DOTFILES_DIR
+is_within_dotfiles() {
+    local path="$1"
+    local real_path
+    real_path=$(realpath --no-symlinks "$path" 2>/dev/null || echo "$path")
+    if [[ "$real_path" == "$DOTFILES_DIR"* ]]; then
+        return 0
+    fi
+    return 1
+}
 
 # Check dotfiles directory
 if [ ! -d "$DOTFILES_DIR" ]; then
-    echo "Error: $DOTFILES_DIR does not exist."
+    log "Error: $DOTFILES_DIR does not exist."
     exit 1
 fi
 
-# Create symlinks in home directory
-for file in .bashrc .bashrc-personal .fehbg .gtkrc-2.0.mine sddm.conf; do
-    if [ -f "$DOTFILES_DIR/$file" ]; then
-        target="$USER_HOME/$file"
-        if [ -L "$target" ] && [ "$(readlink "$target")" = "$DOTFILES_DIR/$file" ]; then
-            echo "Symlink for $target already exists and is correct, skipping"
+# Initialize log file
+> "$LOG_FILE"
+log "Starting dotfiles symlink setup"
+
+# Function to create symlink for a file or directory
+create_symlink() {
+    local source="$1"
+    local target="$2"
+    local sudo_needed="${3:-false}"
+
+    # Skip if source doesn't exist
+    if [ ! -e "$source" ] && [ ! -d "$source" ]; then
+        log "Source $source does not exist, skipping"
+        return
+    fi
+
+    # Skip if target is within DOTFILES_DIR
+    if is_within_dotfiles "$target"; then
+        log "Target $target is within $DOTFILES_DIR, skipping to prevent overwrite"
+        return
+    fi
+
+    # Check if target exists
+    if [ -e "$target" ] || [ -L "$target" ]; then
+        # Check if it's a symlink pointing to the correct source
+        if [ -L "$target" ] && [ "$(readlink -f "$target")" = "$source" ]; then
+            log "Symlink already correct: $target -> $source"
+            if [ "$sudo_needed" = "true" ]; then
+                sudo chmod --reference="$source" "$target"
+            else
+                chmod --reference="$source" "$target"
+            fi
+            log "Updated permissions for $target to match $source"
+            return
+        fi
+        # Back up existing file or directory
+        log "Target $target exists, backing up"
+        if [ "$sudo_needed" = "true" ]; then
+            sudo mv "$target" "${target}.bak"
         else
-            ln -sf "$DOTFILES_DIR/$file" "$target"
-            echo "Created symlink for $target"
+            mv "$target" "${target}.bak"
         fi
     fi
-done
 
-# Symlink .fonts directory
-if [ -d "$DOTFILES_DIR/.fonts" ]; then
-    target="$USER_HOME/.fonts"
-    if [ -L "$target" ] && [ "$(readlink "$target")" = "$DOTFILES_DIR/.fonts" ]; then
-        echo "Symlink for $target already exists and is correct, skipping"
+    # Create parent directory if needed
+    if [ "$sudo_needed" = "true" ]; then
+        sudo mkdir -p "$(dirname "$target")"
     else
-        ln -sf "$DOTFILES_DIR/.fonts" "$target"
-        echo "Created symlink for $target"
+        mkdir -p "$(dirname "$target")"
     fi
-fi
 
-# Ensure .config exists
-mkdir -p "$USER_HOME/.config"
-
-# Symlink each .config item
-for item in betterlockscreen i3-logout bluetooth-connect dunst geany gtk-3.0 i3 micro polybar qBittorrent rofi Thunar mimeapps.list; do
-    if [ -e "$DOTFILES_DIR/.config/$item" ]; then
-        target="$USER_HOME/.config/$item"
-        if [ -L "$target" ] && [ "$(readlink "$target")" = "$DOTFILES_DIR/.config/$item" ]; then
-            echo "Symlink for $target already exists and is correct, skipping"
+    # Create symlink
+    if [ "$sudo_needed" = "true" ]; then
+        sudo ln -sf "$source" "$target"
+    else
+        ln -sf "$source" "$target"
+    fi
+    if [ $? -eq 0 ]; then
+        if [ "$sudo_needed" = "true" ]; then
+            sudo chmod --reference="$source" "$target"
         else
-            ln -sf "$DOTFILES_DIR/.config/$item" "$target"
-            echo "Created symlink for $target"
+            chmod --reference="$source" "$target"
         fi
+        log "Created symlink: $target -> $source with matching permissions"
+    else
+        log "Failed to create symlink: $target -> $source"
+        exit 1
     fi
+}
+
+# Note: Explicit file/directory lists are used instead of 'find' to ensure only
+# intended files are symlinked, avoiding issues with unexpected files and ensuring
+# subdirectories (e.g., .config/i3/) are handled correctly.
+
+# Top-level files
+for file in .bashrc .bashrc-personal .fehbg .gtkrc-2.0.mine sddm.conf; do
+    create_symlink "$DOTFILES_DIR/$file" "$USER_HOME/$file"
 done
 
-# Ensure local applications dir exists
-mkdir -p "$USER_HOME/.local/share/applications"
+# .fonts directory
+create_symlink "$DOTFILES_DIR/.fonts" "$USER_HOME/.fonts"
 
-# Symlink .desktop files
+# .config subdirectories and files
+for item in betterlockscreen i3-logout bluetooth-connect dunst geany gtk-3.0 i3 micro polybar qBittorrent rofi Thunar mimeapps.list; do
+    create_symlink "$DOTFILES_DIR/.config/$item" "$USER_HOME/.config/$item"
+done
+
+# .desktop files
 for file in "$DOTFILES_DIR/.local/share/applications/"*.desktop; do
     if [ -f "$file" ]; then
         filename=$(basename "$file")
-        target="$USER_HOME/.local/share/applications/$filename"
-        if [ -L "$target" ] && [ "$(readlink "$target")" = "$file" ]; then
-            echo "Symlink for $target already exists and is correct, skipping"
-        else
-            ln -sf "$file" "$target"
-            echo "Created symlink for $target"
-        fi
+        create_symlink "$file" "$USER_HOME/.local/share/applications/$filename"
     fi
 done
 
-# Ensure X11 config dir exists and symlink touchpad config
-sudo mkdir -p /etc/X11/xorg.conf.d
-if [ -f "$DOTFILES_DIR/etc/X11/xorg.conf.d/40-libinput.conf" ]; then
-    target="/etc/X11/xorg.conf.d/40-libinput.conf"
-    if [ -L "$target" ] && [ "$(readlink "$target")" = "$DOTFILES_DIR/etc/X11/xorg.conf.d/40-libinput.conf" ]; then
-        echo "Symlink for $target already exists and is correct, skipping"
-    else
-        sudo ln -sf "$DOTFILES_DIR/etc/X11/xorg.conf.d/40-libinput.conf" "$target"
-        echo "Created symlink for $target"
-    fi
-fi
+# Touchpad config
+create_symlink "$DOTFILES_DIR/etc/X11/xorg.conf.d/40-libinput.conf" "/etc/X11/xorg.conf.d/40-libinput.conf" "true"
 
-echo "Symlinks set up successfully."
+log "Symlink creation completed."
+exit 0
