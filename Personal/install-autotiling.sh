@@ -7,8 +7,8 @@ sudo apt install pipx -y
 USER="brett"
 USER_HOME="/home/$USER"
 VENV_DIR="$USER_HOME/i3ipc-venv"
-DOTFILES_DIR="$USER_HOME/dotfiles-minti3"
-AUTOTILING_SRC="$DOTFILES_DIR/Personal/autotiling.py"
+SCRIPTS_DIR="$USER_HOME/minti3/Personal"
+AUTOTILING_SRC="$SCRIPTS_DIR/autotiling.py"
 AUTOTILING_DEST="$USER_HOME/.bin-personal/autotiling.py"
 
 # Create and activate virtual environment
@@ -18,19 +18,21 @@ source "$VENV_DIR/bin/activate"
 # Install i3ipc in virtual environment
 pip install i3ipc
 
-# Fetch autotiling script if not present in dotfiles
+# Check if autotiling script exists locally, otherwise download it
 if [ ! -f "$AUTOTILING_SRC" ]; then
-    echo "autotiling.py not found in $DOTFILES_DIR/Personal/, downloading from GitHub..."
-    sudo -u "$USER" wget -O "$AUTOTILING_SRC" https://raw.githubusercontent.com/nwg-piotr/autotiling/main/autotiling.py
+    echo "autotiling.py not found in $SCRIPTS_DIR, downloading from GitHub..."
+    sudo -u "$USER" wget -O "$AUTOTILING_DEST" https://raw.githubusercontent.com/nwg-piotr/autotiling/main/autotiling.py
     if [ $? -ne 0 ]; then
         echo "Error: Failed to download autotiling.py from GitHub"
         exit 1
     fi
+else
+    # Copy autotiling script from local source
+    mkdir -p "$USER_HOME/.bin-personal"
+    cp "$AUTOTILING_SRC" "$AUTOTILING_DEST"
 fi
 
-# Copy autotiling script
-mkdir -p "$USER_HOME/.bin-personal"
-cp "$AUTOTILING_SRC" "$AUTOTILING_DEST"
+# Set permissions
 chmod +x "$AUTOTILING_DEST"
 
 # Verify installation by checking file existence

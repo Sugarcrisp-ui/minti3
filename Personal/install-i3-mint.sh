@@ -38,13 +38,11 @@ USER_HOME="/home/$USER"
 
 # Symlink dotfiles
 sudo -u "$USER" bash -c "mkdir -p $USER_HOME/.config/i3 $USER_HOME/.config/polybar $USER_HOME/.config/rofi $USER_HOME/.config/dunst"
-sudo -u "$USER" bash -c "ln -sf $USER_HOME/dotfiles/.config/i3/config $USER_HOME/.config/i3/config"
-sudo -u "$USER" bash -c "ln -sf $USER_HOME/dotfiles/.config/polybar $USER_HOME/.config/polybar"
-sudo -u "$USER" bash -c "ln -sf $USER_HOME/dotfiles/.config/rofi/config.rasi $USER_HOME/.config/rofi/config.rasi"
-sudo -u "$USER" bash -c "ln -sf $USER_HOME/dotfiles/.config/dunst/dunstrc $USER_HOME/.config/dunst/dunstrc"
+sudo -u "$USER" bash -c "rm -f $USER_HOME/.config/i3/config; ln -sf $USER_HOME/dotfiles-minti3/.config/i3/config $USER_HOME/.config/i3/config"
+sudo -u "$USER" bash -c "rm -rf $USER_HOME/.config/polybar; ln -sf $USER_HOME/dotfiles-minti3/.config/polybar $USER_HOME/.config/polybar"
+sudo -u "$USER" bash -c "rm -f $USER_HOME/.config/rofi/config.rasi; ln -sf $USER_HOME/dotfiles-minti3/.config/rofi/config.rasi $USER_HOME/.config/rofi/config.rasi"
+sudo -u "$USER" bash -c "rm -f $USER_HOME/.config/dunst/dunstrc; ln -sf $USER_HOME/dotfiles-minti3/.config/dunst/dunstrc $USER_HOME/.config/dunst/dunstrc"
 sudo -u "$USER" bash -c "mkdir -p $USER_HOME/.bin-personal"
-sudo -u "$USER" bash -c "ln -sf $USER_HOME/dotfiles/.bin-personal/* $USER_HOME/.bin-personal/"
-sudo -u "$USER" bash -c "chmod +x $USER_HOME/.bin-personal/*"
 
 # Verify installations
 i3 --version
