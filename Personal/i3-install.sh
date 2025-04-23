@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Set environment to prevent Rofi/Audacity popups and stabilize verification
+# Set environment for D-Bus and XFCE compatibility
 export DISPLAY=:0
 export XDG_SESSION_TYPE=x11
 export XDG_RUNTIME_DIR=/run/user/$(id -u brett)
 export XDG_CONFIG_HOME=/home/brett/.config
 export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u brett)/bus
 
-# Master script to install and set up i3 on Linux Mint
+# Master script to install and set up i3 on a fresh Linux Mint XFCE system
 
 # Variables
 USER="brett"
@@ -33,25 +33,6 @@ run_script() {
 # Warn about InSync
 echo "Warning: If InSync is running, it may cause issues with this script. Please ensure InSync is stopped before proceeding."
 read -p "Press Enter to continue, or Ctrl+C to abort and stop InSync..."
-
-# Check and stop Rofi to prevent popups during script execution
-echo "Checking for running Rofi processes..."
-ROFI_PIDS=$(pgrep -u brett rofi)
-if [ -n "$ROFI_PIDS" ]; then
-    echo "Stopping Rofi (PIDs: $ROFI_PIDS)..."
-    pkill -u brett rofi
-    sleep 2  # Give extra time for Rofi to fully terminate
-    # Double-check if Rofi is still running
-    if pgrep -u brett rofi > /dev/null; then
-        echo "Rofi did not stop, forcing termination..."
-        pkill -9 -u brett rofi
-        sleep 1
-    fi
-else
-    echo "Rofi is not running."
-fi
-# Set a flag to prevent Rofi popups during script execution
-export ROFI_NO_POPUP=1
 
 # Section 1: Install Core i3 Components and Dependencies
 run_script "install-i3-mint.sh" true
@@ -120,7 +101,7 @@ cp -v ~/dotfiles-minti3/.gtkrc-2.0.mine ~/.gtkrc-2.0.mine
 echo "Setting up cron jobs..."
 run_script "setup-cron-jobs.sh" true
 
-# Ensure dunst is running for betterlockscreen verification
+# Ensure dunst is running for XFCE session
 dunst &
 
 # Section 13: Verify Installations
@@ -131,18 +112,11 @@ rofi --version > /dev/null 2>&1
 dunst --version
 i3lock-color --version
 i3-logout --version
-betterlockscreen --version
 protonvpn-app --version
 flatpak run io.github.shiftey.Desktop --version
 vncserver-x11 --version
 xfconf-query -c xsettings -p /Net/ThemeName
 "$USER_HOME/i3ipc-venv/bin/pip" show i3ipc
 cat /etc/sddm.conf.d/kde_settings.conf
-
-# Restart Rofi after script completion without showing the launcher
-echo "Restarting Rofi..."
-unset ROFI_NO_POPUP  # Clear the flag
-# Restart Rofi in the background without launching a window
-(rofi -monitor > /dev/null 2>&1 &)
 
 echo "Mint i3 installation complete."
