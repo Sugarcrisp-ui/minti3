@@ -12,7 +12,7 @@ export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u brett)/bus
 # Variables
 USER="brett"
 USER_HOME="/home/$USER"
-SCRIPTS_DIR="$USER_HOME/minti3/Personal"
+SCRIPTS_DIR="$USER_HOME/minti3/install-scripts"
 
 # Function to run a script and check for errors
 run_script() {
