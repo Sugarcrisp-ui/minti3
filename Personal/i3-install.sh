@@ -34,6 +34,18 @@ run_script() {
 echo "Warning: If InSync is running, it may cause issues with this script. Please ensure InSync is stopped before proceeding."
 read -p "Press Enter to continue, or Ctrl+C to abort and stop InSync..."
 
+# Clone dotfiles-minti3 repository if it doesn't exist
+if [ ! -d "$USER_HOME/dotfiles-minti3" ]; then
+    echo "Cloning dotfiles-minti3 repository..."
+    git clone https://github.com/Sugarcrisp-ui/dotfiles-minti3.git "$USER_HOME/dotfiles-minti3"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to clone dotfiles-minti3 repository. Exiting."
+        exit 1
+    fi
+else
+    echo "dotfiles-minti3 repository already exists at $USER_HOME/dotfiles-minti3, skipping clone."
+fi
+
 # Section 1: Install Core i3 Components and Dependencies
 run_script "install-i3-mint.sh" true
 

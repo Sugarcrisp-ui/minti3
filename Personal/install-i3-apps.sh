@@ -4,6 +4,7 @@
 sudo apt update
 sudo apt install -y \
   arandr \
+  alacritty \
   audacity \
   bat \
   evince \
@@ -15,7 +16,8 @@ sudo apt install -y \
   vlc \
   xclip \
   xdotool \
-  curl
+  curl \
+  numlockx
 
 # Install Flatpak and bitwarden
 sudo apt install flatpak -y
