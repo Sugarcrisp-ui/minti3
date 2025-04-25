@@ -43,9 +43,21 @@ else
     fi
 fi
 
+# Ensure correct permissions for the repository directory
+echo "Fixing permissions for i3lock-color repository..."
+sudo chown -R brett:brett /home/brett/i3lock-color
+
+# Clean up any stale build directories
+echo "Cleaning up stale build directories..."
+rm -rf /home/brett/i3lock-color/autom4te.cache /home/brett/i3lock-color/build
+
 # Build and install i3lock-color
 cd /home/brett/i3lock-color
 autoreconf -i
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to run autoreconf for i3lock-color. Exiting."
+    exit 1
+fi
 mkdir -p build && cd build
 ../configure --prefix=/usr/local
 if [ $? -ne 0 ]; then
@@ -57,16 +69,16 @@ if [ $? -ne 0 ]; then
     echo "Error: Failed to build i3lock-color. Exiting."
     exit 1
 fi
-make install
+sudo make install
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install i3lock-color. Exiting."
     exit 1
 fi
 
-# Verify installation
-i3lock-color --version
+# Verify installation (binary is named i3lock, not i3lock-color)
+/usr/local/bin/i3lock --version
 if [ $? -ne 0 ]; then
-    echo "Error: Failed to verify i3lock-color installation. Exiting."
+    echo "Error: Failed to verify i3lock-color installation (binary should be i3lock). Exiting."
     exit 1
 fi
 
