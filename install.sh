@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export DEBIAN_FRONTEND=noninteractive
+
 # Set environment for D-Bus and XFCE compatibility
 export DISPLAY=:0
 export XDG_SESSION_TYPE=x11
