@@ -9,8 +9,7 @@ sudo apt-get install -y \
   gir1.2-wnck-3.0 \
   python3-psutil \
   python3-cairo \
-  python3-distro \
-  i3lock-color
+  python3-distro
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install dependencies. Exiting."
     exit 1
