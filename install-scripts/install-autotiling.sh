@@ -16,19 +16,19 @@ if [ $? -ne 0 ]; then
 fi
 
 # Clone or update autotiling repository
-if [ ! -d "/home/brett/autotiling" ]; then
-    echo "Cloning autotiling repository..."
-    git clone https://github.com/Sugarcrisp-ui/autotiling.git /home/brett/autotiling
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to clone autotiling repository. Exiting."
-        exit 1
-    fi
-else
+if [ -d "/home/brett/autotiling/.git" ]; then
     echo "autotiling repository already exists at /home/brett/autotiling, updating..."
     cd /home/brett/autotiling
     git pull
     if [ $? -ne 0 ]; then
         echo "Error: Failed to update autotiling repository. Exiting."
+        exit 1
+    fi
+else
+    echo "Cloning autotiling repository..."
+    git clone https://github.com/Sugarcrisp-ui/autotiling.git /home/brett/autotiling
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to clone autotiling repository. Exiting."
         exit 1
     fi
 fi

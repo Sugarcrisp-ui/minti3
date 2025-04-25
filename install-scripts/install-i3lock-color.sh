@@ -26,27 +26,23 @@ if ! dpkg -l | grep -q libxcb-composite0-dev; then
 fi
 
 # Clone or update i3lock-color repository
-if [ ! -d "/home/brett/i3lock-color" ]; then
+if [ -d "/home/brett/i3lock-color/.git" ]; then
+    echo "i3lock-color repository already exists at /home/brett/i3lock-color, updating..."
+    cd /home/brett/i3lock-color
+    sudo chown -R brett:brett /home/brett/i3lock-color
+    git pull
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to update i3lock-color repository. Exiting."
+        exit 1
+    fi
+else
     echo "Cloning i3lock-color repository..."
     git clone https://github.com/Raymo111/i3lock-color.git /home/brett/i3lock-color
     if [ $? -ne 0 ]; then
         echo "Error: Failed to clone i3lock-color repository. Exiting."
         exit 1
     fi
-    # Fix permissions immediately after cloning
-    echo "Fixing permissions for newly cloned i3lock-color repository..."
     sudo chown -R brett:brett /home/brett/i3lock-color
-else
-    echo "i3lock-color repository already exists at /home/brett/i3lock-color, updating..."
-    # Fix permissions before any operations
-    echo "Fixing permissions for i3lock-color repository..."
-    sudo chown -R brett:brett /home/brett/i3lock-color
-    cd /home/brett/i3lock-color
-    git pull
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to update i3lock-color repository. Exiting."
-        exit 1
-    fi
 fi
 
 # Clean up any stale build directories

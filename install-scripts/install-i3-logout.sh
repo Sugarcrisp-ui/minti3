@@ -9,19 +9,19 @@ if [ $? -ne 0 ]; then
 fi
 
 # Clone or update i3-logout repository
-if [ ! -d "/home/brett/i3-logout" ]; then
-    echo "Cloning i3-logout repository..."
-    git clone https://github.com/nwhirschfeld/i3-logout.git /home/brett/i3-logout
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to clone i3-logout repository. Exiting."
-        exit 1
-    fi
-else
+if [ -d "/home/brett/i3-logout/.git" ]; then
     echo "i3-logout repository already exists at /home/brett/i3-logout, updating..."
     cd /home/brett/i3-logout
     git pull
     if [ $? -ne 0 ]; then
         echo "Error: Failed to update i3-logout repository. Exiting."
+        exit 1
+    fi
+else
+    echo "Cloning i3-logout repository..."
+    git clone https://github.com/nwhirschfeld/i3-logout.git /home/brett/i3-logout
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to clone i3-logout repository. Exiting."
         exit 1
     fi
 fi
