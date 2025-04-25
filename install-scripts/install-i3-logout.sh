@@ -36,7 +36,7 @@ fi
 # Extract the tarball
 echo "Extracting i3-logout-files.tar.gz..."
 cd /home/brett/i3-logout
-tar -xzf i3-logout-files.tar.gz -C /tmp
+tar -xzf i3-logout-files.tar.gz -C /home/brett/tmp
 if [ $? -ne 0 ]; then
     echo "Error: Failed to extract i3-logout-files.tar.gz. Exiting."
     exit 1
@@ -116,6 +116,6 @@ if [ $? -ne 0 ]; then
 fi
 
 # Clean up
-rm -rf /tmp/etc /tmp/usr
+rm -rf /home/brett/tmp/etc /home/brett/tmp/usr
 
 echo "i3-logout installation complete."
