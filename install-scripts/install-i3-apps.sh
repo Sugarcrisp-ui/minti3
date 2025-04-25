@@ -75,7 +75,7 @@ fi
 # Install hblock from GitHub
 echo "Installing hblock..."
 curl -o /tmp/hblock https://raw.githubusercontent.com/hectorm/hblock/v3.5.1/hblock
-echo "c68a0b8dad58ab75080eed7cb989e5634fc88fca051703139c025352a6ee19ad /tmp/hblock" | sha256sum --check -
+echo "d010cb9e0f3c644e9df3bfb387f42f7dbbffbbd481fb50c32683bbe71f994451 /tmp/hblock" | sha256sum --check -
 if [ $? -ne 0 ]; then
     echo "Error: hblock checksum verification failed. Exiting."
     exit 1
