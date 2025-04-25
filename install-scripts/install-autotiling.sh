@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Install dependencies
-apt-get install -y pipx
+sudo apt-get install -y pipx
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install pipx. Exiting."
     exit 1
