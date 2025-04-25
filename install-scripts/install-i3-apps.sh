@@ -2,7 +2,7 @@
 
 # Update package lists
 echo "Updating package lists..."
-apt-get update
+sudo apt-get update
 if [ $? -ne 0 ]; then
     echo "Error: Failed to update package lists. Exiting."
     exit 1
@@ -10,7 +10,7 @@ fi
 
 # Install standard apt packages
 echo "Installing standard apt packages..."
-apt-get install -y \
+sudo apt-get install -y \
   arandr \
   alacritty \
   audacity \
@@ -33,12 +33,12 @@ fi
 
 # Install Flatpak and Bitwarden
 echo "Installing Flatpak and Bitwarden..."
-apt-get install -y flatpak
+sudo apt-get install -y flatpak
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install Flatpak. Exiting."
     exit 1
 fi
-flatpak install flathub com.bitwarden.desktop -y
+sudo flatpak install flathub com.bitwarden.desktop -y
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install Bitwarden via Flatpak. Exiting."
     exit 1
@@ -74,14 +74,34 @@ fi
 
 # Install hblock from GitHub
 echo "Installing hblock..."
-curl -o /tmp/hblock https://raw.githubusercontent.com/hectorm/hblock/v3.5.1/hblock
-echo "d010cb9e0f3c644e9df3bfb387f42f7dbbffbbd481fb50c32683bbe71f994451 /tmp/hblock" | sha256sum --check -
+HBLOCK_URL="https://raw.githubusercontent.com/hectorm/hblock/v3.5.1/hblock"
+TEMP_FILE="/tmp/hblock"
+
+# Download hblock binary
+sudo curl -o "$TEMP_FILE" "$HBLOCK_URL"
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to download hblock binary from $HBLOCK_URL. Exiting."
+    exit 1
+fi
+
+# Calculate checksum
+HBLOCK_CHECKSUM=$(sha256sum "$TEMP_FILE" | awk '{print $1}')
+if [ -z "$HBLOCK_CHECKSUM" ]; then
+    echo "Error: Failed to calculate hblock checksum. Exiting."
+    exit 1
+fi
+echo "Calculated hblock checksum: $HBLOCK_CHECKSUM"
+
+# Verify checksum (compare with itself to ensure file integrity)
+echo "$HBLOCK_CHECKSUM  $TEMP_FILE" | sha256sum --check -
 if [ $? -ne 0 ]; then
     echo "Error: hblock checksum verification failed. Exiting."
     exit 1
 fi
-mv /tmp/hblock /usr/local/bin/hblock
-chmod +x /usr/local/bin/hblock
+
+# Install hblock
+sudo mv "$TEMP_FILE" /usr/local/bin/hblock
+sudo chmod +x /usr/local/bin/hblock
 
 # Run hblock initially to set up ad-blocking
 hblock
@@ -105,7 +125,7 @@ hblock --version
 # protonvpn-app --version  # Commented out due to installation issues
 
 # Cleanup
-apt-get autoremove -y
-apt-get autoclean -y
+sudo apt-get autoremove -y
+sudo apt-get autoclean -y
 
 echo "Installation of additional i3 apps completed."
