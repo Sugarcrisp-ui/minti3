@@ -1,8 +1,16 @@
 #!/bin/bash
 
+# Update package lists
+echo "Updating package lists..."
+apt-get update
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to update package lists. Exiting."
+    exit 1
+fi
+
 # Install standard apt packages
-sudo apt update
-sudo apt install -y \
+echo "Installing standard apt packages..."
+apt-get install -y \
   arandr \
   alacritty \
   audacity \
@@ -18,20 +26,66 @@ sudo apt install -y \
   xdotool \
   curl \
   numlockx
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to install standard apt packages. Exiting."
+    exit 1
+fi
 
-# Install Flatpak and bitwarden
-sudo apt install flatpak -y
+# Install Flatpak and Bitwarden
+echo "Installing Flatpak and Bitwarden..."
+apt-get install -y flatpak
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to install Flatpak. Exiting."
+    exit 1
+fi
 flatpak install flathub com.bitwarden.desktop -y
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to install Bitwarden via Flatpak. Exiting."
+    exit 1
+fi
+
+# Install ProtonVPN
+echo "Installing ProtonVPN..."
+
+# Import ProtonVPN GPG key
+wget -q -O - https://repo.protonvpn.com/debian/public_key.asc | gpg --dearmor > protonvpn.gpg
+mv protonvpn.gpg /etc/apt/trusted.gpg.d/
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to import ProtonVPN GPG key. Exiting."
+    exit 1
+fi
+
+# Add ProtonVPN repository
+echo "deb https://repo.protonvpn.com/debian stable main" > /etc/apt/sources.list.d/protonvpn-stable.list
+
+# Update and install ProtonVPN
+apt-get update
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to update package lists after adding ProtonVPN repository. Exiting."
+    exit 1
+fi
+apt-get install -y protonvpn
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to install ProtonVPN. Exiting."
+    exit 1
+fi
 
 # Install hblock from GitHub
-curl -o hblock -L https://raw.githubusercontent.com/hectorm/hblock/v3.5.1/hblock
-sudo mv hblock /usr/local/bin/
-sudo chmod +x /usr/local/bin/hblock
+echo "Installing hblock..."
+curl -o /tmp/hblock https://raw.githubusercontent.com/hectorm/hblock/v3.5.1/hblock
+echo "c68a0b8dad58ab75080eed7cb989e5634fc88fca051703139c025352a6ee19ad /tmp/hblock" | sha256sum --check -
+if [ $? -ne 0 ]; then
+    echo "Error: hblock checksum verification failed. Exiting."
+    exit 1
+fi
+mv /tmp/hblock /usr/local/bin/hblock
+chmod +x /usr/local/bin/hblock
 
 # Run hblock initially to set up ad-blocking
 hblock
 
 # Verify installations
+echo "Verifying installations..."
 arandr --version
 audacity --version
 batcat --version
@@ -46,3 +100,10 @@ vlc --version
 xclip -version
 xdotool --version
 hblock --version
+protonvpn-app --version
+
+# Cleanup
+apt-get autoremove -y
+apt-get autoclean -y
+
+echo "Installation of additional i3 apps completed."
