@@ -12,7 +12,7 @@ fi
 # Clone or update sddm-themes repository
 if [ ! -d "/tmp/sddm-themes/.git" ]; then
     echo "Cloning sddm-themes repository..."
-    git clone git@github.com:Skanderkam/sddm-themes.git /tmp/sddm-themes
+        git clone git@github.com:Sugarcrisp-ui/sddm-themes.git /tmp/sddm-themes
     if [ $? -ne 0 ]; then
         echo "Error: Failed to clone sddm-themes repository. Exiting."
         exit 1
