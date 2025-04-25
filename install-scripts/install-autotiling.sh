@@ -8,7 +8,8 @@ if [ $? -ne 0 ]; then
 fi
 
 # Ensure i3ipc is installed
-"$USER_HOME/i3ipc-venv/bin/pip" install i3ipc
+echo "Installing i3ipc in virtual environment..."
+/home/brett/i3ipc-venv/bin/pip install i3ipc
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install i3ipc. Exiting."
     exit 1

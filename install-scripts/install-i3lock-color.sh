@@ -2,7 +2,7 @@
 
 # Install dependencies for i3lock-color
 echo "Installing dependencies..."
-apt-get install -y autoconf automake pkg-config libx11-dev libxext-dev libxrandr-dev libxpm-dev libxcb1-dev libxcb-dpms0-dev libxcb-image0-dev libxcb-util-dev libxcb-xrm-dev libjpeg-dev libpam0g-dev libcairo2-dev libxkbcommon-dev libxkbcommon-x11-dev libgif-dev
+sudo apt-get install -y autoconf automake pkg-config libx11-dev libxext-dev libxrandr-dev libxpm-dev libxcb1-dev libxcb-dpms0-dev libxcb-image0-dev libxcb-util-dev libxcb-xrm-dev libjpeg-dev libpam0g-dev libcairo2-dev libxkbcommon-dev libxkbcommon-x11-dev libgif-dev libev-dev
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install dependencies for i3lock-color. Exiting."
     exit 1
@@ -31,10 +31,26 @@ cd /home/brett/i3lock-color
 autoreconf -i
 mkdir -p build && cd build
 ../configure --prefix=/usr/local
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to configure i3lock-color. Exiting."
+    exit 1
+fi
 make
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to build i3lock-color. Exiting."
+    exit 1
+fi
 make install
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to install i3lock-color. Exiting."
+    exit 1
+fi
 
 # Verify installation
 i3lock-color --version
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to verify i3lock-color installation. Exiting."
+    exit 1
+fi
 
 echo "i3lock-color installation complete."
