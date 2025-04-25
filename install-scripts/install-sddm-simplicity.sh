@@ -12,7 +12,7 @@ fi
 # Clone or update sddm-themes repository
 if [ ! -d "/tmp/sddm-themes/.git" ]; then
     echo "Cloning sddm-themes repository..."
-        git clone git@github.com:Sugarcrisp-ui/sddm-themes.git /tmp/sddm-themes
+    git clone git@github.com:Sugarcrisp-ui/sddm-themes.git /tmp/sddm-themes
     if [ $? -ne 0 ]; then
         echo "Error: Failed to clone sddm-themes repository. Exiting."
         exit 1
@@ -27,19 +27,19 @@ else
     fi
 fi
 
-# Install the simplicity theme
-sudo cp -r /tmp/sddm-themes/simplicity /usr/share/sddm/themes/
+# Install the sddm-simplicity theme
+sudo cp -r /tmp/sddm-themes/sddm-simplicity /usr/share/sddm/themes/
 if [ $? -ne 0 ]; then
-    echo "Error: Failed to install simplicity theme. Exiting."
+    echo "Error: Failed to install sddm-simplicity theme. Exiting."
     exit 1
 fi
 
-# Configure SDDM to use the simplicity theme
+# Configure SDDM to use the sddm-simplicity theme
 echo "[Theme]" | sudo tee /etc/sddm.conf
-echo "Current=simplicity" | sudo tee -a /etc/sddm.conf
+echo "Current=sddm-simplicity" | sudo tee -a /etc/sddm.conf
 if [ $? -ne 0 ]; then
-    echo "Error: Failed to configure SDDM to use simplicity theme. Exiting."
+    echo "Error: Failed to configure SDDM to use sddm-simplicity theme. Exiting."
     exit 1
 fi
 
-echo "SDDM and simplicity theme installation complete."
+echo "SDDM and sddm-simplicity theme installation complete."
