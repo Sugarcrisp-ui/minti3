@@ -115,6 +115,24 @@ cp -v ~/dotfiles-minti3/.bashrc-personal ~/.bashrc-personal
 cp -v ~/dotfiles-minti3/.fehbg ~/.fehbg
 cp -v ~/dotfiles-minti3/.gtkrc-2.0.mine ~/.gtkrc-2.0.mine
 
+# Select Polybar configuration based on system type
+echo "Selecting Polybar configuration based on system type..."
+HOSTNAME=$(hostname)
+POLYBAR_CONFIG_DIR="$USER_HOME/.config/polybar"
+if [ "$HOSTNAME" = "brett-ms7d82" ]; then
+    # Desktop: Use desktop-config.ini
+    cp "$POLYBAR_CONFIG_DIR/desktop-config.ini" "$POLYBAR_CONFIG_DIR/config.ini"
+    echo "Applied desktop Polybar configuration."
+elif [ "$HOSTNAME" = "brett-K501UX" ]; then
+    # Laptop: Use laptop-config.ini
+    cp "$POLYBAR_CONFIG_DIR/laptop-config.ini" "$POLYBAR_CONFIG_DIR/config.ini"
+    echo "Applied laptop Polybar configuration."
+else
+    # Default: Use laptop config (can adjust for VM later)
+    cp "$POLYBAR_CONFIG_DIR/laptop-config.ini" "$POLYBAR_CONFIG_DIR/config.ini"
+    echo "Applied default (laptop) Polybar configuration."
+fi
+
 # Section 12: Set Up Cron Jobs
 echo "Setting up cron jobs..."
 run_script "setup-cron-jobs.sh" true
