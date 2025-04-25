@@ -44,29 +44,28 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Install ProtonVPN
+# Install ProtonVPN using the .deb file
 echo "Installing ProtonVPN..."
-
-# Import ProtonVPN GPG key
-wget -q -O - https://repo.protonvpn.com/debian/public_key.asc | gpg --dearmor > protonvpn.gpg
-mv protonvpn.gpg /etc/apt/trusted.gpg.d/
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to import ProtonVPN GPG key. Exiting."
-    exit 1
-fi
-
-# Add ProtonVPN repository
-echo "deb https://repo.protonvpn.com/debian stable main" > /etc/apt/sources.list.d/protonvpn-stable.list
-
-# Update and install ProtonVPN
-apt-get update
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to update package lists after adding ProtonVPN repository. Exiting."
-    exit 1
-fi
-apt-get install -y protonvpn
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to install ProtonVPN. Exiting."
+if [ -f "/home/brett/dotfiles-minti3/protonvpn-stable-release.deb" ]; then
+    dpkg -i /home/brett/dotfiles-minti3/protonvpn-stable-release.deb
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to install ProtonVPN .deb package. Exiting."
+        exit 1
+    fi
+    # Update package lists after adding the ProtonVPN repository via .deb
+    apt-get update
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to update package lists after adding ProtonVPN .deb. Exiting."
+        exit 1
+    fi
+    # Install ProtonVPN
+    apt-get install -y protonvpn
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to install ProtonVPN. Exiting."
+        exit 1
+    fi
+else
+    echo "Error: ProtonVPN .deb file not found at /home/brett/dotfiles-minti3/protonvpn-stable-release.deb. Exiting."
     exit 1
 fi
 
