@@ -33,8 +33,14 @@ if [ ! -d "/home/brett/i3lock-color" ]; then
         echo "Error: Failed to clone i3lock-color repository. Exiting."
         exit 1
     fi
+    # Fix permissions immediately after cloning
+    echo "Fixing permissions for newly cloned i3lock-color repository..."
+    sudo chown -R brett:brett /home/brett/i3lock-color
 else
     echo "i3lock-color repository already exists at /home/brett/i3lock-color, updating..."
+    # Fix permissions before any operations
+    echo "Fixing permissions for i3lock-color repository..."
+    sudo chown -R brett:brett /home/brett/i3lock-color
     cd /home/brett/i3lock-color
     git pull
     if [ $? -ne 0 ]; then
@@ -43,13 +49,17 @@ else
     fi
 fi
 
-# Ensure correct permissions for the repository directory
-echo "Fixing permissions for i3lock-color repository..."
-sudo chown -R brett:brett /home/brett/i3lock-color
-
 # Clean up any stale build directories
 echo "Cleaning up stale build directories..."
 rm -rf /home/brett/i3lock-color/autom4te.cache /home/brett/i3lock-color/build
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to clean up stale build directories. Attempting with sudo..."
+    sudo rm -rf /home/brett/i3lock-color/autom4te.cache /home/brett/i3lock-color/build
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to clean up stale build directories even with sudo. Exiting."
+        exit 1
+    fi
+fi
 
 # Build and install i3lock-color
 cd /home/brett/i3lock-color
