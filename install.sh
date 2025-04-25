@@ -148,7 +148,7 @@ i3 --version
 polybar --version
 rofi --version > /dev/null 2>&1
 dunst --version
-i3lock-color --version
+i3lock --version
 i3-logout --version
 # protonvpn-app --version  # Commented out due to installation issues
 flatpak run io.github.shiftey.Desktop --version
