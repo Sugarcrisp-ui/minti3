@@ -44,30 +44,33 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Install ProtonVPN using the .deb file
-echo "Installing ProtonVPN..."
-if [ -f "/home/brett/dotfiles-minti3/protonvpn-stable-release.deb" ]; then
-    dpkg -i /home/brett/dotfiles-minti3/protonvpn-stable-release.deb
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to install ProtonVPN .deb package. Exiting."
-        exit 1
-    fi
-    # Update package lists after adding the ProtonVPN repository via .deb
-    apt-get update
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to update package lists after adding ProtonVPN .deb. Exiting."
-        exit 1
-    fi
-    # Install ProtonVPN
-    apt-get install -y protonvpn
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to install ProtonVPN. Exiting."
-        exit 1
-    fi
-else
-    echo "Error: ProtonVPN .deb file not found at /home/brett/dotfiles-minti3/protonvpn-stable-release.deb. Exiting."
-    exit 1
-fi
+# Install ProtonVPN using the .deb file (commented out due to issues)
+# echo "Installing ProtonVPN..."
+# PROTONVPN_DEB="/home/brett/dotfiles-minti3/protonvpn-stable-release_1.0.8_all.deb"
+# echo "Checking for ProtonVPN .deb file at $PROTONVPN_DEB..."
+# if [ -f "$PROTONVPN_DEB" ]; then
+#     echo "Found ProtonVPN .deb file. Installing..."
+#     dpkg -i "$PROTONVPN_DEB"
+#     if [ $? -ne 0 ]; then
+#         echo "Error: Failed to install ProtonVPN .deb package. Exiting."
+#         exit 1
+#     fi
+#     # Update package lists after adding the ProtonVPN repository via .deb
+#     apt-get update
+#     if [ $? -ne 0 ]; then
+#         echo "Error: Failed to update package lists after adding ProtonVPN .deb. Exiting."
+#         exit 1
+#     fi
+#     # Install ProtonVPN
+#     apt-get install -y protonvpn
+#     if [ $? -ne 0 ]; then
+#         echo "Error: Failed to install ProtonVPN. Exiting."
+#         exit 1
+#     fi
+# else
+#     echo "Error: ProtonVPN .deb file not found at $PROTONVPN_DEB. Exiting."
+#     exit 1
+# fi
 
 # Install hblock from GitHub
 echo "Installing hblock..."
@@ -99,7 +102,7 @@ vlc --version
 xclip -version
 xdotool --version
 hblock --version
-protonvpn-app --version
+# protonvpn-app --version  # Commented out due to installation issues
 
 # Cleanup
 apt-get autoremove -y
