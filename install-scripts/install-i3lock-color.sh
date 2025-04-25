@@ -2,9 +2,20 @@
 
 # Install dependencies for i3lock-color
 echo "Installing dependencies..."
+sudo apt-get update
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to update package lists. Exiting."
+    exit 1
+fi
 sudo apt-get install -y autoconf automake pkg-config libx11-dev libxext-dev libxrandr-dev libxpm-dev libxcb1-dev libxcb-dpms0-dev libxcb-image0-dev libxcb-util-dev libxcb-xrm-dev libjpeg-dev libpam0g-dev libcairo2-dev libxkbcommon-dev libxkbcommon-x11-dev libgif-dev libev-dev
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install dependencies for i3lock-color. Exiting."
+    exit 1
+fi
+
+# Verify libev-dev installation
+if ! dpkg -l | grep -q libev-dev; then
+    echo "Error: libev-dev is not installed. Exiting."
     exit 1
 fi
 
@@ -30,9 +41,10 @@ fi
 cd /home/brett/i3lock-color
 autoreconf -i
 mkdir -p build && cd build
-../configure --prefix=/usr/local
+# Explicitly set LDFLAGS to help configure find libev
+LDFLAGS="-L/usr/lib -lev" ../configure --prefix=/usr/local
 if [ $? -ne 0 ]; then
-    echo "Error: Failed to configure i3lock-color. Exiting."
+    echo "Error: Failed to configure i3lock-color. Check /home/brett/i3lock-color/build/config.log for details. Exiting."
     exit 1
 fi
 make
