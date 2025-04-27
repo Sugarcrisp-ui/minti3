@@ -158,6 +158,6 @@ flatpak run io.github.shiftey.Desktop --version
 vncserver-x11 --version
 xfconf-query -c xsettings -p /Net/ThemeName
 "$USER_HOME/i3ipc-venv/bin/pip" show i3ipc
-cat /etc/sddm.conf.d/kde_settings.conf
+cat /etc/sddm.conf
 
 echo "Mint i3 installation complete."
