@@ -75,6 +75,15 @@ sudo apt-get install -y \
     yaru-theme-gnome-shell \
     zim
 
+# Install Warp Terminal
+echo "Installing Warp Terminal..."
+sudo apt-get install -y wget gpg
+wget -qO- https://releases.warp.dev/linux/keys/warp.asc | sudo gpg --dearmor -o /etc/apt/keyrings/warpdotdev.gpg
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/warpdotdev.gpg] https://releases.warp.dev/linux/deb stable main" | sudo tee /etc/apt/sources.list.d/warpdotdev.list
+sudo apt update
+sudo apt install -y warp-terminal
+sudo rm -f /etc/apt/keyrings/warpdotdev.gpg
+
 echo "Installing ProtonVPN..."
 sudo apt-get install -y curl gnupg
 sudo sh -c 'echo "deb [signed-by=/usr/share/keyrings/protonvpn-stable-archive-keyring.gpg] https://repo.protonvpn.com/debian stable main" > /etc/apt/sources.list.d/protonvpn-stable.list'
