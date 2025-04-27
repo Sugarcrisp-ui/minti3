@@ -169,6 +169,17 @@ cp ~/dotfiles-minti3/crontabs/crontab-sudo ~/dotfiles-minti3/crontabs/crontab-su
 crontab ~/dotfiles-minti3/crontabs/crontab-user
 sudo crontab ~/dotfiles-minti3/crontabs/crontab-sudo
 
+# Install PulseAudio and remove PipeWire
+echo "Installing PulseAudio and removing PipeWire..."
+sudo apt remove -y pipewire pipewire-audio pipewire-alsa pipewire-pulse
+sudo apt install -y pulseaudio pulseaudio-utils
+pulseaudio --start
+
+# Configure HDMI sink for PulseAudio
+echo "Configuring HDMI sink for PulseAudio..."
+pactl load-module module-alsa-sink device=hw:0,3 sink_name=hdmi-sink
+pactl set-default-sink hdmi-sink
+
 # Section 13: Verify Installations
 echo "Verifying installations..."
 i3 --version
