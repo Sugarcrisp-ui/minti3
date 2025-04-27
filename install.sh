@@ -144,7 +144,9 @@ else
 fi
 
 # Ensure dunst is running for XFCE session
-dunst &
+if ! pgrep -u "$USER" dunst >/dev/null; then
+    dunst &
+fi
 
 # Section 13: Verify Installations
 echo "Verifying installations..."
@@ -153,7 +155,7 @@ polybar --version
 rofi --version > /dev/null 2>&1
 dunst --version
 i3lock --version
-sudo -u "$USER" XDG_SESSION_TYPE=x11 i3-logout --version
+sudo -u "$USER" DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus XDG_SESSION_TYPE=x11 i3-logout -h
 # protonvpn-app --version  # Commented out due to installation issues
 flatpak run io.github.shiftey.Desktop --version
 vncserver-x11 --version

@@ -6,7 +6,7 @@ USER=$(whoami)
 sudo apt-get install -y arc-theme
 
 # Check if XFCE session is active
-if pgrep -u "$USER" xfce4-session >/dev/null; then
+if pgrep -u "$USER" xfce4-session >/dev/null || pgrep -u "$USER" i3 >/dev/null; then
     echo "Applying Arc-Darker theme..."
     if sudo -u "$USER" DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u "$USER")/bus xfconf-query -c xsettings -p /Net/ThemeName -s "Arc-Darker" 2>/dev/null; then
         echo "Successfully set xsettings theme to Arc-Darker."
