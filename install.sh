@@ -23,9 +23,9 @@ run_script() {
     echo "Running $script..."
     echo "Current user: $(whoami), USER=$USER, HOME=$HOME" >&2
     if [ "$sudo_needed" = "true" ]; then
-        sudo -E DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u $USER)/bus bash "$SCRIPTS_DIR/$script"
+        sudo -E bash "$SCRIPTS_DIR/$script"
     else
-        DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u $USER)/bus bash "$SCRIPTS_DIR/$script"
+        bash "$SCRIPTS_DIR/$script"
     fi
     if [ $? -ne 0 ]; then
         echo "Error: $script failed. Exiting."
@@ -56,19 +56,19 @@ else
 fi
 
 # Section 1: Install Core i3 Components and Dependencies
-run_script "install-i3-mint.sh" true
+run_script "install-i3-mint.sh" false
 
 # Section 2: Install i3lock-color
 run_script "install-i3lock-color.sh" true
 
 # Section 3: Set Up Virtual Environment and Install i3ipc
-run_script "install-i3ipc.sh"
+run_script "install-i3ipc.sh" false
 
 # Section 4: Install autotiling
-run_script "install-autotiling.sh"
+run_script "install-autotiling.sh" false
 
 # Section 5: Install i3-logout and betterlockscreen
-run_script "install-i3-logout.sh"
+run_script "install-i3-logout.sh" false
 
 # Section 6: Install SDDM and Simplicity Theme
 run_script "install-sddm-simplicity.sh" true
@@ -88,9 +88,13 @@ fi
 run_script "install-realvnc.sh" true
 
 # Section 10: Install XFCE Theme
-run_script "install-xfce-theme.sh"
+run_script "install-xfce-theme.sh" true
 
-# Section 11: Apply Dotfiles by Direct Copying
+# Section 11: Set Up Cron Jobs
+echo "Setting up cron jobs..."
+run_script "setup-cron-jobs.sh" true
+
+# Section 12: Apply Dotfiles by Direct Copying (Final Step)
 echo "Applying dotfiles by copying directly..."
 mkdir -p ~/.config ~/.local/share/applications ~/.fonts
 sudo mkdir -p /etc/X11/xorg.conf.d
@@ -139,10 +143,6 @@ else
     echo "Applied default (laptop) Polybar configuration."
 fi
 
-# Section 12: Set Up Cron Jobs
-echo "Setting up cron jobs..."
-run_script "setup-cron-jobs.sh" true
-
 # Ensure dunst is running for XFCE session
 dunst &
 
@@ -153,7 +153,7 @@ polybar --version
 rofi --version > /dev/null 2>&1
 dunst --version
 i3lock --version
-i3-logout --version
+sudo -u "$USER" i3-logout --version
 # protonvpn-app --version  # Commented out due to installation issues
 flatpak run io.github.shiftey.Desktop --version
 vncserver-x11 --version
