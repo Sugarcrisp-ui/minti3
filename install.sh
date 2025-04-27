@@ -21,6 +21,7 @@ run_script() {
     local script="$1"
     local sudo_needed="${2:-false}"
     echo "Running $script..."
+    echo "Current user: $(whoami), USER=$USER, HOME=$HOME" >&2
     if [ "$sudo_needed" = "true" ]; then
         sudo -E DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u $USER)/bus bash "$SCRIPTS_DIR/$script"
     else
@@ -124,7 +125,7 @@ sudo cp -rv ~/dotfiles-minti3/etc/X11/xorg.conf.d/* /etc/X11/xorg.conf.d/
 echo "Selecting Polybar configuration based on system type..."
 HOSTNAME=$(hostname)
 POLYBAR_CONFIG_DIR="$USER_HOME/.config/polybar"
-if [ "$HOSTNAME" = "brett-ms7d82" ]; then
+if [ "$HOSTNAME" = "brett-ms-7d82" ]; then
     # Desktop: Use desktop-config.ini
     cp "$POLYBAR_CONFIG_DIR/desktop-config.ini" "$POLYBAR_CONFIG_DIR/config.ini"
     echo "Applied desktop Polybar configuration."
