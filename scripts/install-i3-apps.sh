@@ -96,4 +96,11 @@ flatpak install -y flathub com.bitwarden.desktop
 echo "Installing GitHub Desktop via Flatpak..."
 flatpak install -y flathub io.github.shiftey.Desktop
 
+# Install Insync
+echo "Installing Insync..."
+curl -fsSL -o insync.deb https://cdn.insynchq.com/builds/linux/3.9.6.60027/insync_3.9.6.60027-noble_amd64.deb
+sudo dpkg -i insync.deb
+sudo apt-get install -f -y
+rm insync.deb
+
 echo "i3 apps installation complete."
