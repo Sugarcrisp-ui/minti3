@@ -154,6 +154,14 @@ SUDOERS_FILE="/etc/sudoers.d/brett-apt"
 echo "brett ALL=(ALL) NOPASSWD: /usr/bin/apt update" | sudo tee "$SUDOERS_FILE" >/dev/null
 sudo chmod 440 "$SUDOERS_FILE"
 
+# Install crontab settings
+echo "Installing crontab settings..."
+mkdir -p ~/dotfiles-minti3/crontabs
+cp ~/dotfiles-minti3/crontabs/crontab-user ~/dotfiles-minti3/crontabs/crontab-user.bak
+cp ~/dotfiles-minti3/crontabs/crontab-sudo ~/dotfiles-minti3/crontabs/crontab-sudo.bak
+crontab ~/dotfiles-minti3/crontabs/crontab-user
+sudo crontab ~/dotfiles-minti3/crontabs/crontab-sudo
+
 # Section 13: Verify Installations
 echo "Verifying installations..."
 i3 --version
