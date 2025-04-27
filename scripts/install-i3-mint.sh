@@ -1,47 +1,164 @@
 #!/bin/bash
 
+export DEBIAN_FRONTEND=noninteractive
+
+# Set environment for D-Bus and XFCE compatibility
+export DISPLAY=:0
+export XDG_SESSION_TYPE=x11
+export XDG_RUNTIME_DIR=/run/user/$(id -u $USER)
+export XDG_CONFIG_HOME=/home/$USER/.config
+export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u $USER)/bus
+
+# Master script to install and set up i3 on a fresh Linux Mint XFCE system
+
+# Variables
 USER=$(whoami)
 USER_HOME="/home/$USER"
+SCRIPTS_DIR="$USER_HOME/minti3/scripts"
 
-# Update package lists
-sudo apt-get update
+# Function to run a script and check for errors
+run_script() {
+    local script="$1"
+    local sudo_needed="${2:-false}"
+    echo "Running $script..."
+    echo "Current user: $(whoami), USER=$USER, HOME=$HOME" >&2
+    if [ "$sudo_needed" = "true" ]; then
+        sudo -E DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u $USER)/bus bash "$SCRIPTS_DIR/$script"
+    else
+        DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u $USER)/bus bash "$SCRIPTS_DIR/$script"
+    fi
+    if [ $? -ne 0 ]; then
+        echo "Error: $script failed. Exiting."
+        exit 1
+    fi
+}
 
-# Install i3 and core dependencies
-sudo apt-get install -y \
-    i3 \
-    i3status \
-    rofi \
-    dunst \
-    xfce4-terminal \
-    micro \
-    polybar \
-    build-essential \
-    cmake \
-    libjsoncpp-dev \
-    libxcb-randr0-dev \
-    libxcb-xinerama0-dev \
-    libxcb-util-dev \
-    libxcb-icccm4-dev \
-    libiw-dev \
-    copyq \
-    blueman \
-    pasystray
+# Warn about InSync
+echo "Warning: If InSync is running, it may cause issues with this script. Please ensure InSync is stopped before proceeding."
+read -p "Press Enter to continue, or Ctrl+C to abort and stop InSync..."
 
-# Create directories as the user
-mkdir -p "$USER_HOME/.config/i3" "$USER_HOME/.config/polybar" "$USER_HOME/.config/rofi" "$USER_HOME/.config/dunst" "$USER_HOME/.bin-personal"
+# Clone or update dotfiles-minti3 repository
+if [ ! -d "$USER_HOME/dotfiles-minti3" ]; then
+    echo "Cloning dotfiles-minti3 repository..."
+    git clone https://github.com/Sugarcrisp-ui/dotfiles-minti3.git "$USER_HOME/dotfiles-minti3"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to clone dotfiles-minti3 repository. Exiting."
+        exit 1
+    fi
+else
+    echo "dotfiles-minti3 repository already exists at $USER_HOME/dotfiles-minti3, updating..."
+    cd "$USER_HOME/dotfiles-minti3"
+    git pull
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to update dotfiles-minti3 repository. Exiting."
+        exit 1
+    fi
+fi
 
-# Symlink dotfiles as the user
-rm -f "$USER_HOME/.config/i3/config"
-ln -sf "$USER_HOME/dotfiles-minti3/.config/i3/config" "$USER_HOME/.config/i3/config"
-rm -rf "$USER_HOME/.config/polybar"
-ln -sf "$USER_HOME/dotfiles-minti3/.config/polybar" "$USER_HOME/.config/polybar"
-rm -f "$USER_HOME/.config/rofi/config.rasi"
-ln -sf "$USER_HOME/dotfiles-minti3/.config/rofi/config.rasi" "$USER_HOME/.config/rofi/config.rasi"
-rm -f "$USER_HOME/.config/dunst/dunstrc"
-ln -sf "$USER_HOME/dotfiles-minti3/.config/dunst/dunstrc" "$USER7907_HOME/.config/dunst/dunstrc"
+# Section 1: Install Core i3 Components and Dependencies
+run_script "install-i3-mint.sh" false  # No sudo for user operations
 
-# Verify installations
+# Section 2: Install i3lock-color
+run_script "install-i3lock-color.sh" true
+
+# Section 3: Set Up Virtual Environment and Install i3ipc
+run_script "install-i3ipc.sh"
+
+# Section 4: Install autotiling
+run_script "install-autotiling.sh"
+
+# Section 5: Install i3-logout and betterlockscreen
+run_script "install-i3-logout.sh"
+
+# Section 6: Install SDDM and Simplicity Theme
+run_script "install-sddm-simplicity.sh" true
+
+# Section 7: Install Additional i3 Apps
+run_script "install-i3-apps.sh" true
+
+# Section 8: Install GitHub Desktop
+echo "Installing GitHub Desktop via Flatpak..."
+sudo flatpak install flathub io.github.shiftey.Desktop -y
+if [ $? -ne 0 ]; then
+    echo "Error: GitHub Desktop installation failed. Exiting."
+    exit 1
+fi
+
+# Section 9: Install RealVNC Server and Viewer
+run_script "install-realvnc.sh" true
+
+# Section 10: Install XFCE Theme
+run_script "install-xfce-theme.sh"
+
+# Section 11: Apply Dotfiles by Direct Copying
+echo "Applying dotfiles by copying directly..."
+mkdir -p ~/.config ~/.local/share/applications ~/.fonts
+sudo mkdir -p /etc/X11/xorg.conf.d
+
+# Replace specific files
+cp -v ~/dotfiles-minti3/.bashrc ~/.bashrc
+cp -v ~/dotfiles-minti3/.bashrc-personal ~/.bashrc-personal
+cp -v ~/dotfiles-minti3/.fehbg ~/.fehbg
+cp -v ~/dotfiles-minti3/.gtkrc-2.0.mine ~/.gtkrc-2.0.mine
+
+# Replace or create .fonts directory
+rm -rf ~/.fonts
+cp -rv ~/dotfiles-minti3/.fonts ~/.fonts
+
+# Add contents to .local, overwrite existing, don't remove non-matching
+cp -rv ~/dotfiles-minti3/.local/share/applications/* ~/.local/share/applications/
+
+# Replace matching .config subdirectories, don't remove non-matching
+for dir in ~/dotfiles-minti3/.config/*; do
+    if [ -d "$dir" ]; then
+        dir_name=$(basename "$dir")
+        mkdir -p ~/.config/$dir_name
+        cp -rv $dir/* ~/.config/$dir_name/
+    fi
+done
+
+# Replace system configuration files
+sudo cp -v ~/dotfiles-minti3/sddm.conf /etc/sddm.conf
+sudo cp -rv ~/dotfiles-minti3/etc/X11/xorg.conf.d/* /etc/X11/xorg.conf.d/
+
+# Select Polybar configuration based on system type
+echo "Selecting Polybar configuration based on system type..."
+HOSTNAME=$(hostname)
+POLYBAR_CONFIG_DIR="$USER_HOME/.config/polybar"
+if [ "$HOSTNAME" = "brett-ms-7d82" ]; then
+    # Desktop: Use desktop-config.ini
+    cp "$POLYBAR_CONFIG_DIR/desktop-config.ini" "$POLYBAR_CONFIG_DIR/config.ini"
+    echo "Applied desktop Polybar configuration."
+elif [ "$HOSTNAME" = "brett-K501UX" ]; then
+    # Laptop: Use laptop-config.ini
+    cp "$POLYBAR_CONFIG_DIR/laptop-config.ini" "$POLYBAR_CONFIG_DIR/config.ini"
+    echo "Applied laptop Polybar configuration."
+else
+    # Default: Use laptop config (can adjust for VM later)
+    cp "$POLYBAR_CONFIG_DIR/laptop-config.ini" "$POLYBAR_CONFIG_DIR/config.ini"
+    echo "Applied default (laptop) Polybar configuration."
+fi
+
+# Section 12: Set Up Cron Jobs
+echo "Setting up cron jobs..."
+run_script "setup-cron-jobs.sh" true
+
+# Ensure dunst is running for XFCE session
+dunst &
+
+# Section 13: Verify Installations
+echo "Verifying installations..."
 i3 --version
 polybar --version
-rofi --version
+rofi --version > /dev/null 2>&1
 dunst --version
+i3lock --version
+sudo -u "$USER" i3-logout --version
+# protonvpn-app --version  # Commented out due to installation issues
+flatpak run io.github.shiftey.Desktop --version
+vncserver-x11 --version
+xfconf-query -c xsettings -p /Net/ThemeName
+"$USER_HOME/i3ipc-venv/bin/pip" show i3ipc
+cat /etc/sddm.conf
+
+echo "Mint i3 installation complete."
