@@ -180,6 +180,19 @@ echo "Configuring HDMI sink for PulseAudio..."
 pactl load-module module-alsa-sink device=hw:0,3 sink_name=hdmi-sink
 pactl set-default-sink hdmi-sink
 
+# Configure LUKS auto-unlock and automount for desktop (brett-ms-7d82)
+if [ "$(hostname)" = "brett-ms-7d82" ]; then
+    echo "Configuring LUKS auto-unlock for desktop..."
+    sudo mkdir -p /etc/luks-keys
+    sudo dd if=/dev/urandom of=/etc/luks-keys/backup-key bs=512 count=8
+    sudo chmod 400 /etc/luks-keys/backup-key
+    sudo cryptsetup luksAddKey /dev/disk/by-uuid/8e7807ea-b45b-4cfe-a767-727994c3d5cd /etc/luks-keys/backup-key
+    echo "backup_crypt /dev/disk/by-uuid/8e7807ea-b45b-4cfe-a767-727994c3d5cd /etc/luks-keys/backup-key luks" | sudo tee /etc/crypttab
+    sudo mkdir -p /media/brett/backup
+    echo "/dev/mapper/backup_crypt /media/brett/backup ext4 defaults 0 2" | sudo tee -a /etc/fstab
+    sudo update-initramfs -u
+fi
+
 # Section 13: Verify Installations
 echo "Verifying installations..."
 i3 --version
