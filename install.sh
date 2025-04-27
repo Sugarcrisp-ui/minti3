@@ -153,7 +153,7 @@ polybar --version
 rofi --version > /dev/null 2>&1
 dunst --version
 i3lock --version
-sudo -u "$USER" i3-logout --version
+sudo -u "$USER" XDG_SESSION_TYPE=x11 i3-logout --version
 # protonvpn-app --version  # Commented out due to installation issues
 flatpak run io.github.shiftey.Desktop --version
 vncserver-x11 --version
