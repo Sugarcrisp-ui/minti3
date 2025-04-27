@@ -148,6 +148,12 @@ if ! pgrep -u "$USER" dunst >/dev/null; then
     dunst &
 fi
 
+# Configure passwordless sudo for apt-updates.sh
+echo "Configuring passwordless sudo for apt update..."
+SUDOERS_FILE="/etc/sudoers.d/brett-apt"
+echo "brett ALL=(ALL) NOPASSWD: /usr/bin/apt update" | sudo tee "$SUDOERS_FILE" >/dev/null
+sudo chmod 440 "$SUDOERS_FILE"
+
 # Section 13: Verify Installations
 echo "Verifying installations..."
 i3 --version
@@ -155,7 +161,7 @@ polybar --version
 rofi --version > /dev/null 2>&1
 dunst --version
 i3lock --version
-sudo -u "$USER" DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus XDG_SESSION_TYPE=x11 i3-logout -h
+sudo -u "$USER" DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus XDG_SESSION_TYPE=x11 NO_AT_BRIDGE=1 i3-logout -h
 # protonvpn-app --version  # Commented out due to installation issues
 flatpak run io.github.shiftey.Desktop --version
 vncserver-x11 --version
