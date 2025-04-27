@@ -1,11 +1,11 @@
 #!/bin/bash
 
+USER=$(whoami)
+
+echo "Current user: $USER, USER=$USER, HOME=/home/$USER"
+
 echo "Updating package lists..."
 sudo apt-get update
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to update package lists. Exiting."
-    exit 1
-fi
 
 echo "Installing standard apt packages..."
 sudo apt-get install -y \
@@ -17,42 +17,74 @@ sudo apt-get install -y \
     xfce4-power-manager \
     xfce4-panel \
     network-manager-gnome \
-    network-manager-openvpn-gnome
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to install standard packages. Exiting."
-    exit 1
-fi
+    network-manager-openvpn-gnome \
+    arandr \
+    audacity \
+    bat \
+    brave-browser \
+    ca-certificates-java \
+    color-picker \
+    default-jre \
+    evince \
+    fonts-crosextra-caladea \
+    fonts-crosextra-carlito \
+    fonts-dejavu \
+    fonts-dejavu-extra \
+    fonts-freefont-ttf \
+    fonts-liberation-sans-narrow \
+    fonts-linuxlibertine \
+    fonts-noto-extra \
+    fonts-noto-ui-core \
+    fonts-sil-gentium \
+    fonts-sil-gentium-basic \
+    gdm3 \
+    geoclue-2.0 \
+    gnome-control-center \
+    gnome-remote-desktop \
+    gnome-session-bin \
+    gnome-settings-daemon \
+    gnome-shell \
+    gnome-shell-extension-appindicator \
+    gnome-startup-applications \
+    gnome-user-docs \
+    heif-thumbnailer \
+    htop \
+    ibus \
+    language-selector-common \
+    language-selector-gnome \
+    libatk-wrapper-java \
+    libreoffice \
+    meld \
+    numlockx \
+    openjdk-21-jre \
+    pipx \
+    playerctl \
+    python3-argcomplete \
+    rygel \
+    screen-resolution-extra \
+    snapd \
+    sublime-text \
+    ubuntu-docs \
+    ubuntu-session \
+    ubuntu-wallpapers \
+    ubuntu-wallpapers-noble \
+    vlc \
+    warp-terminal \
+    whoopsie \
+    xdotool \
+    yaru-theme-gnome-shell \
+    zim
 
 echo "Installing ProtonVPN..."
 sudo apt-get install -y curl gnupg
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to install curl and gnupg. Exiting."
-    exit 1
-fi
-if [ ! -f /usr/share/keyrings/protonvpn-stable-archive-keyring.gpg ]; then
-    curl -sSL https://repo.protonvpn.com/debian/public_key.asc | sudo gpg --dearmor -o /usr/share/keyrings/protonvpn-stable-archive-keyring.gpg
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to download or process ProtonVPN key. Exiting."
-        exit 1
-    fi
-fi
-echo "deb [signed-by=/usr/share/keyrings/protonvpn-stable-archive-keyring.gpg] https://repo.protonvpn.com/debian stable main" | sudo tee /etc/apt/sources.list.d/protonvpn.list
+sudo sh -c 'echo "deb [signed-by=/usr/share/keyrings/protonvpn-stable-archive-keyring.gpg] https://repo.protonvpn.com/debian stable main" > /etc/apt/sources.list.d/protonvpn-stable.list'
 sudo apt-get update
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to update package lists with ProtonVPN repository. Exiting."
-    exit 1
-fi
 sudo apt-get install -y protonvpn
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to install ProtonVPN. Exiting."
-    exit 1
-fi
 
 echo "Installing Bitwarden via Flatpak..."
-sudo flatpak install flathub com.bitwarden.desktop -y
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to install Bitwarden Flatpak. Exiting."
-    exit 1
-fi
+flatpak install -y flathub com.bitwarden.desktop
+
+echo "Installing GitHub Desktop via Flatpak..."
+flatpak install -y flathub io.github.shiftey.Desktop
 
 echo "i3 apps installation complete."
