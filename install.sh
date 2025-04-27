@@ -5,16 +5,16 @@ export DEBIAN_FRONTEND=noninteractive
 # Set environment for D-Bus and XFCE compatibility
 export DISPLAY=:0
 export XDG_SESSION_TYPE=x11
-export XDG_RUNTIME_DIR=/run/user/$(id -u testuser)
-export XDG_CONFIG_HOME=/home/testuser/.config
-export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u testuser)/bus
+export XDG_RUNTIME_DIR=/run/user/$(id -u $USER)
+export XDG_CONFIG_HOME=/home/$USER/.config
+export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u $USER)/bus
 
 # Master script to install and set up i3 on a fresh Linux Mint XFCE system
 
 # Variables
-USER="testuser"
+USER=$(whoami)
 USER_HOME="/home/$USER"
-SCRIPTS_DIR="$USER_HOME/scripts"
+SCRIPTS_DIR="$USER_HOME/minti3/scripts"
 
 # Function to run a script and check for errors
 run_script() {
@@ -34,7 +34,7 @@ run_script() {
 
 # Warn about InSync
 echo "Warning: If InSync is running, it may cause issues with this script. Please ensure InSync is stopped before proceeding."
-#read -p "Press Enter to continue, or Ctrl+C to abort and stop InSync..."
+read -p "Press Enter to continue, or Ctrl+C to abort and stop InSync..."
 
 # Clone or update dotfiles-minti3 repository
 if [ ! -d "$USER_HOME/dotfiles-minti3" ]; then
@@ -91,31 +91,34 @@ run_script "install-xfce-theme.sh"
 
 # Section 11: Apply Dotfiles by Direct Copying
 echo "Applying dotfiles by copying directly..."
-mkdir -p ~/.config/i3 ~/.config/dunst ~/.config/rofi ~/.config/betterlockscreen ~/.config/bluetooth-connect ~/.config/i3-logout
-mkdir -p ~/.config/geany ~/.config/gtk-3.0 ~/.config/micro ~/.config/polybar ~/.config/qBittorrent ~/.config/Thunar
-mkdir -p ~/.fonts ~/.local/share/applications
+mkdir -p ~/.config ~/.local/share/applications ~/.fonts
 sudo mkdir -p /etc/X11/xorg.conf.d
 
-cp -rv ~/dotfiles-minti3/.config/i3/* ~/.config/i3/
-cp -rv ~/dotfiles-minti3/.config/dunst/* ~/.config/dunst/
-cp -rv ~/dotfiles-minti3/.config/rofi/* ~/.config/rofi/
-cp -rv ~/dotfiles-minti3/.config/betterlockscreen/* ~/.config/betterlockscreen/
-cp -rv ~/dotfiles-minti3/.config/bluetooth-connect/* ~/.config/bluetooth-connect/
-cp -rv ~/dotfiles-minti3/.config/i3-logout/* ~/.config/i3-logout/
-cp -rv ~/dotfiles-minti3/.config/geany/* ~/.config/geany/
-cp -rv ~/dotfiles-minti3/.config/gtk-3.0/* ~/.config/gtk-3.0/
-cp -rv ~/dotfiles-minti3/.config/micro/* ~/.config/micro/
-cp -rv ~/dotfiles-minti3/.config/polybar/* ~/.config/polybar/
-cp -rv ~/dotfiles-minti3/.config/qBittorrent/* ~/.config/qBittorrent/
-cp -rv ~/dotfiles-minti3/.config/Thunar/* ~/.config/Thunar/
-cp -rv ~/dotfiles-minti3/.fonts/* ~/.fonts/
-cp -rv ~/dotfiles-minti3/.local/share/applications/* ~/.local/share/applications/
-sudo cp -rv ~/dotfiles-minti3/etc/X11/xorg.conf.d/* /etc/X11/xorg.conf.d/
-sudo cp -v ~/dotfiles-minti3/sddm.conf /etc/sddm.conf
+# Replace specific files
 cp -v ~/dotfiles-minti3/.bashrc ~/.bashrc
 cp -v ~/dotfiles-minti3/.bashrc-personal ~/.bashrc-personal
 cp -v ~/dotfiles-minti3/.fehbg ~/.fehbg
 cp -v ~/dotfiles-minti3/.gtkrc-2.0.mine ~/.gtkrc-2.0.mine
+
+# Replace or create .fonts directory
+rm -rf ~/.fonts
+cp -rv ~/dotfiles-minti3/.fonts ~/.fonts
+
+# Add contents to .local, overwrite existing, don't remove non-matching
+cp -rv ~/dotfiles-minti3/.local/share/applications/* ~/.local/share/applications/
+
+# Replace matching .config subdirectories, don't remove non-matching
+for dir in ~/dotfiles-minti3/.config/*; do
+    if [ -d "$dir" ]; then
+        dir_name=$(basename "$dir")
+        mkdir -p ~/.config/$dir_name
+        cp -rv $dir/* ~/.config/$dir_name/
+    fi
+done
+
+# Replace system configuration files
+sudo cp -v ~/dotfiles-minti3/sddm.conf /etc/sddm.conf
+sudo cp -rv ~/dotfiles-minti3/etc/X11/xorg.conf.d/* /etc/X11/xorg.conf.d/
 
 # Select Polybar configuration based on system type
 echo "Selecting Polybar configuration based on system type..."
