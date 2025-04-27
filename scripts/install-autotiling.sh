@@ -5,6 +5,7 @@ USER=$(whoami)
 echo "Installing i3 autotiling..."
 sudo apt-get update
 sudo apt-get install -y python3-pip
+sudo apt-get install -y python3-i3ipc
 
 /home/$USER/i3ipc-venv/bin/pip install i3ipc
 if [ $? -ne 0 ]; then
