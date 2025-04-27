@@ -59,7 +59,7 @@ fi
 run_script "install-i3-mint.sh" false
 
 # Section 2: Install i3lock-color
-run_script "install-i3lock-color.sh" true
+run_script "install-i3lock-color.sh" false
 
 # Section 3: Set Up Virtual Environment and Install i3ipc
 run_script "install-i3ipc.sh" false

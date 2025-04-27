@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Ensure D-Bus environment for xfconf-query
-export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u brett)/bus
+# Set environment for D-Bus and XFCE compatibility
+export DISPLAY=:0
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus
 
-# Install Arc-Darker theme
-sudo apt install arc-theme -y
+# Install Arc theme
+sudo apt-get install -y arc-theme
 
-# Set Arc-Darker as GTK theme
-DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u brett)/bus xfconf-query -c xsettings -p /Net/ThemeName -s Arc-Darker
-
-# Verify theme setting
-DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u brett)/bus xfconf-query -c xsettings -p /Net/ThemeName
+# Apply Arc-Darker theme
+xfconf-query -c xsettings -p /Net/ThemeName -s "Arc-Darker"
+xfconf-query -c xfwm4 -p /general/theme -s "Arc-Darker"

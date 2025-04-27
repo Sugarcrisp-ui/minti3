@@ -1,99 +1,62 @@
 #!/bin/bash
 
-# Install dependencies for i3lock-color
-echo "Installing dependencies..."
-sudo apt-get update
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to update package lists. Exiting."
-    exit 1
-fi
-# Check critical packages
-for pkg in libxcb-xinerama0-dev libxcb-randr0-dev; do
-    apt-cache search $pkg | grep -q $pkg
-    if [ $? -ne 0 ]; then
-        echo "Error: Package $pkg not found in repositories. Exiting."
-        exit 1
-    fi
-done
-sudo apt-get install -y autoconf automake gcc make pkg-config libx11-dev libxext-dev libxrandr-dev libxpm-dev libxcb1-dev libxcb-dpms0-dev libxcb-image0-dev libxcb-util0-dev libxcb-xrm-dev libxcb-composite0-dev libxcb-xinerama0-dev libxcb-randr0-dev libx11-xcb-dev libxcb-xkb-dev libjpeg-dev libpam0g-dev libcairo2-dev libfontconfig1-dev libxkbcommon-dev libxkbcommon-x11-dev libgif-dev libev-dev
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to install dependencies for i3lock-color. Exiting."
-    exit 1
-fi
+USER=$(whoami)
+USER_HOME="/home/$USER"
 
-# Verify libev-dev installation
-if ! dpkg -l | grep -q libev-dev; then
-    echo "Error: libev-dev is not installed. Exiting."
-    exit 1
-fi
+# Install dependencies
+sudo apt-get install -y \
+    autoconf \
+    automake \
+    gcc \
+    make \
+    pkg-config \
+    libx11-dev \
+    libxext-dev \
+    libxrandr-dev \
+    libxpm-dev \
+    libxcb1-dev \
+    libxcb-dpms0-dev \
+    libxcb-image0-dev \
+    libxcb-util0-dev \
+    libxcb-xrm-dev \
+    libxcb-composite0-dev \
+    libxcb-xinerama0-dev \
+    libxcb-randr0-dev \
+    libx11-xcb-dev \
+    libxcb-xkb-dev \
+    libjpeg-dev \
+    libpam0g-dev \
+    libcairo2-dev \
+    libfontconfig1-dev \
+    libxkbcommon-dev \
+    libxkbcommon-x11-dev \
+    libgif-dev \
+    libev-dev
 
-# Verify libxcb-composite0-dev installation
-if ! dpkg -l | grep -q libxcb-composite0-dev; then
-    echo "Error: libxcb-composite0-dev is not installed. Exiting."
-    exit 1
-fi
-
-# Clone or update i3lock-color repository
-if [ -d "/home/$(whoami)/i3lock-color/.git" ]; then
-    echo "i3lock-color repository already exists at /home/$(whoami)/i3lock-color, updating..."
-    cd /home/$(whoami)/i3lock-color
-    sudo chown -R $(whoami):$(whoami) /home/$(whoami)/i3lock-color
+# Clone i3lock-color repository
+echo "Cloning i3lock-color repository..."
+if [ -d "$USER_HOME/i3lock-color" ]; then
+    echo "i3lock-color repository already exists at $USER_HOME/i3lock-color, updating..."
+    cd "$USER_HOME/i3lock-color"
     git pull
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to update i3lock-color repository. Exiting."
-        exit 1
-    fi
 else
-    echo "Cloning i3lock-color repository..."
-    git clone https://github.com/Raymo111/i3lock-color.git /home/$(whoami)/i3lock-color
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to clone i3lock-color repository. Exiting."
-        exit 1
-    fi
-    sudo chown -R $(whoami):$(whoami) /home/$(whoami)/i3lock-color
+    git clone https://github.com/Raymo111/i3lock-color.git "$USER_HOME/i3lock-color"
 fi
 
-# Clean up any stale build directories
+# Clean up stale build directories
 echo "Cleaning up stale build directories..."
-rm -rf /home/$(whoami)/i3lock-color/autom4te.cache /home/$(whoami)/i3lock-color/build
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to clean up stale build directories. Attempting with sudo..."
-    sudo rm -rf /home/$(whoami)/i3lock-color/autom4te.cache /home/$(whoami)/i3lock-color/build
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to clean up stale build directories even with sudo. Exiting."
-        exit 1
-    fi
-fi
+cd "$USER_HOME/i3lock-color"
+rm -rf build
+mkdir build
+cd build
 
-# Build and install i3lock-color
-cd /home/$(whoami)/i3lock-color
-autoreconf -i
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to run autoreconf for i3lock-color. Exiting."
-    exit 1
-fi
-mkdir -p build && cd build
-../configure --prefix=/usr/local
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to configure i3lock-color. Check /home/$(whoami)/i3lock-color/build/config.log for details. Exiting."
-    exit 1
-fi
+# Build and install
+autoreconf -fi ..
+../configure
 make
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to build i3lock-color. Exiting."
-    exit 1
-fi
 sudo make install
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to install i3lock-color. Exiting."
-    exit 1
-fi
 
-# Verify installation (binary is named i3lock, not i3lock-color)
-/usr/local/bin/i3lock --version
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to verify i3lock-color installation (binary should be i3lock). Exiting."
-    exit 1
-fi
+# Verify installation
+i3lock --version
 
 echo "i3lock-color installation complete."
