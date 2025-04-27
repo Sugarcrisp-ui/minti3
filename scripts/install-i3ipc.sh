@@ -3,7 +3,7 @@
 # Script to install i3ipc in a virtual environment on Linux Mint
 
 # Variables
-USER="testuser"
+USER=$(whoami)
 USER_HOME="/home/$USER"
 VENV_DIR="$USER_HOME/i3ipc-venv"
 

@@ -26,7 +26,7 @@ sudo apt install -y \
   pasystray
 
 # Variables
-USER="testuser"
+USER=$(whoami)
 USER_HOME="/home/$USER"
 
 # Symlink dotfiles
