@@ -5,16 +5,16 @@ export DEBIAN_FRONTEND=noninteractive
 # Set environment for D-Bus and XFCE compatibility
 export DISPLAY=:0
 export XDG_SESSION_TYPE=x11
-export XDG_RUNTIME_DIR=/run/user/$(id -u brett)
-export XDG_CONFIG_HOME=/home/brett/.config
-export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u brett)/bus
+export XDG_RUNTIME_DIR=/run/user/$(id -u testuser)
+export XDG_CONFIG_HOME=/home/testuser/.config
+export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u testuser)/bus
 
 # Master script to install and set up i3 on a fresh Linux Mint XFCE system
 
 # Variables
-USER="brett"
+USER="testuser"
 USER_HOME="/home/$USER"
-SCRIPTS_DIR="$USER_HOME/minti3/install-scripts"
+SCRIPTS_DIR="$USER_HOME/scripts"
 
 # Function to run a script and check for errors
 run_script() {
@@ -22,9 +22,9 @@ run_script() {
     local sudo_needed="${2:-false}"
     echo "Running $script..."
     if [ "$sudo_needed" = "true" ]; then
-        sudo -E DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u brett)/bus bash "$SCRIPTS_DIR/$script"
+        sudo -E DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u $USER)/bus bash "$SCRIPTS_DIR/$script"
     else
-        DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u brett)/bus bash "$SCRIPTS_DIR/$script"
+        DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u $USER)/bus bash "$SCRIPTS_DIR/$script"
     fi
     if [ $? -ne 0 ]; then
         echo "Error: $script failed. Exiting."
@@ -34,7 +34,7 @@ run_script() {
 
 # Warn about InSync
 echo "Warning: If InSync is running, it may cause issues with this script. Please ensure InSync is stopped before proceeding."
-read -p "Press Enter to continue, or Ctrl+C to abort and stop InSync..."
+#read -p "Press Enter to continue, or Ctrl+C to abort and stop InSync..."
 
 # Clone or update dotfiles-minti3 repository
 if [ ! -d "$USER_HOME/dotfiles-minti3" ]; then
