@@ -54,6 +54,7 @@ sudo apt-get install -y \
     language-selector-gnome \
     libatk-wrapper-java \
     libreoffice \
+    lxpolkit \
     meld \
     numlockx \
     openjdk-21-jre \
@@ -64,6 +65,8 @@ sudo apt-get install -y \
     screen-resolution-extra \
     snapd \
     sublime-text \
+    syncthing \
+    syncthing-gtk \
     ubuntu-docs \
     ubuntu-session \
     ubuntu-wallpapers \
