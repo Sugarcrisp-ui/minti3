@@ -103,7 +103,7 @@ run_script "setup-cron-jobs.sh" true
 
 # Section 12: Apply Dotfiles by Direct Copying (Final Step)
 echo "Applying dotfiles by copying directly..."
-mkdir -p ~/.config ~/.local/share/applications ~/.fonts
+mkdir -p ~/.config ~/.local/share/applications
 sudo mkdir -p /etc/X11/xorg.conf.d
 
 # Replace specific files
@@ -111,10 +111,6 @@ cp -v ~/dotfiles-minti3/.bashrc ~/.bashrc
 cp -v ~/dotfiles-minti3/.bashrc-personal ~/.bashrc-personal
 cp -v ~/dotfiles-minti3/.fehbg ~/.fehbg
 cp -v ~/dotfiles-minti3/.gtkrc-2.0.mine ~/.gtkrc-2.0.mine
-
-# Replace or create .fonts directory
-rm -rf ~/.fonts
-cp -rv ~/dotfiles-minti3/.fonts ~/.fonts
 
 # Add contents to .local, overwrite existing, don't remove non-matching
 cp -rv ~/dotfiles-minti3/.local/share/applications/* ~/.local/share/applications/
@@ -191,6 +187,33 @@ if [ "$(hostname)" = "brett-ms-7d82" ]; then
     sudo mkdir -p /media/brett/backup
     echo "/dev/mapper/backup_crypt /media/brett/backup ext4 defaults 0 2" | sudo tee -a /etc/fstab
     sudo update-initramfs -u
+fi
+
+# Section 12.5: Install Fonts from External Drive
+echo "Installing fonts from external drive..."
+if [ -d "/media/brett/backup/.fonts" ]; then
+    mkdir -p ~/.fonts
+    cp -rv /media/brett/backup/.fonts/* ~/.fonts/
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to copy fonts from /media/brett/backup/.fonts/. Exiting."
+        exit 1
+    fi
+    fc-cache -fv
+else
+    echo "Warning: Font directory /media/brett/backup/.fonts not found. Skipping font installation."
+fi
+
+# Section 12.6: Install Mozilla Configuration from External Drive
+echo "Installing Mozilla configuration from external drive..."
+if [ -d "/media/brett/backup/.mozilla" ]; then
+    mkdir -p ~/.mozilla
+    cp -rv /media/brett/backup/.mozilla/* ~/.mozilla/
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to copy Mozilla configuration from /media/brett/backup/.mozilla/. Exiting."
+        exit 1
+    fi
+else
+    echo "Warning: Mozilla configuration directory /media/brett/backup/.mozilla not found. Skipping Mozilla configuration installation."
 fi
 
 # Section 13: Verify Installations

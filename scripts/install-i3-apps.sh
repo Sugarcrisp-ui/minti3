@@ -1,3 +1,5 @@
+cd /home/brett/minti3/install-scripts
+cat << 'EOF' > install-i3-apps.sh
 #!/bin/bash
 
 USER=$(whoami)
@@ -81,11 +83,36 @@ sudo apt-get install -y \
 # Install Warp Terminal
 echo "Installing Warp Terminal..."
 sudo apt-get install -y wget gpg
+
+# Download and install the Warp GPG key
 wget -qO- https://releases.warp.dev/linux/keys/warp.asc | sudo gpg --dearmor -o /etc/apt/keyrings/warpdotdev.gpg
-echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/warpdotdev.gpg] https://releases.warp.dev/linux/deb stable main" | sudo tee /etc/apt/sources.list.d/warpdotdev.list
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to download or convert Warp GPG key. Exiting."
+    exit 1
+fi
+sudo chmod 644 /etc/apt/keyrings/warpdotdev.gpg
+
+# Remove any duplicate Warp repository entries
+sudo rm -f /etc/apt/sources.list.d/warpdotdev.list
+
+# Add the Warp repository
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/warpdotdev.gpg] https://releases.warp.dev/linux/deb stable main" | sudo tee /etc/apt/sources.list.d/warp.list
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to add Warp repository to sources list. Exiting."
+    exit 1
+fi
+
+# Update package lists and install Warp Terminal
 sudo apt update
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to update package lists after adding Warp repository. Exiting."
+    exit 1
+fi
 sudo apt install -y warp-terminal
-sudo rm -f /etc/apt/keyrings/warpdotdev.gpg
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to install Warp Terminal. Exiting."
+    exit 1
+fi
 
 echo "Installing ProtonVPN..."
 sudo apt-get install -y curl gnupg
@@ -107,3 +134,4 @@ sudo apt-get install -f -y
 rm insync.deb
 
 echo "i3 apps installation complete."
+EOF
