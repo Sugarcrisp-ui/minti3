@@ -1,42 +1,136 @@
 #!/bin/bash
 
+# Ensure script is run as non-root user
 USER=$(whoami)
-
-echo "Installing i3 autotiling..."
-sudo apt-get update
-sudo apt-get install -y python3-pip
-sudo apt-get install -y python3-i3ipc
-
-/home/$USER/i3ipc-venv/bin/pip install i3ipc
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to install i3ipc. Exiting."
+if [ "$USER" = "root" ]; then
+    echo "Error: This script should not be run as root. Exiting."
     exit 1
 fi
 
-if [ -d "/home/$USER/autotiling/.git" ]; then
-    echo "autotiling repository already exists at /home/$USER/autotiling, updating..."
-    cd /home/$USER/autotiling
-    git pull
+# Variables
+USER_HOME="$HOME"
+VENV_DIR="$USER_HOME/i3ipc-venv"
+AUTOTILING_DIR="$USER_HOME/autotiling"
+OUTPUT_FILE="$USER_HOME/github-repos/minti3/scripts/install-autotiling-output.txt"
+
+# Redirect output to file
+exec > >(tee -a "$OUTPUT_FILE") 2>&1
+echo "Logging output to $OUTPUT_FILE"
+
+# Check for git
+echo "Checking for git..."
+if ! command -v git >/dev/null 2>&1; then
+    echo "Installing git..."
+    sudo apt-get install -y git
     if [ $? -ne 0 ]; then
-        echo "Error: Failed to update autotiling repository. Exiting."
+        echo "Error: Failed to install git. Exiting."
         exit 1
     fi
 else
+    echo "git is already installed."
+fi
+
+# Check for Python and pip
+echo "Checking for Python and pip..."
+if ! command -v python3 >/dev/null 2>&1; then
+    echo "Error: python3 not found. Exiting."
+    exit 1
+fi
+if ! command -v pip3 >/dev/null 2>&1; then
+    echo "Installing python3-pip..."
+    sudo apt-get install -y python3-pip
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to install python3-pip. Exiting."
+        exit 1
+    fi
+else
+    echo "python3-pip is already installed."
+fi
+
+# Check for virtual environment
+echo "Checking for virtual environment..."
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Warning: Virtual environment not found at $VENV_DIR. Creating one..."
+    python3 -m venv "$VENV_DIR"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to create virtual environment at $VENV_DIR. Exiting."
+        exit 1
+    fi
+fi
+
+# Install i3ipc in virtual environment
+echo "Installing i3ipc in virtual environment..."
+source "$VENV_DIR/bin/activate"
+if [ $? -ne 0 ]; then
+    echo "Warning: Failed to activate virtual environment. Recreating..."
+    rm -rf "$VENV_DIR"
+    python3 -m venv "$VENV_DIR"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to recreate virtual environment at $VENV_DIR. Exiting."
+        exit 1
+    fi
+    source "$VENV_DIR/bin/activate"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to activate recreated virtual environment. Exiting."
+        exit 1
+    fi
+fi
+pip install --upgrade pip
+pip install i3ipc==2.2.1
+if [ $? -ne 0 ]; then
+    echo "Warning: Failed to install i3ipc in virtual environment. Continuing."
+    deactivate
+else
+    echo "i3ipc installed successfully."
+    deactivate
+fi
+
+# Clone or update autotiling repository
+echo "Cloning or updating autotiling repository..."
+if [ -d "$AUTOTILING_DIR/.git" ]; then
+    echo "autotiling repository exists at $AUTOTILING_DIR, updating..."
+    cd "$AUTOTILING_DIR"
+    git pull
+    if [ $? -ne 0 ]; then
+        echo "Warning: Failed to update autotiling repository. Continuing with existing version."
+    fi
+else
     echo "Cloning autotiling repository..."
-    git clone https://github.com/Sugarcrisp-ui/autotiling.git /home/$USER/autotiling
+    git clone https://github.com/Sugarcrisp-ui/autotiling.git "$AUTOTILING_DIR"
     if [ $? -ne 0 ]; then
         echo "Error: Failed to clone autotiling repository. Exiting."
         exit 1
     fi
 fi
 
-if [ -f "/home/$USER/autotiling/autotiling.py" ]; then
-    echo "Installing autotiling..."
-    sudo cp /home/$USER/autotiling/autotiling.py /usr/local/bin/autotiling.py
-    sudo chmod +x /usr/local/bin/autotiling.py
+# Install autotiling
+echo "Installing autotiling..."
+if [ -f "$AUTOTILING_DIR/autotiling.py" ]; then
+    sudo cp "$AUTOTILING_DIR/autotiling.py" /usr/local/bin/autotiling.py
+    if [ $? -ne 0 ]; then
+        echo "Warning: Failed to copy autotiling.py to /usr/local/bin/. Continuing."
+    else
+        sudo chmod +x /usr/local/bin/autotiling.py
+        if [ $? -ne 0 ]; then
+            echo "Warning: Failed to set executable permissions on autotiling.py. Continuing."
+        fi
+    fi
 else
-    echo "Error: autotiling.py not found. Exiting."
+    echo "Error: autotiling.py not found in $AUTOTILING_DIR. Exiting."
     exit 1
+fi
+
+# Verify installation
+echo "Verifying installation..."
+if [ -x /usr/local/bin/autotiling.py ]; then
+    echo "autotiling.py is installed and executable."
+else
+    echo "Warning: autotiling.py not installed or not executable."
+fi
+
+# Check for Docker environment
+if [ -f "/proc/1/cgroup" ] && grep -qE "docker|containerd|kubepods|libpod|/docker/|/.*/docker/|/.*/containerd/" /proc/1/cgroup || [ -f "/.dockerenv" ]; then
+    echo "Warning: Running in a containerized environment (Docker). Network operations (e.g., git clone) or system permissions may be restricted."
 fi
 
 echo "autotiling installation complete."

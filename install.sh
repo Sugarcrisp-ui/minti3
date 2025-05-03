@@ -6,17 +6,17 @@ export DEBIAN_FRONTEND=noninteractive
 export DISPLAY=:0
 export XDG_SESSION_TYPE=x11
 export XDG_RUNTIME_DIR=/run/user/$(id -u $USER)
-export XDG_CONFIG_HOME=/home/$USER/.config
+export XDG_CONFIG_HOME="$HOME/.config"
 export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u $USER)/bus
 
 # Master script to install and set up i3 on a fresh Linux Mint XFCE system
 
 # Variables
 USER=$(whoami)
-USER_HOME="/home/$USER"
+USER_HOME="$HOME"
 GITHUB_REPOS_DIR="$USER_HOME/github-repos"
 MINTI3_DIR="$GITHUB_REPOS_DIR/minti3"
-DOTFILES_DIR="$GITHUB_REPOS_DIR/dotfiles-minti3"
+USER_CONFIGS_DIR="$GITHUB_REPOS_DIR/user-configs"
 SCRIPTS_DIR="$MINTI3_DIR/scripts"
 
 # Ensure minti3 is in ~/github-repos/
@@ -57,24 +57,36 @@ run_script() {
 echo "Warning: If InSync is running, it may cause issues with this script. Please ensure InSync is stopped before proceeding."
 read -p "Press Enter to continue, or Ctrl+C to abort and stop InSync..."
 
-# Clone or update dotfiles-minti3 repository
-if [ ! -d "$DOTFILES_DIR" ]; then
-    echo "Cloning dotfiles-minti3 repository..."
-    mkdir -p "$GITHUB_REPOS_DIR"
-    git clone https://github.com/Sugarcrisp-ui/dotfiles-minti3.git "$DOTFILES_DIR"
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to clone dotfiles-minti3 repository. Exiting."
-        exit 1
+# Clone dependency repositories
+echo "Cloning dependency repositories..."
+mkdir -p "$GITHUB_REPOS_DIR"
+declare -A repos=(
+    ["user-configs"]="https://github.com/Sugarcrisp-ui/user-configs.git"
+    ["i3-logout"]="https://github.com/Sugarcrisp-ui/i3-logout.git"
+    ["autotiling"]="https://github.com/Sugarcrisp-ui/autotiling.git"
+    ["sddm-themes"]="https://github.com/Sugarcrisp-ui/sddm-themes.git"
+    ["i3lock-color"]="https://github.com/Raymo111/i3lock-color.git"
+    ["betterlockscreen"]="https://github.com/betterlockscreen/betterlockscreen.git"
+)
+for repo in "${!repos[@]}"; do
+    repo_dir="$GITHUB_REPOS_DIR/$repo"
+    if [ ! -d "$repo_dir" ]; then
+        echo "Cloning $repo..."
+        git clone "${repos[$repo]}" "$repo_dir"
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to clone $repo repository. Exiting."
+            exit 1
+        fi
+    else
+        echo "$repo repository already exists at $repo_dir, updating..."
+        cd "$repo_dir"
+        git pull
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to update $repo repository. Exiting."
+            exit 1
+        fi
     fi
-else
-    echo "dotfiles-minti3 repository already exists at $DOTFILES_DIR, updating..."
-    cd "$DOTFILES_DIR"
-    git pull
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to update dotfiles-minti3 repository. Exiting."
-        exit 1
-    fi
-fi
+done
 
 # Section 1: Install Core i3 Components and Dependencies
 run_script "install-i3-mint.sh" false
@@ -102,7 +114,8 @@ echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg arch=
 sudo apt update
 
 # Section 7: Install Additional i3 Apps
-run_script "install-i3-apps.sh" true
+# Temporarily commented out for testing
+# run_script "install-i3-apps.sh" true
 
 # Section 8: Install GitHub Desktop
 echo "Installing GitHub Desktop via Flatpak..."
@@ -123,36 +136,56 @@ echo "Setting up cron jobs..."
 run_script "setup-cron-jobs.sh" true
 
 # Section 12: Apply Dotfiles by Direct Copying (Final Step)
-echo "Applying dotfiles by copying directly..."
-mkdir -p ~/.config ~/.local/share/applications
+echo "Applying dotfiles by copying from latest backup..."
+EXTERNAL_BACKUP_DIR="/media/brett/backup"
+LATEST_BACKUP=""
+LATEST_EXTERNAL_BACKUP=""
+
+# Find latest backup in user-configs
+if [ -L "$USER_CONFIGS_DIR/backup.latest" ] && [ -d "$(readlink "$USER_CONFIGS_DIR/backup.latest")" ]; then
+    LATEST_BACKUP=$(readlink -f "$USER_CONFIGS_DIR/backup.latest")
+else
+    echo "Error: No valid backup.latest link found in $USER_CONFIGS_DIR. Exiting."
+    exit 1
+fi
+
+# Find latest backup in external drive
+if [ -L "$EXTERNAL_BACKUP_DIR/backup.latest" ] && [ -d "$(readlink "$EXTERNAL_BACKUP_DIR/backup.latest")" ]; then
+    LATEST_EXTERNAL_BACKUP=$(readlink -f "$EXTERNAL_BACKUP_DIR/backup.latest")
+else
+    echo "Warning: No valid backup.latest link found in $EXTERNAL_BACKUP_DIR. Skipping external backup files."
+fi
+
+# Create necessary directories
+mkdir -p "$HOME/.config" "$HOME/.local/share/applications"
 sudo mkdir -p /etc/X11/xorg.conf.d
 
-# Replace specific files
-cp -v $DOTFILES_DIR/.bashrc ~/.bashrc
-cp -v $DOTFILES_DIR/.bashrc-personal ~/.bashrc-personal
-cp -v $DOTFILES_DIR/.fehbg ~/.fehbg
-cp -v $DOTFILES_DIR/.gtkrc-2.0.mine ~/.gtkrc-2.0.mine
+# Copy specific files from latest backup
+cp -v "$LATEST_BACKUP/.bashrc" "$HOME/.bashrc"
+cp -v "$LATEST_BACKUP/.bashrc-personal" "$HOME/.bashrc-personal"
+cp -v "$LATEST_BACKUP/.fehbg" "$HOME/.fehbg"
+cp -v "$LATEST_BACKUP/.gtkrc-2.0.mine" "$HOME/.gtkrc-2.0.mine"
 
-# Add contents to .local, overwrite existing, don't remove non-matching
-cp -rv $DOTFILES_DIR/.local/share/applications/* ~/.local/share/applications/
+# Copy .local/share/applications
+cp -rv "$LATEST_BACKUP/applications/"* "$HOME/.local/share/applications/"
 
-# Replace matching .config subdirectories, don't remove non-matching
-for dir in $DOTFILES_DIR/.config/*; do
+# Copy .config subdirectories
+for dir in "$LATEST_BACKUP/.config/"*; do
     if [ -d "$dir" ]; then
         dir_name=$(basename "$dir")
-        mkdir -p ~/.config/$dir_name
-        cp -rv $dir/* ~/.config/$dir_name/
+        mkdir -p "$HOME/.config/$dir_name"
+        cp -rv "$dir/"* "$HOME/.config/$dir_name/"
     fi
 done
 
-# Replace system configuration files
-sudo cp -v $DOTFILES_DIR/sddm.conf /etc/sddm.conf
-sudo cp -rv $DOTFILES_DIR/etc/X11/xorg.conf.d/* /etc/X11/xorg.conf.d/
+# Copy system configuration files
+sudo cp -v "$LATEST_BACKUP/etc/sddm.conf" /etc/sddm.conf
+sudo cp -rv "$LATEST_BACKUP/xorg.conf.d/"* /etc/X11/xorg.conf.d/
 
 # Select Polybar configuration based on system type
 echo "Selecting Polybar configuration based on system type..."
 HOSTNAME=$(hostname)
-POLYBAR_CONFIG_DIR="$USER_HOME/.config/polybar"
+POLYBAR_CONFIG_DIR="$HOME/.config/polybar"
 if [ "$HOSTNAME" = "brett-ms-7d82" ]; then
     # Desktop: Use desktop-config.ini
     cp "$POLYBAR_CONFIG_DIR/desktop-config.ini" "$POLYBAR_CONFIG_DIR/config.ini"
@@ -180,11 +213,11 @@ sudo chmod 440 "$SUDOERS_FILE"
 
 # Install crontab settings
 echo "Installing crontab settings..."
-mkdir -p $DOTFILES_DIR/crontabs
-cp $DOTFILES_DIR/crontabs/crontab-user $DOTFILES_DIR/crontabs/crontab-user.bak
-cp $DOTFILES_DIR/crontabs/crontab-sudo $DOTFILES_DIR/crontabs/crontab-sudo.bak
-crontab $DOTFILES_DIR/crontabs/crontab-user
-sudo crontab $DOTFILES_DIR/crontabs/crontab-sudo
+mkdir -p "$USER_CONFIGS_DIR/crontabs"
+cp "$USER_CONFIGS_DIR/crontabs/crontab-user" "$USER_CONFIGS_DIR/crontabs/crontab-user.bak"
+cp "$USER_CONFIGS_DIR/crontabs/crontab-sudo" "$USER_CONFIGS_DIR/crontabs/crontab-sudo.bak"
+crontab "$USER_CONFIGS_DIR/crontabs/crontab-user"
+sudo crontab "$USER_CONFIGS_DIR/crontabs/crontab-sudo"
 
 # Install PulseAudio and remove PipeWire
 echo "Installing PulseAudio and removing PipeWire..."
@@ -212,29 +245,29 @@ fi
 
 # Section 12.5: Install Fonts from External Drive
 echo "Installing fonts from external drive..."
-if [ -d "/media/brett/backup/.fonts" ]; then
-    mkdir -p ~/.fonts
-    cp -rv /media/brett/backup/.fonts/* ~/.fonts/
+if [ -n "$LATEST_EXTERNAL_BACKUP" ] && [ -d "$LATEST_EXTERNAL_BACKUP/.fonts" ]; then
+    mkdir -p "$HOME/.fonts"
+    cp -rv "$LATEST_EXTERNAL_BACKUP/.fonts/"* "$HOME/.fonts/"
     if [ $? -ne 0 ]; then
-        echo "Error: Failed to copy fonts from /media/brett/backup/.fonts/. Exiting."
+        echo "Error: Failed to copy fonts from $LATEST_EXTERNAL_BACKUP/.fonts/. Exiting."
         exit 1
     fi
     fc-cache -fv
 else
-    echo "Warning: Font directory /media/brett/backup/.fonts not found. Skipping font installation."
+    echo "Warning: Font directory $LATEST_EXTERNAL_BACKUP/.fonts not found. Skipping font installation."
 fi
 
 # Section 12.6: Install Mozilla Configuration from External Drive
 echo "Installing Mozilla configuration from external drive..."
-if [ -d "/media/brett/backup/.mozilla" ]; then
-    mkdir -p ~/.mozilla
-    cp -rv /media/brett/backup/.mozilla/* ~/.mozilla/
+if [ -n "$LATEST_EXTERNAL_BACKUP" ] && [ -d "$LATEST_EXTERNAL_BACKUP/.mozilla" ]; then
+    mkdir -p "$HOME/.mozilla"
+    cp -rv "$LATEST_EXTERNAL_BACKUP/.mozilla/"* "$HOME/.mozilla/"
     if [ $? -ne 0 ]; then
-        echo "Error: Failed to copy Mozilla configuration from /media/brett/backup/.mozilla/. Exiting."
+        echo "Error: Failed to copy Mozilla configuration from $LATEST_EXTERNAL_BACKUP/.mozilla/. Exiting."
         exit 1
     fi
 else
-    echo "Warning: Mozilla configuration directory /media/brett/backup/.mozilla not found. Skipping Mozilla configuration installation."
+    echo "Warning: Mozilla configuration directory $LATEST_EXTERNAL_BACKUP/.mozilla not found. Skipping Mozilla configuration installation."
 fi
 
 # Section 13: Verify Installations

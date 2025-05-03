@@ -1,23 +1,75 @@
 #!/bin/bash
 
+# Ensure script is run as non-root user
 USER=$(whoami)
+if [ "$USER" = "root" ]; then
+    echo "Error: This script should not be run as root. Exiting."
+    exit 1
+fi
 
-# Install Arc theme
-sudo apt-get install -y arc-theme
+# Variables
+USER_HOME="$HOME"
+DBUS_ADDRESS="unix:path=/run/user/$(id -u "$USER")/bus"
 
-# Check if XFCE session is active
+# Check and install dependencies
+echo "Checking and installing dependencies..."
+packages=(
+    arc-theme
+    xfce4-settings
+)
+for pkg in "${packages[@]}"; do
+    if ! dpkg -l | grep -q " $pkg "; then
+        echo "Installing $pkg..."
+        sudo apt-get install -y "$pkg"
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to install $pkg. Exiting."
+            exit 1
+        fi
+    else
+        echo "$pkg is already installed."
+    fi
+done
+
+# Check for xfconf-query
+if ! command -v xfconf-query >/dev/null 2>&1; then
+    echo "Error: xfconf-query not found. Exiting."
+    exit 1
+fi
+
+# Apply Arc-Darker theme
+echo "Applying Arc-Darker theme..."
 if pgrep -u "$USER" xfce4-session >/dev/null || pgrep -u "$USER" i3 >/dev/null; then
-    echo "Applying Arc-Darker theme..."
-    if sudo -u "$USER" DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u "$USER")/bus xfconf-query -c xsettings -p /Net/ThemeName -s "Arc-Darker" 2>/dev/null; then
+    # Set xsettings theme
+    if sudo -u "$USER" DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS="$DBUS_ADDRESS" xfconf-query -c xsettings -p /Net/ThemeName -s "Arc-Darker" 2>/dev/null; then
         echo "Successfully set xsettings theme to Arc-Darker."
     else
-        echo "Warning: Failed to set xsettings theme."
+        echo "Warning: Failed to set xsettings theme. Display may not be active."
     fi
-    if sudo -u "$USER" DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u "$USER")/bus xfconf-query -c xfwm4 -p /general/theme -s "Arc-Darker" 2>/dev/null; then
+    # Set xfwm4 theme
+    if sudo -u "$USER" DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS="$DBUS_ADDRESS" xfconf-query -c xfwm4 -p /general/theme -s "Arc-Darker" 2>/dev/null; then
         echo "Successfully set xfwm4 theme to Arc-Darker."
     else
-        echo "Warning: Failed to set xfwm4 theme."
+        echo "Warning: Failed to set xfwm4 theme. Display may not be active."
     fi
 else
-    echo "Warning: XFCE session not active. Skipping theme application."
+    echo "Warning: XFCE or i3 session not active. Skipping theme application."
 fi
+
+# Verify theme application
+echo "Verifying theme application..."
+THEME_SET=false
+if sudo -u "$USER" DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS="$DBUS_ADDRESS" xfconf-query -c xsettings -p /Net/ThemeName 2>/dev/null | grep -q "Arc-Darker"; then
+    echo "xsettings theme verified as Arc-Darker."
+    THEME_SET=true
+elif sudo -u "$USER" DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS="$DBUS_ADDRESS" xfconf-query -c xfwm4 -p /general/theme 2>/dev/null | grep -q "Arc-Darker"; then
+    echo "xfwm4 theme verified as Arc-Darker."
+    THEME_SET=true
+else
+    echo "Warning: Could not verify Arc-Darker theme application. Display may not be active."
+fi
+
+if [ "$THEME_SET" = false ]; then
+    echo "Note: Theme application may not be fully verified in this environment (e.g., Docker without display)."
+fi
+
+echo "XFCE theme installation complete."
