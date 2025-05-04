@@ -10,10 +10,11 @@ fi
 USER_HOME="/home/brett"
 REPO_URL="https://github.com/Raymo111/i3lock-color"
 SRC_DIR="$USER_HOME/github-repos/i3lock-color"
-OUTPUT_FILE="$USER_HOME/github-repos/minti3/scripts/update-i3lock-color-output.txt"
+OUTPUT_FILE="/home/brett/log-files/update-i3lock-color/update-i3lock-color-output.txt"
 CRON_JOB="20 21 * * 0 /bin/bash $USER_HOME/github-repos/minti3/scripts/update-i3lock-color.sh >> $USER_HOME/github-repos/minti3/logs/i3lock-color-update.log 2>&1"
 
 # Redirect output to file
+mkdir -p ~/log-files/update-i3lock-color
 exec > >(tee -a "$OUTPUT_FILE") 2>&1
 echo "Logging output to $OUTPUT_FILE"
 

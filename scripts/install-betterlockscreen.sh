@@ -10,9 +10,10 @@ fi
 # Variables
 USER_HOME="$HOME"
 BETTERLOCKSCREEN_DIR="$USER_HOME/github-repos/betterlockscreen"
-OUTPUT_FILE="$USER_HOME/github-repos/minti3/scripts/install-betterlockscreen-output.txt"
+OUTPUT_FILE="/home/brett/log-files/install-betterlockscreen/install-betterlockscreen-output.txt"
 
 # Redirect output to file
+mkdir -p ~/log-files/install-betterlockscreen
 exec > >(tee -a "$OUTPUT_FILE") 2>&1
 echo "Logging output to $OUTPUT_FILE"
 

@@ -8,9 +8,10 @@ if [ "$USER" = "root" ]; then
 fi
 
 # Variables
-OUTPUT_FILE="$HOME/github-repos/minti3/scripts/setup-syncthing-selective-output.txt"
+OUTPUT_FILE="/home/brett/log-files/setup-syncthing-selective/setup-syncthing-selective-output.txt"
 
 # Redirect output to file
+mkdir -p ~/log-files/setup-syncthing-selective
 exec > >(tee -a "$OUTPUT_FILE") 2>&1
 echo "Logging output to $OUTPUT_FILE"
 

@@ -9,9 +9,10 @@ fi
 
 # Variables
 THEMES_DIR="$HOME/tmp/sddm-themes"
-OUTPUT_FILE="$HOME/github-repos/minti3/scripts/install-sddm-simplicity-output.txt"
+OUTPUT_FILE="/home/brett/log-files/install-sddm-simplicity/install-sddm-simplicity-output.txt"
 
 # Redirect output to file
+mkdir -p ~/log-files/install-sddm-simplicity
 exec > >(tee -a "$OUTPUT_FILE") 2>&1
 echo "Logging output to $OUTPUT_FILE"
 

@@ -11,9 +11,10 @@ fi
 USER_HOME="$HOME"
 GITHUB_REPOS_DIR="$USER_HOME/github-repos"
 I3LOCK_COLOR_DIR="$GITHUB_REPOS_DIR/i3lock-color"
-OUTPUT_FILE="$USER_HOME/github-repos/minti3/scripts/install-i3lock-color-output.txt"
+OUTPUT_FILE="/home/brett/log-files/install-i3lock-color/install-i3lock-color-output.txt"
 
 # Redirect output to file
+mkdir -p ~/log-files/install-i3lock-color
 exec > >(tee -a "$OUTPUT_FILE") 2>&1
 echo "Logging output to $OUTPUT_FILE"
 

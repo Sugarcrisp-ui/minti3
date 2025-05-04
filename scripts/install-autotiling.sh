@@ -11,9 +11,10 @@ fi
 USER_HOME="$HOME"
 VENV_DIR="$USER_HOME/i3ipc-venv"
 AUTOTILING_DIR="$USER_HOME/autotiling"
-OUTPUT_FILE="$USER_HOME/github-repos/minti3/scripts/install-autotiling-output.txt"
+OUTPUT_FILE="/home/brett/log-files/install-autotiling/install-autotiling-output.txt"
 
 # Redirect output to file
+mkdir -p ~/log-files/install-autotiling
 exec > >(tee -a "$OUTPUT_FILE") 2>&1
 echo "Logging output to $OUTPUT_FILE"
 

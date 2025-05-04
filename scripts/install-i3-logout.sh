@@ -11,9 +11,10 @@ fi
 USER_HOME="$HOME"
 USER_CONFIGS_DIR="$USER_HOME/github-repos/user-configs"
 I3_LOGOUT_DIR="$USER_HOME/github-repos/i3-logout"
-OUTPUT_FILE="$USER_HOME/github-repos/minti3/scripts/install-i3-logout-output.txt"
+OUTPUT_FILE="/home/brett/log-files/install-i3-logout/install-i3-logout-output.txt"
 
 # Redirect output to file
+mkdir -p ~/log-files/install-i3-logout
 exec > >(tee -a "$OUTPUT_FILE") 2>&1
 echo "Logging output to $OUTPUT_FILE"
 

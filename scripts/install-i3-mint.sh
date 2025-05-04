@@ -9,9 +9,10 @@ fi
 
 # Variables
 USER_HOME="$HOME"
-OUTPUT_FILE="$USER_HOME/github-repos/minti3/scripts/install-i3-mint-output.txt"
+OUTPUT_FILE="/home/brett/log-files/install-i3-mint/install-i3-mint-output.txt"
 
 # Redirect output to file
+mkdir -p ~/log-files/install-i3-mint
 exec > >(tee -a "$OUTPUT_FILE") 2>&1
 echo "Logging output to $OUTPUT_FILE"
 

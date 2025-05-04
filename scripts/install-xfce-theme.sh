@@ -10,6 +10,12 @@ fi
 # Variables
 USER_HOME="$HOME"
 DBUS_ADDRESS="unix:path=/run/user/$(id -u "$USER")/bus"
+OUTPUT_FILE="/home/brett/log-files/install-xfce-theme/install-xfce-theme-output.txt"
+
+# Redirect output to file
+mkdir -p ~/log-files/install-xfce-theme
+exec > >(tee -a "$OUTPUT_FILE") 2>&1
+echo "Logging output to $OUTPUT_FILE"
 
 # Check and install dependencies
 echo "Checking and installing dependencies..."
@@ -22,8 +28,7 @@ for pkg in "${packages[@]}"; do
         echo "Installing $pkg..."
         sudo apt-get install -y "$pkg"
         if [ $? -ne 0 ]; then
-            echo "Error: Failed to install $pkg. Exiting."
-            exit 1
+            echo "Warning: Failed to install $pkg. Continuing."
         fi
     else
         echo "$pkg is already installed."
@@ -32,8 +37,7 @@ done
 
 # Check for xfconf-query
 if ! command -v xfconf-query >/dev/null 2>&1; then
-    echo "Error: xfconf-query not found. Exiting."
-    exit 1
+    echo "Warning: xfconf-query not found. Theme application may fail."
 fi
 
 # Apply Arc-Darker theme
@@ -65,11 +69,15 @@ elif sudo -u "$USER" DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS="$DBUS_ADDRESS" xfconf-
     echo "xfwm4 theme verified as Arc-Darker."
     THEME_SET=true
 else
-    echo "Warning: Could not verify Arc-Darker theme application. Display may not be active."
+    echo "Warning: Could not verify Arc-Darker theme application."
 fi
 
-if [ "$THEME_SET" = false ]; then
-    echo "Note: Theme application may not be fully verified in this environment (e.g., Docker without display)."
+# Check for Docker environment
+if [ -f "/proc/1/cgroup" ] && grep -qE "docker|containerd|kubepods|libpod|/docker/|/.*/docker/|/.*/containerd/" /proc/1/cgroup || [ -f "/.dockerenv" ]; then
+    echo "Warning: Running in a containerized environment (Docker). Theme application may be restricted."
+    if [ "$THEME_SET" = false ]; then
+        echo "Note: Theme verification likely failed due to Docker environment."
+    fi
 fi
 
 echo "XFCE theme installation complete."
