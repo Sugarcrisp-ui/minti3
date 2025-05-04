@@ -41,8 +41,12 @@ echo "Backup created at $CRONTAB_BACKUP."
 
 # Define cron jobs
 CRON_JOBS=(
-    "20 21 * * 0 /bin/bash $USER_HOME/.bin-personal/update-i3lock-color.sh >> $USER_HOME/.bin-personal/i3lock-color-update.log 2>&1 # Update i3lock-color every Sunday at 9:20 PM"
-    "0 23 * * * /bin/bash $USER_HOME/.bin-personal/backup-dotfiles.sh >> $USER_HOME/.bin-personal/backup-dotfiles.log 2>&1 # Run backup-dotfiles.sh daily at 23:00"
+    "# Update i3lock-color every Sunday at 9:20 PM"
+    "20 21 * * 0 /bin/bash $USER_HOME/github-repos/minti3/scripts/install-i3lock-color.sh >> $USER_HOME/log-files/install-i3lock-color/install-i3lock-color.log 2>&1"
+    "# Backup user config files to user-configs repo daily at 22:00"
+    "0 22 * * * /bin/bash $USER_HOME/.bin-personal/backup-user-configs-github-rsync.sh >> $USER_HOME/log-files/backup-user-configs-github-rsync/backup-user-configs-github-rsync.log 2>&1"
+    "# Backup user config files to external daily at 22:10"
+    "10 22 * * * /bin/bash $USER_HOME/.bin-personal/backup-user-configs-external-rsync.sh >> $USER_HOME/log-files/backup-user-configs-external-rsync/backup-user-configs-external-rsync.log 2>&1"
 )
 
 # Write cron jobs to a temporary file
