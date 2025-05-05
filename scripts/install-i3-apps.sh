@@ -76,6 +76,9 @@ for pkg in "${packages[@]}"; do
             echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
             sudo apt-get update
             sudo apt-get install -y brave-browser
+        elif [ "$pkg" = "gdm3" ]; then
+            echo "gdm3 shared/default-x-display-manager select sddm" | sudo debconf-set-selections
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "$pkg"
         else
             sudo apt-get install -y "$pkg"
         fi
@@ -86,5 +89,16 @@ for pkg in "${packages[@]}"; do
         echo "$pkg is already installed."
     fi
 done
+
+# Ensure SDDM remains the default display manager
+echo "Ensuring SDDM is the default display manager..."
+if [ -f "/etc/X11/default-display-manager" ]; then
+    echo "/usr/sbin/sddm" | sudo tee /etc/X11/default-display-manager >/dev/null
+    if [ $? -eq 0 ]; then
+        echo "Confirmed sddm as default display manager."
+    else
+        echo "Warning: Failed to confirm sddm as default display manager."
+    fi
+fi
 
 echo "i3-apps installation complete."
