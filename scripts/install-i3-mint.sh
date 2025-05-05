@@ -76,7 +76,11 @@ verified_commands=(
 )
 for cmd in "${verified_commands[@]}"; do
     if command -v "$cmd" >/dev/null 2>&1; then
-        echo "$cmd is installed: $($cmd --version 2>&1 | head -n 1)"
+        if [ "$cmd" = "rofi" ]; then
+            echo "$cmd is installed: $(rofi --version > /dev/null 2>&1 && echo 'version check passed')"
+        else
+            echo "$cmd is installed: $($cmd --version 2>&1 | head -n 1)"
+        fi
     else
         echo "Warning: $cmd is not installed."
     fi
