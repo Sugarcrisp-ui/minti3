@@ -190,15 +190,6 @@ for file in .bashrc bashrc-personal-sync/.bashrc-personal .fehbg .gtkrc-2.0.mine
     fi
 done
 
-# Copy .local/share/applications
-if [ -d "$LATEST_BACKUP/applications/applications" ]; then
-    cp -rv "$LATEST_BACKUP/applications/applications/"* "$HOME/.local/share/applications/"
-elif [ -d "$LATEST_BACKUP/applications" ]; then
-    cp -rv "$LATEST_BACKUP/applications/"* "$HOME/.local/share/applications/"
-else
-    echo "Warning: applications directory not found in $LATEST_BACKUP. Skipping."
-fi
-
 # Copy .config subdirectories, excluding .git
 if [ -d "$LATEST_BACKUP/.config" ]; then
     find "$LATEST_BACKUP/.config/" -maxdepth 1 -type d ! -path "$LATEST_BACKUP/.config" -exec basename {} \; | while read -r dir_name; do
