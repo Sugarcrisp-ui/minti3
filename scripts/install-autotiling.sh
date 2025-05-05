@@ -31,22 +31,24 @@ else
     echo "git is already installed."
 fi
 
-# Check for Python and pip
-echo "Checking for Python and pip..."
+echo "Checking for Python, pip, and venv..."
 if ! command -v python3 >/dev/null 2>&1; then
     echo "Error: python3 not found. Exiting."
     exit 1
 fi
-if ! command -v pip3 >/dev/null 2>&1; then
-    echo "Installing python3-pip..."
-    sudo apt-get install -y python3-pip
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to install python3-pip. Exiting."
-        exit 1
+packages=("python3-pip" "python3-venv")
+for pkg in "${packages[@]}"; do
+    if ! dpkg -l | grep -q " $pkg "; then
+        echo "Installing $pkg..."
+        sudo apt-get install -y "$pkg"
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to install $pkg. Exiting."
+            exit 1
+        fi
+    else
+        echo "$pkg is already installed."
     fi
-else
-    echo "python3-pip is already installed."
-fi
+done
 
 # Check for virtual environment
 echo "Checking for virtual environment..."
