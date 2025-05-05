@@ -11,7 +11,7 @@ fi
 USER_HOME="$HOME"
 GITHUB_REPOS_DIR="$USER_HOME/github-repos"
 I3LOCK_COLOR_DIR="$GITHUB_REPOS_DIR/i3lock-color"
-OUTPUT_FILE="/home/brett/log-files/install-i3lock-color/install-i3lock-color-output.txt"
+OUTPUT_FILE="$USER_HOME/log-files/install-i3lock-color/install-i3lock-color-output.txt"
 
 # Redirect output to file
 mkdir -p ~/log-files/install-i3lock-color
