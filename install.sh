@@ -56,6 +56,7 @@ fi
 run_script() {
     local script="$1"
     echo "Running $script..."
+    sudo -v
     echo "Current user: $(whoami), USER=$USER, HOME=$HOME" >&2
     bash "$SCRIPTS_DIR/$script"
     if [ $? -ne 0 ]; then
