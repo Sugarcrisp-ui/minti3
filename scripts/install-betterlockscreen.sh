@@ -8,7 +8,7 @@ if [ "$USER" = "root" ]; then
 fi
 
 # Variables
-USER_HOME="$HOME"
+USER_HOME=$(eval echo ~$USER)
 BETTERLOCKSCREEN_DIR="$USER_HOME/github-repos/betterlockscreen"
 LOG_DIR="$USER_HOME/log-files/install-betterlockscreen"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)

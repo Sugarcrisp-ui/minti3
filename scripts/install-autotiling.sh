@@ -8,7 +8,7 @@ if [ "$USER" = "root" ]; then
 fi
 
 # Variables
-USER_HOME="$HOME"
+USER_HOME=$(eval echo ~$USER)
 VENV_DIR="$USER_HOME/i3ipc-venv"
 AUTOTILING_DIR="$USER_HOME/autotiling"
 LOG_DIR="$USER_HOME/log-files/install-autotiling"

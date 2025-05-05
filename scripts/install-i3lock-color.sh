@@ -8,7 +8,7 @@ if [ "$USER" = "root" ]; then
 fi
 
 # Variables
-USER_HOME="$HOME"
+USER_HOME=$(eval echo ~$USER)
 GITHUB_REPOS_DIR="$USER_HOME/github-repos"
 I3LOCK_COLOR_DIR="$GITHUB_REPOS_DIR/i3lock-color"
 LOG_DIR="$USER_HOME/log-files/install-i3lock-color"

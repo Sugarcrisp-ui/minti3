@@ -8,7 +8,7 @@ if [ "$USER" = "root" ]; then
 fi
 
 # Variables
-USER_HOME="$HOME"
+USER_HOME=$(eval echo ~$USER)
 CRONTAB_BACKUP="$USER_HOME/crontab-backup-$(date +%F-%H%M%S).txt"
 LOG_DIR="$USER_HOME/log-files/setup-cron-jobs"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)

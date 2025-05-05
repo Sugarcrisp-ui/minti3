@@ -8,7 +8,7 @@ if [ "$USER" = "root" ]; then
 fi
 
 # Variables
-USER_HOME="$HOME"
+USER_HOME=$(eval echo ~$USER)
 LOG_DIR="$USER_HOME/log-files/install-i3-mint"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 OUTPUT_FILE="$LOG_DIR/install-i3-mint-$TIMESTAMP.txt"
