@@ -5,7 +5,7 @@
 # Variables
 VENV_DIR="$HOME/i3ipc-venv"
 PIP="$VENV_DIR/bin/pip"
-LOG_FILE="$HOME/minti3/Personal/i3ipc-update.log"
+LOG_FILE="$USER_HOME/minti3/Personal/i3ipc-update.log"
 
 # Check if virtual environment exists
 if [ ! -d "$VENV_DIR" ]; then
