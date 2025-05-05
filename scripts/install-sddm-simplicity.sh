@@ -8,6 +8,8 @@ if [ "$USER" = "root" ]; then
 fi
 
 # Variables
+USER=$(whoami)
+USER_HOME=$(eval echo ~$USER)
 THEMES_DIR="$HOME/tmp/sddm-themes"
 OUTPUT_FILE="$USER_HOME/log-files/install-sddm-simplicity/install-sddm-simplicity-output.txt"
 
