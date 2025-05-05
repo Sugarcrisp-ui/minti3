@@ -2,18 +2,22 @@
 
 # Ensure script is run as non-root user
 USER=$(whoami)
+USER_HOME=$(eval echo ~$USER)
 if [ "$USER" = "root" ]; then
     echo "Error: This script should not be run as root. Exiting."
     exit 1
 fi
 
 # Variables
-OUTPUT_FILE="/home/brett/log-files/setup-syncthing-selective/setup-syncthing-selective-output.txt"
+LOG_DIR="$USER_HOME/log-files/setup-syncthing-selective"
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OUTPUT_FILE="$LOG_DIR/setup-syncthing-selective-$TIMESTAMP.txt"
+LATEST_LOG="$LOG_DIR/setup-syncthing-selective-output.txt"
 
 # Redirect output to file
-mkdir -p ~/log-files/setup-syncthing-selective
-exec > >(tee -a "$OUTPUT_FILE") 2>&1
-echo "Logging output to $OUTPUT_FILE"
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$OUTPUT_FILE" "$LATEST_LOG") 2>&1
+echo "Logging output to $OUTPUT_FILE and $LATEST_LOG"
 
 # Install Syncthing if not already installed
 if ! command -v syncthing >/dev/null 2>&1; then

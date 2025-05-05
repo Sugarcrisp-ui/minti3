@@ -8,12 +8,17 @@ if [ $? -ne 0 ]; then
 fi
 
 # Variables for logging
-OUTPUT_FILE="$HOME/log-files/install/install-output.txt"
-mkdir -p "$HOME/log-files/install"
+LOG_DIR="$HOME/log-files/install"
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OUTPUT_FILE="$LOG_DIR/install-$TIMESTAMP.txt"
+LATEST_LOG="$LOG_DIR/install-output.txt"
+USER=$(whoami)
+USER_HOME=$(eval echo ~$USER)
 
-# Redirect output to file
-exec > >(tee -a "$OUTPUT_FILE") 2>&1
-echo "Logging output to $OUTPUT_FILE"
+# Redirect output to timestamped and latest log files
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$OUTPUT_FILE" "$LATEST_LOG") 2>&1
+echo "Logging output to $OUTPUT_FILE and $LATEST_LOG"
 
 export DEBIAN_FRONTEND=noninteractive
 

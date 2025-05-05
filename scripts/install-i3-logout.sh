@@ -11,12 +11,15 @@ fi
 USER_HOME="$HOME"
 USER_CONFIGS_DIR="$USER_HOME/github-repos/user-configs"
 I3_LOGOUT_DIR="$USER_HOME/github-repos/i3-logout"
-OUTPUT_FILE="/home/brett/log-files/install-i3-logout/install-i3-logout-output.txt"
+LOG_DIR="$USER_HOME/log-files/install-i3-logout"
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OUTPUT_FILE="$LOG_DIR/install-i3-logout-$TIMESTAMP.txt"
+LATEST_LOG="$LOG_DIR/install-i3-logout-output.txt"
 
 # Redirect output to file
-mkdir -p ~/log-files/install-i3-logout
-exec > >(tee -a "$OUTPUT_FILE") 2>&1
-echo "Logging output to $OUTPUT_FILE"
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$OUTPUT_FILE" "$LATEST_LOG") 2>&1
+echo "Logging output to $OUTPUT_FILE and $LATEST_LOG"
 
 # Check for Python
 echo "Checking for Python..."

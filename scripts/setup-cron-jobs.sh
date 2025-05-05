@@ -10,12 +10,15 @@ fi
 # Variables
 USER_HOME="$HOME"
 CRONTAB_BACKUP="$USER_HOME/crontab-backup-$(date +%F-%H%M%S).txt"
-OUTPUT_FILE="$USER_HOME/log-files/setup-cron-jobs/setup-cron-jobs-output.txt"
+LOG_DIR="$USER_HOME/log-files/setup-cron-jobs"
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OUTPUT_FILE="$LOG_DIR/setup-cron-jobs-$TIMESTAMP.txt"
+LATEST_LOG="$LOG_DIR/setup-cron-jobs-output.txt"
 
 # Redirect output to file
-mkdir -p ~/log-files/setup-cron-jobs
-exec > >(tee -a "$OUTPUT_FILE") 2>&1
-echo "Logging output to $OUTPUT_FILE"
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$OUTPUT_FILE" "$LATEST_LOG") 2>&1
+echo "Logging output to $OUTPUT_FILE and $LATEST_LOG"
 
 # Check for cron
 echo "Checking for cron..."

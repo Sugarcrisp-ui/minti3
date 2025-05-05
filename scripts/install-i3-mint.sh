@@ -9,12 +9,15 @@ fi
 
 # Variables
 USER_HOME="$HOME"
-OUTPUT_FILE="$USER_HOME/log-files/install-i3-mint/install-i3-mint-output.txt"
+LOG_DIR="$USER_HOME/log-files/install-i3-mint"
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OUTPUT_FILE="$LOG_DIR/install-i3-mint-$TIMESTAMP.txt"
+LATEST_LOG="$LOG_DIR/install-i3-mint-output.txt"
 
 # Redirect output to file
-mkdir -p ~/log-files/install-i3-mint
-exec > >(tee -a "$OUTPUT_FILE") 2>&1
-echo "Logging output to $OUTPUT_FILE"
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$OUTPUT_FILE" "$LATEST_LOG") 2>&1
+echo "Logging output to $OUTPUT_FILE and $LATEST_LOG"
 
 # Check and install dependencies
 echo "Checking and installing dependencies..."

@@ -10,12 +10,15 @@ fi
 # Variables
 USER_HOME="$HOME"
 DBUS_ADDRESS="unix:path=/run/user/$(id -u "$USER")/bus"
-OUTPUT_FILE="$USER_HOME/log-files/install-xfce-theme/install-xfce-theme-output.txt"
+LOG_DIR="$USER_HOME/log-files/install-xfce-theme"
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OUTPUT_FILE="$LOG_DIR/install-xfce-theme-$TIMESTAMP.txt"
+LATEST_LOG="$LOG_DIR/install-xfce-theme-output.txt"
 
 # Redirect output to file
-mkdir -p ~/log-files/install-xfce-theme
-exec > >(tee -a "$OUTPUT_FILE") 2>&1
-echo "Logging output to $OUTPUT_FILE"
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$OUTPUT_FILE" "$LATEST_LOG") 2>&1
+echo "Logging output to $OUTPUT_FILE and $LATEST_LOG"
 
 # Check and install dependencies
 echo "Checking and installing dependencies..."

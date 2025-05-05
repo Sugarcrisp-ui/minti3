@@ -10,12 +10,15 @@ fi
 # Variables
 USER_HOME="$HOME"
 BETTERLOCKSCREEN_DIR="$USER_HOME/github-repos/betterlockscreen"
-OUTPUT_FILE="$USER_HOME/log-files/install-betterlockscreen/install-betterlockscreen-output.txt"
+LOG_DIR="$USER_HOME/log-files/install-betterlockscreen"
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OUTPUT_FILE="$LOG_DIR/install-betterlockscreen-$TIMESTAMP.txt"
+LATEST_LOG="$LOG_DIR/install-betterlockscreen-output.txt"
 
 # Redirect output to file
-mkdir -p ~/log-files/install-betterlockscreen
-exec > >(tee -a "$OUTPUT_FILE") 2>&1
-echo "Logging output to $OUTPUT_FILE"
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$OUTPUT_FILE" "$LATEST_LOG") 2>&1
+echo "Logging output to $OUTPUT_FILE and $LATEST_LOG"
 
 # Check for git
 echo "Checking for git..."

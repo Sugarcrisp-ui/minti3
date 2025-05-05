@@ -9,12 +9,15 @@ fi
 
 # Variables
 USER_HOME="$HOME"
-OUTPUT_FILE="$USER_HOME/log-files/install-i3-apps/install-i3-apps-output.txt"
+LOG_DIR="$USER_HOME/log-files/install-i3-apps"
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OUTPUT_FILE="$LOG_DIR/install-i3-apps-$TIMESTAMP.txt"
+LATEST_LOG="$LOG_DIR/install-i3-apps-output.txt"
 
 # Redirect output to file
-mkdir -p ~/log-files/install-i3-apps
-exec > >(tee -a "$OUTPUT_FILE") 2>&1
-echo "Logging output to $OUTPUT_FILE"
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$OUTPUT_FILE" "$LATEST_LOG") 2>&1
+echo "Logging output to $OUTPUT_FILE and $LATEST_LOG"
 
 # Preconfigure sddm as default display manager
 echo "Preconfiguring sddm as default display manager..."

@@ -2,6 +2,7 @@
 
 # Ensure script is run as non-root user
 USER=$(whoami)
+USER_HOME=$(eval echo ~$USER)
 if [ "$USER" = "root" ]; then
     echo "Error: This script should not be run as root. Exiting."
     exit 1
@@ -12,12 +13,15 @@ SERVER_DOWNLOAD_URL="https://downloads.realvnc.com/download/file/vnc.files/VNC-S
 VIEWER_DOWNLOAD_URL="https://downloads.realvnc.com/download/file/viewer.files/VNC-Viewer-7.13.0-Linux-x64.deb"
 SERVER_DEB_FILE="$HOME/tmp/VNC-Server-7.13.0-Linux-x64.deb"
 VIEWER_DEB_FILE="$HOME/tmp/VNC-Viewer-7.13.0-Linux-x64.deb"
-OUTPUT_FILE="$USER_HOME/log-files/install-realvnc/install-realvnc-output.txt"
+LOG_DIR="$USER_HOME/log-files/install-realvnc"
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OUTPUT_FILE="$LOG_DIR/install-realvnc-$TIMESTAMP.txt"
+LATEST_LOG="$LOG_DIR/install-realvnc-output.txt"
 
 # Redirect output to file
-mkdir -p ~/log-files/install-realvnc
-exec > >(tee -a "$OUTPUT_FILE") 2>&1
-echo "Logging output to $OUTPUT_FILE"
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$OUTPUT_FILE" "$LATEST_LOG") 2>&1
+echo "Logging output to $OUTPUT_FILE and $LATEST_LOG"
 
 # Create temporary directory
 echo "Creating temporary directory..."
