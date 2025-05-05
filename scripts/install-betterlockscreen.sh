@@ -76,7 +76,7 @@ if [ -d "$BETTERLOCKSCREEN_DIR/.git" ]; then
     fi
 else
     echo "Cloning Betterlockscreen repository..."
-    git clone https://github.com/betterlockscreen/betterlockscreen.git "$BETTERLOCKSCREEN_DIR"
+    git clone git@github.com:Sugarcrisp-ui/betterlockscreen.git "$BETTERLOCKSCREEN_DIR"
     if [ $? -ne 0 ]; then
         echo "Error: Failed to clone Betterlockscreen repository. Exiting."
         exit 1
@@ -86,8 +86,7 @@ fi
 # Install Betterlockscreen
 echo "Installing Betterlockscreen..."
 cd "$BETTERLOCKSCREEN_DIR"
-sudo make clean
-if sudo make install 2>/tmp/betterlockscreen-install-error.log; then
+if sudo bash install.sh system 2>/tmp/betterlockscreen-install-error.log; then
     echo "Betterlockscreen installed successfully."
 else
     echo "Warning: Failed to install Betterlockscreen. Error details in /tmp/betterlockscreen-install-error.log."
