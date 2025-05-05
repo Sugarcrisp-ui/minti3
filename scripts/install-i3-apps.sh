@@ -61,7 +61,6 @@ packages=(
     ubuntu-wallpapers
     ubuntu-wallpapers-noble
     vlc
-    warp-terminal
     whoopsie
     xdotool
     yaru-theme-gnome-shell
@@ -76,12 +75,6 @@ for pkg in "${packages[@]}"; do
             echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
             sudo apt-get update
             sudo apt-get install -y brave-browser
-        elif [ "$pkg" = "warp-terminal" ]; then
-            sudo apt-get install -y curl gnupg
-            sudo curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
-            echo "deb [signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ focal main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
-            sudo apt-get update
-            sudo apt-get install -y warp-terminal
         elif [ "$pkg" = "gdm3" ]; then
             echo "gdm3 shared/default-x-display-manager select sddm" | sudo debconf-set-selections
             sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "$pkg"
@@ -95,6 +88,32 @@ for pkg in "${packages[@]}"; do
         echo "$pkg is already installed."
     fi
 done
+
+# Install warp-terminal via Flatpak
+echo "Installing warp-terminal via Flatpak..."
+if ! command -v flatpak >/dev/null; then
+    echo "Installing Flatpak..."
+    sudo apt-get install -y flatpak
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to install Flatpak. Continuing."
+    fi
+fi
+if ! flatpak remote-list | grep -q flathub; then
+    echo "Adding Flathub repository..."
+    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to add Flathub repository. Continuing."
+    fi
+fi
+if ! flatpak list | grep -q com.warp.Warp; then
+    echo "Installing com.warp.Warp..."
+    flatpak install -y flathub com.warp.Warp
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to install warp-terminal via Flatpak. Continuing."
+    fi
+else
+    echo "warp-terminal is already installed via Flatpak."
+fi
 
 # Ensure SDDM remains the default display manager
 echo "Ensuring SDDM is the default display manager..."
