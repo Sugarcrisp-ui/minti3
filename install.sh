@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Prompt for sudo password early to cache credentials
+sudo -v
+if [ $? -ne 0 ]; then
+    echo "Error: Sudo authentication failed. Exiting."
+    exit 1
+fi
+
 # Variables for logging
 OUTPUT_FILE="$HOME/log-files/install/install-output.txt"
 mkdir -p "$HOME/log-files/install"
