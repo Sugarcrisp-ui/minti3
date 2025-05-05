@@ -35,10 +35,6 @@ USER_CONFIGS_DIR="$GITHUB_REPOS_DIR/user-configs"
 SCRIPTS_DIR="$MINTI3_DIR/scripts"
 EXTERNAL_BACKUP_DIR="/media/brett/backup"
 
-# Start background sudo cache refresh every 5 minutes
-(while true; do sudo -v; sleep 300; done) &
-SUDO_REFRESH_PID=$!
-
 # Ensure minti3 is in ~/github-repos/
 if [ ! -d "$MINTI3_DIR" ]; then
     echo "minti3 not found in $GITHUB_REPOS_DIR. Checking for $USER_HOME/minti3..."
@@ -55,9 +51,6 @@ if [ ! -d "$MINTI3_DIR" ]; then
         exit 1
     fi
 fi
-
-# Stop sudo cache refresh
-kill $SUDO_REFRESH_PID
 
 # Function to run a script and check for errors
 run_script() {
@@ -78,6 +71,9 @@ read -p "Press Enter to continue, or Ctrl+C to abort and stop InSync..."
 
 # Clone dependency repositories
 echo "Cloning dependency repositories..."
+# Start background sudo cache refresh every 5 minutes
+(while true; do sudo -v; sleep 300; done) &
+SUDO_REFRESH_PID=$!
 mkdir -p "$GITHUB_REPOS_DIR"
 declare -A repos=(
     ["user-configs"]="https://github.com/Sugarcrisp-ui/user-configs.git"
@@ -106,6 +102,8 @@ for repo in "${!repos[@]}"; do
         fi
     fi
 done
+# Stop sudo cache refresh
+kill $SUDO_REFRESH_PID
 
 # Section 1: Install Core i3 Components and Dependencies
 run_script "install-i3-mint.sh"
@@ -197,6 +195,14 @@ for file in .bashrc bashrc-personal-sync/.bashrc-personal .fehbg .gtkrc-2.0.mine
         echo "Warning: $file not found in $LATEST_BACKUP. Skipping."
     fi
 done
+
+# Copy .local/share/applications
+if [ -d "$LATEST_BACKUP/applications" ]; then
+    mkdir -p "$HOME/.local/share/applications"
+    cp -rv "$LATEST_BACKUP/applications/"* "$HOME/.local/share/applications/"
+else
+    echo "Warning: applications directory not found in $LATEST_BACKUP. Skipping."
+fi
 
 # Copy .config subdirectories, excluding .git
 if [ -d "$LATEST_BACKUP/.config" ]; then
