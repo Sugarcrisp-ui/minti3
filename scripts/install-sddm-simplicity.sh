@@ -9,7 +9,7 @@ fi
 
 # Variables
 THEMES_DIR="$HOME/tmp/sddm-themes"
-OUTPUT_FILE="/home/brett/log-files/install-sddm-simplicity/install-sddm-simplicity-output.txt"
+OUTPUT_FILE="$USER_HOME/log-files/install-sddm-simplicity/install-sddm-simplicity-output.txt"
 
 # Redirect output to file
 mkdir -p ~/log-files/install-sddm-simplicity
