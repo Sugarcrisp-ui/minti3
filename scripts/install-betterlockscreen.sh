@@ -10,7 +10,7 @@ fi
 # Variables
 USER_HOME="$HOME"
 BETTERLOCKSCREEN_DIR="$USER_HOME/github-repos/betterlockscreen"
-OUTPUT_FILE="/home/brett/log-files/install-betterlockscreen/install-betterlockscreen-output.txt"
+OUTPUT_FILE="$USER_HOME/log-files/install-betterlockscreen/install-betterlockscreen-output.txt"
 
 # Redirect output to file
 mkdir -p ~/log-files/install-betterlockscreen
