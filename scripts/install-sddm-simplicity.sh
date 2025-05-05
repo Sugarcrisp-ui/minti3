@@ -28,10 +28,14 @@ packages=(
 for pkg in "${packages[@]}"; do
     if ! dpkg -l | grep -q " $pkg "; then
         echo "Installing $pkg..."
-        echo "sddm shared/default-x-display-manager select sddm" | sudo debconf-set-selections
-        echo "keyboard-configuration keyboard-configuration/layoutcode string us" | sudo debconf-set-selections
-        echo "keyboard-configuration keyboard-configuration/variantcode string" | sudo debconf-set-selections
-        sudo apt-get install -y "$pkg"
+        if [ "$pkg" = "sddm" ]; then
+            echo "sddm shared/default-x-display-manager select sddm" | sudo debconf-set-selections
+            echo "keyboard-configuration keyboard-configuration/layoutcode string us" | sudo debconf-set-selections
+            echo "keyboard-configuration keyboard-configuration/variantcode string" | sudo debconf-set-selections
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "$pkg"
+        else
+            sudo apt-get install -y "$pkg"
+        fi
         if [ $? -ne 0 ]; then
             echo "Warning: Failed to install $pkg. Continuing."
         fi
