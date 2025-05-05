@@ -52,6 +52,7 @@ packages=(
     libxkbcommon-dev
     libxkbcommon-x11-dev
     libjpeg-dev
+    libgif-dev
 )
 for pkg in "${packages[@]}"; do
     if ! dpkg -l | grep -q " $pkg "; then

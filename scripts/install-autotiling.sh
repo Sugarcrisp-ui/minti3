@@ -11,7 +11,7 @@ fi
 USER_HOME="$HOME"
 VENV_DIR="$USER_HOME/i3ipc-venv"
 AUTOTILING_DIR="$USER_HOME/autotiling"
-OUTPUT_FILE="/home/brett/log-files/install-autotiling/install-autotiling-output.txt"
+OUTPUT_FILE="$USER_HOME/log-files/install-autotiling/install-autotiling-output.txt"
 
 # Redirect output to file
 mkdir -p ~/log-files/install-autotiling
