@@ -12,7 +12,7 @@ SERVER_DOWNLOAD_URL="https://downloads.realvnc.com/download/file/vnc.files/VNC-S
 VIEWER_DOWNLOAD_URL="https://downloads.realvnc.com/download/file/viewer.files/VNC-Viewer-7.13.0-Linux-x64.deb"
 SERVER_DEB_FILE="$HOME/tmp/VNC-Server-7.13.0-Linux-x64.deb"
 VIEWER_DEB_FILE="$HOME/tmp/VNC-Viewer-7.13.0-Linux-x64.deb"
-OUTPUT_FILE="/home/brett/log-files/install-realvnc/install-realvnc-output.txt"
+OUTPUT_FILE="$USER_HOME/log-files/install-realvnc/install-realvnc-output.txt"
 
 # Redirect output to file
 mkdir -p ~/log-files/install-realvnc
