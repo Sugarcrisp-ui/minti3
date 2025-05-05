@@ -10,7 +10,7 @@ fi
 # Variables
 USER_HOME="$HOME"
 CRONTAB_BACKUP="$USER_HOME/crontab-backup-$(date +%F-%H%M%S).txt"
-OUTPUT_FILE="/home/brett/log-files/setup-cron-jobs/setup-cron-jobs-output.txt"
+OUTPUT_FILE="$USER_HOME/log-files/setup-cron-jobs/setup-cron-jobs-output.txt"
 
 # Redirect output to file
 mkdir -p ~/log-files/setup-cron-jobs
