@@ -10,7 +10,7 @@ fi
 # Variables
 USER_HOME="$HOME"
 DBUS_ADDRESS="unix:path=/run/user/$(id -u "$USER")/bus"
-OUTPUT_FILE="/home/brett/log-files/install-xfce-theme/install-xfce-theme-output.txt"
+OUTPUT_FILE="$USER_HOME/log-files/install-xfce-theme/install-xfce-theme-output.txt"
 
 # Redirect output to file
 mkdir -p ~/log-files/install-xfce-theme
