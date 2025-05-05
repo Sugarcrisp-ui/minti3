@@ -86,9 +86,12 @@ fi
 # Install Betterlockscreen
 echo "Installing Betterlockscreen..."
 cd "$BETTERLOCKSCREEN_DIR"
-sudo make install
-if [ $? -ne 0 ]; then
-    echo "Warning: Failed to install Betterlockscreen. Continuing."
+sudo make clean
+if sudo make install 2>/tmp/betterlockscreen-install-error.log; then
+    echo "Betterlockscreen installed successfully."
+else
+    echo "Warning: Failed to install Betterlockscreen. Error details in /tmp/betterlockscreen-install-error.log."
+    cat /tmp/betterlockscreen-install-error.log
 fi
 
 # Verify installation
