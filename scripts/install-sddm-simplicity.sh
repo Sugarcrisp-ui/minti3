@@ -11,12 +11,15 @@ fi
 USER=$(whoami)
 USER_HOME=$(eval echo ~$USER)
 THEMES_DIR="$HOME/tmp/sddm-themes"
-OUTPUT_FILE="$USER_HOME/log-files/install-sddm-simplicity/install-sddm-simplicity-output.txt"
+LOG_DIR="$USER_HOME/log-files/install-sddm-simplicity"
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OUTPUT_FILE="$LOG_DIR/install-sddm-simplicity-$TIMESTAMP.txt"
+LATEST_LOG="$LOG_DIR/install-sddm-simplicity-output.txt"
 
-# Redirect output to file
-mkdir -p ~/log-files/install-sddm-simplicity
-exec > >(tee -a "$OUTPUT_FILE") 2>&1
-echo "Logging output to $OUTPUT_FILE"
+# Redirect output to timestamped and latest log files
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$OUTPUT_FILE" "$LATEST_LOG") 2>&1
+echo "Logging output to $OUTPUT_FILE and $LATEST_LOG"
 
 # Check and install dependencies
 echo "Checking and installing dependencies..."
