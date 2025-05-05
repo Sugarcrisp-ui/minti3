@@ -16,7 +16,7 @@ PHYSICAL_IFACE=$(ip route | grep default | awk '{print $5}')
 GROK_DESKTOP_FILE="$HOME/.local/share/applications/grok.desktop"
 GROK_SCRIPT="$HOME/.bin-personal/grok-launch.sh"
 SUDOERS_FILE="/etc/sudoers.d/grok-namespace"
-OUTPUT_FILE="/home/brett/log-files/setup-grok-split-tunnel/setup-grok-split-tunnel-output.txt"
+OUTPUT_FILE="$USER_HOME/log-files/setup-grok-split-tunnel/setup-grok-split-tunnel-output.txt"
 
 # Redirect output to file
 mkdir -p ~/log-files/setup-grok-split-tunnel
