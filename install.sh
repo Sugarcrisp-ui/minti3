@@ -35,6 +35,10 @@ USER_CONFIGS_DIR="$GITHUB_REPOS_DIR/user-configs"
 SCRIPTS_DIR="$MINTI3_DIR/scripts"
 EXTERNAL_BACKUP_DIR="/media/brett/backup"
 
+# Start background sudo cache refresh every 5 minutes
+(while true; do sudo -v; sleep 300; done) &
+SUDO_REFRESH_PID=$!
+
 # Ensure minti3 is in ~/github-repos/
 if [ ! -d "$MINTI3_DIR" ]; then
     echo "minti3 not found in $GITHUB_REPOS_DIR. Checking for $USER_HOME/minti3..."
@@ -51,6 +55,9 @@ if [ ! -d "$MINTI3_DIR" ]; then
         exit 1
     fi
 fi
+
+# Stop sudo cache refresh
+kill $SUDO_REFRESH_PID
 
 # Function to run a script and check for errors
 run_script() {
