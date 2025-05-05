@@ -9,7 +9,7 @@ fi
 
 # Variables
 USER_HOME="$HOME"
-OUTPUT_FILE="/home/brett/log-files/install-i3-mint/install-i3-mint-output.txt"
+OUTPUT_FILE="$USER_HOME/log-files/install-i3-mint/install-i3-mint-output.txt"
 
 # Redirect output to file
 mkdir -p ~/log-files/install-i3-mint
