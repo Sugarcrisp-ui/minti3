@@ -12,12 +12,11 @@ USER_HOME=$(eval echo ~$USER)
 LOG_DIR="$USER_HOME/log-files/install-xfce-theme"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 OUTPUT_FILE="$LOG_DIR/install-xfce-theme-$TIMESTAMP.txt"
-LATEST_LOG="$LOG_DIR/install-xfce-theme-output.txt"
 
-# Redirect output to timestamped and latest log files
+# Redirect output to timestamped log file
 mkdir -p "$LOG_DIR"
-exec > >(tee -a "$OUTPUT_FILE" "$LATEST_LOG") 2>&1
-echo "Logging output to $OUTPUT_FILE and $LATEST_LOG"
+exec > >(tee -a "$OUTPUT_FILE") 2>&1
+echo "Logging output to $OUTPUT_FILE"
 
 # Check and install dependencies
 echo "Checking and installing dependencies..."
