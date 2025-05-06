@@ -37,20 +37,14 @@ for pkg in "${packages[@]}"; do
     fi
 done
 
-# Apply Arc-Darker theme
-echo "Applying Arc-Darker theme..."
+# Apply Arc-Darker GTK theme
+echo "Applying Arc-Darker GTK theme..."
 if command -v xfconf-query >/dev/null; then
     xfconf-query -c xsettings -p /Net/ThemeName -s "Arc-Darker" 2>/dev/null
     if [ $? -eq 0 ]; then
         echo "Set GTK theme to Arc-Darker."
     else
         echo "Warning: Failed to set GTK theme to Arc-Darker."
-    fi
-    xfconf-query -c xfwm4 -p /general/theme -s "Arc-Darker" 2>/dev/null
-    if [ $? -eq 0 ]; then
-        echo "Set window manager theme to Arc-Darker."
-    else
-        echo "Warning: Failed to set window manager theme to Arc-Darker."
     fi
 else
     echo "Warning: xfconf-query not found. Skipping theme application."
@@ -62,11 +56,6 @@ if xfconf-query -c xsettings -p /Net/ThemeName 2>/dev/null | grep -q "Arc-Darker
     echo "Arc-Darker GTK theme applied successfully."
 else
     echo "Warning: Arc-Darker GTK theme not applied."
-fi
-if xfconf-query -c xfwm4 -p /general/theme 2>/dev/null | grep -q "Arc-Darker"; then
-    echo "Arc-Darker window manager theme applied successfully."
-else
-    echo "Warning: Arc-Darker window manager theme not applied."
 fi
 
 echo "XFCE theme installation complete."
