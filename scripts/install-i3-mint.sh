@@ -35,28 +35,22 @@ packages=(
     libxcb-xinerama0-dev
     libxcb-util-dev
     libxcb-icccm4-dev
-    libiw-dev
     copyq
     blueman
     pasystray
 )
 unavailable_packages=(
-    libiw-dev  # May be replaced by wireless-tools or libiw30 in some distros
+    libiw-dev
 )
-
 for pkg in "${unavailable_packages[@]}"; do
     echo "Warning: Package $pkg may not be available in Linux Mint repositories. Skipping."
 done
-
 for pkg in "${packages[@]}"; do
-    if [[ " ${unavailable_packages[*]} " =~ " $pkg " ]]; then
-        continue
-    fi
     if ! dpkg -l | grep -q " $pkg "; then
         echo "Installing $pkg..."
         sudo apt-get install -y "$pkg"
         if [ $? -ne 0 ]; then
-            echo "Warning: Failed to install $pkg. Continuing."
+            echo "Error: Failed to install $pkg. Continuing."
         fi
     else
         echo "$pkg is already installed."
@@ -65,32 +59,34 @@ done
 
 # Create configuration directories
 echo "Creating configuration directories..."
-mkdir -p "$USER_HOME/.config/i3" "$USER_HOME/.config/rofi" "$USER_HOME/.config/dunst" "$USER_HOME/.bin-personal"
-echo "Configuration directories created."
+mkdir -p "$USER_HOME/.config/i3" "$USER_HOME/.config/polybar" "$USER_HOME/.config/rofi" "$USER_HOME/.config/dunst"
+if [ $? -eq 0 ]; then
+    echo "Configuration directories created."
+else
+    echo "Warning: Failed to create configuration directories."
+fi
 
 # Verify installations
 echo "Verifying installations..."
-verified_commands=(
-    i3
-    polybar
-    rofi
-    dunst
-)
-for cmd in "${verified_commands[@]}"; do
-    if command -v "$cmd" >/dev/null 2>&1; then
-        if [ "$cmd" = "rofi" ]; then
-            echo "$cmd is installed: $(rofi --version > /dev/null 2>&1 && echo 'version check passed')"
-        else
-            echo "$cmd is installed: $($cmd --version 2>&1 | head -n 1)"
-        fi
-    else
-        echo "Warning: $cmd is not installed."
-    fi
-done
-
-# Check for Docker environment
-if [ -f "/proc/1/cgroup" ] && grep -qE "docker|containerd|kubepods|libpod|/docker/|/.*/docker/|/.*/containerd/" /proc/1/cgroup || [ -f "/.dockerenv" ]; then
-    echo "Warning: Running in a containerized environment (Docker). Some packages (e.g., blueman, pasystray) may not function fully."
+if command -v i3 >/dev/null; then
+    echo "i3 is installed: $(i3 --version)"
+else
+    echo "Warning: i3 is not installed."
+fi
+if command -v polybar >/dev/null; then
+    echo "polybar is installed: $(polybar --version)"
+else
+    echo "Warning: polybar is not installed."
+fi
+if command -v rofi >/dev/null; then
+    echo "rofi is installed: $(rofi -v)"
+else
+    echo "Warning: rofi is not installed."
+fi
+if command -v dunst >/dev/null; then
+    echo "dunst is installed: $(dunst -v)"
+else
+    echo "Warning: dunst is not installed."
 fi
 
 echo "i3-mint installation complete."
