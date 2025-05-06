@@ -14,12 +14,11 @@ I3LOCK_COLOR_DIR="$GITHUB_REPOS_DIR/i3lock-color"
 LOG_DIR="$USER_HOME/log-files/install-i3lock-color"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 OUTPUT_FILE="$LOG_DIR/install-i3lock-color-$TIMESTAMP.txt"
-LATEST_LOG="$LOG_DIR/install-i3lock-color-output.txt"
 
-# Redirect output to file
+# Redirect output to timestamped log file
 mkdir -p "$LOG_DIR"
-exec > >(tee -a "$OUTPUT_FILE" "$LATEST_LOG") 2>&1
-echo "Logging output to $OUTPUT_FILE and $LATEST_LOG"
+exec > >(tee -a "$OUTPUT_FILE") 2>&1
+echo "Logging output to $OUTPUT_FILE"
 
 # Check for git
 echo "Checking for git..."
