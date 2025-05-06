@@ -17,15 +17,15 @@ PHYSICAL_IFACE=$(ip route | grep default | awk '{print $5}')
 GROK_DESKTOP_FILE="$HOME/.local/share/applications/grok.desktop"
 GROK_SCRIPT="$HOME/.bin-personal/grok-launch.sh"
 SUDOERS_FILE="/etc/sudoers.d/grok-namespace"
+USER_HOME=$(eval echo ~$USER)
 LOG_DIR="$USER_HOME/log-files/setup-grok-split-tunnel"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 OUTPUT_FILE="$LOG_DIR/setup-grok-split-tunnel-$TIMESTAMP.txt"
-LATEST_LOG="$LOG_DIR/setup-grok-split-tunnel-output.txt"
 
-# Redirect output to file
+# Redirect output to timestamped log file
 mkdir -p "$LOG_DIR"
-exec > >(tee -a "$OUTPUT_FILE" "$LATEST_LOG") 2>&1
-echo "Logging output to $OUTPUT_FILE and $LATEST_LOG"
+exec > >(tee -a "$OUTPUT_FILE") 2>&1
+echo "Logging output to $OUTPUT_FILE"
 
 # Validate detected values
 if [ -z "$GATEWAY_IP" ] || [ -z "$PHYSICAL_IFACE" ]; then
