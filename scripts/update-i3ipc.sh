@@ -3,13 +3,21 @@
 # Script to update i3ipc in ~/i3ipc-venv/ on Linux Mint
 
 # Variables
-VENV_DIR="$HOME/i3ipc-venv"
+USER_HOME=$(eval echo ~$USER)
+VENV_DIR="$USER_HOME/i3ipc-venv"
 PIP="$VENV_DIR/bin/pip"
-LOG_FILE="$USER_HOME/minti3/Personal/i3ipc-update.log"
+LOG_DIR="$USER_HOME/log-files/update-i3ipc"
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OUTPUT_FILE="$LOG_DIR/update-i3ipc-$TIMESTAMP.txt"
+
+# Redirect output to timestamped log file
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$OUTPUT_FILE") 2>&1
+echo "Logging output to $OUTPUT_FILE"
 
 # Check if virtual environment exists
 if [ ! -d "$VENV_DIR" ]; then
-    echo "Error: Virtual environment $VENV_DIR not found" >> "$LOG_FILE"
+    echo "Error: Virtual environment $VENV_DIR not found"
     exit 1
 fi
 
@@ -17,19 +25,23 @@ fi
 source "$VENV_DIR/bin/activate"
 
 # Update pip and i3ipc
-echo "Updating i3ipc $(date)" >> "$LOG_FILE"
-$PIP install --upgrade pip >> "$LOG_FILE" 2>&1
-$PIP install --upgrade i3ipc >> "$LOG_FILE" 2>&1
-
-# Check if update was successful
+echo "Updating i3ipc $(date)"
+$PIP install --upgrade pip
 if [ $? -eq 0 ]; then
-    echo "i3ipc updated successfully" >> "$LOG_FILE"
+    echo "pip updated successfully"
 else
-    echo "Error: Failed to update i3ipc" >> "$LOG_FILE"
+    echo "Error: Failed to update pip"
+    exit 1
+fi
+$PIP install --upgrade i3ipc
+if [ $? -eq 0 ]; then
+    echo "i3ipc updated successfully"
+else
+    echo "Error: Failed to update i3ipc"
     exit 1
 fi
 
 # Deactivate virtual environment
 deactivate
 
-echo "i3ipc update complete" >> "$LOG_FILE"
+echo "i3ipc update complete"
