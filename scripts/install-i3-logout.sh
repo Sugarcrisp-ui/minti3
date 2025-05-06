@@ -126,7 +126,8 @@ fi
 echo "Installing themes..."
 sudo mkdir -p /usr/share/i3-logout-themes
 if [ -d "$I3_LOGOUT_DIR/themes" ]; then
-    if sudo cp -r "$I3_LOGOUT_DIR/themes/"* /usr/share/i3-logout-themes/ 2>/tmp/theme-copy-error.log; then
+    sudo mkdir -p /usr/share/i3-logout-themes/themes && sudo cp -r "$I3_LOGOUT_DIR/themes/"* /usr/share/i3-logout-themes/themes/ 2>/tmp/theme-copy-error.log
+    if [ $? -eq 0 ]; then
         echo "Themes copied successfully."
     else
         echo "Warning: Failed to copy themes. Error details in /tmp/theme-copy-error.log."
@@ -134,6 +135,7 @@ if [ -d "$I3_LOGOUT_DIR/themes" ]; then
     fi
     if sudo cp "$I3_LOGOUT_DIR"/*.svg /usr/share/i3-logout-themes/ 2>/tmp/svg-copy-error.log; then
         echo "SVG files copied successfully."
+        sudo chown -R root:root /usr/share/i3-logout-themes/
     else
         echo "Note: No SVG files found in $I3_LOGOUT_DIR root or failed to copy. Details in /tmp/svg-copy-error.log."
         cat /tmp/svg-copy-error.log
