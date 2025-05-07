@@ -49,19 +49,19 @@ if [ ! -d "$SCRIPTS_DIR" ]; then
 fi
 
 # Ensure external drive is mounted
-if [ -f "$SCRIPTS_DIR/setup-external-mount.sh" ]; then
-    echo "Running setup-external-mount.sh..."
-    sudo bash "$SCRIPTS_DIR/setup-external-mount.sh"
-    if [ $? -eq 0 ]; then
-        echo "setup-external-mount.sh completed successfully."
-    else
-        echo "Error: setup-external-mount.sh failed. Exiting."
-        exit 1
-    fi
-else
-    echo "Error: setup-external-mount.sh not found in $SCRIPTS_DIR. Exiting."
-    exit 1
-fi
+#if [ -f "$SCRIPTS_DIR/setup-external-mount.sh" ]; then
+#    echo "Running setup-external-mount.sh..."
+#    sudo bash "$SCRIPTS_DIR/setup-external-mount.sh"
+#    if [ $? -eq 0 ]; then
+#        echo "setup-external-mount.sh completed successfully."
+#    else
+#        echo "Error: setup-external-mount.sh failed. Exiting."
+#        exit 1
+#    fi
+#else
+#    echo "Error: setup-external-mount.sh not found in $SCRIPTS_DIR. Exiting."
+#    exit 1
+#fi
 
 # Check for config directory
 if [ ! -d "$CONFIG_SRC" ]; then
