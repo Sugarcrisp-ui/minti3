@@ -69,12 +69,24 @@ packages=(
 )
 for pkg in "${packages[@]}"; do
     if [ "$pkg" = "brave-browser" ]; then
-                sudo apt-get install -y apt-transport-https curl
-                sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-                echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
-                sudo apt-get update
-                sudo apt-get install -y brave-browser
-            fi
+        echo "Setting up Brave Browser repository..."
+        sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to download Brave Browser keyring. Exiting."
+            exit 1
+        fi
+        echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to set up Brave Browser repository. Exiting."
+            exit 1
+        fi
+        sudo apt-get update
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to update apt after adding Brave repository. Exiting."
+            exit 1
+        fi
+        sudo apt-get install -y brave-browser
+    fi
             
         elif [ "$pkg" = "warp-terminal" ]; then
             sudo apt-get install -y wget gpg
