@@ -70,20 +70,19 @@ done
 
 # Clone or update i3lock-color repository
 echo "Cloning or updating i3lock-color repository..."
-if [ -d "$I3LOCK_COLOR_DIR/.git" ]; then
+if [ -d "$I3LOCK_COLOR_DIR" ]; then
     echo "i3lock-color repository exists at $I3LOCK_COLOR_DIR, updating..."
     cd "$I3LOCK_COLOR_DIR"
     git pull
-    if [ $? -ne 0 ]; then
-        echo "Warning: Failed to update i3lock-color repository. Continuing with existing version."
-    fi
 else
     echo "Cloning i3lock-color repository..."
-    git clone https://github.com/Raymo111/i3lock-color.git "$I3LOCK_COLOR_DIR"
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to clone i3lock-color repository. Exiting."
-        exit 1
-    fi
+    git clone https://github.com/RaymondLi123/i3lock-color.git "$I3LOCK_COLOR_DIR"
+fi
+# Fix ownership to current user
+sudo chown -R $USER:$USER "$I3LOCK_COLOR_DIR"
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to fix ownership of $I3LOCK_COLOR_DIR. Exiting."
+    exit 1
 fi
 
 # Build and install i3lock-color
