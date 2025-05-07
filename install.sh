@@ -16,7 +16,6 @@ LOG_DIR="$USER_HOME/log-files/install"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 OUTPUT_FILE="$LOG_DIR/install-$TIMESTAMP.txt"
 SCRIPTS_DIR="$GITHUB_REPOS_DIR/minti3/scripts"
-#CONFIG_SRC="/media/brett/backup/user-configs/backup.latest"
 CONFIG_SRC="$USER_HOME/github-repos/backup.latest"
 
 # Redirect output to timestamped log file
@@ -30,16 +29,24 @@ if [ ! -d "$GITHUB_REPOS_DIR" ]; then
     mkdir -p "$GITHUB_REPOS_DIR"
 fi
 
-# Move ~/minti3 to ~/github-repos/minti3 if it exists
-if [ -d "$USER_HOME/minti3" ]; then
-    echo "Moving $USER_HOME/minti3 to $GITHUB_REPOS_DIR/minti3..."
-    mv "$USER_HOME/minti3" "$GITHUB_REPOS_DIR/minti3"
+# Clone minti3 if not already present
+if [ ! -d "$GITHUB_REPOS_DIR/minti3" ]; then
+    echo "Cloning minti3 to $GITHUB_REPOS_DIR/minti3..."
+    cd "$GITHUB_REPOS_DIR"
+    git clone https://github.com/Sugarcrisp-ui/minti3.git
     if [ $? -eq 0 ]; then
-        echo "Moved minti3 successfully."
+        echo "Cloned minti3 successfully."
     else
-        echo "Error: Failed to move minti3. Exiting."
+        echo "Error: Failed to clone minti3. Exiting."
         exit 1
     fi
+fi
+
+# Change to minti3 directory
+cd "$GITHUB_REPOS_DIR/minti3"
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to change to $GITHUB_REPOS_DIR/minti3. Exiting."
+    exit 1
 fi
 
 # Check for scripts directory
@@ -48,24 +55,9 @@ if [ ! -d "$SCRIPTS_DIR" ]; then
     exit 1
 fi
 
-# Ensure external drive is mounted
-#if [ -f "$SCRIPTS_DIR/setup-external-mount.sh" ]; then
-#    echo "Running setup-external-mount.sh..."
-#    sudo bash "$SCRIPTS_DIR/setup-external-mount.sh"
-#    if [ $? -eq 0 ]; then
-#        echo "setup-external-mount.sh completed successfully."
-#    else
-#        echo "Error: setup-external-mount.sh failed. Exiting."
-#        exit 1
-#    fi
-#else
-#    echo "Error: setup-external-mount.sh not found in $SCRIPTS_DIR. Exiting."
-#    exit 1
-#fi
-
 # Check for config directory
 if [ ! -d "$CONFIG_SRC" ]; then
-    echo "Error: User configs directory $CONFIG_SRC not found. Ensure external drive is mounted correctly. Exiting."
+    echo "Error: User configs directory $CONFIG_SRC not found. Exiting."
     exit 1
 fi
 
