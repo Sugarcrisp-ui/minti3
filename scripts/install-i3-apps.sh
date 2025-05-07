@@ -68,14 +68,14 @@ packages=(
     zim
 )
 for pkg in "${packages[@]}"; do
-    if ! dpkg -l | grep -q " $pkg "; then
-        echo "Installing $pkg..."
-        if [ "$pkg" = "brave-browser" ]; then
-            sudo apt-get install -y apt-transport-https curl
-            sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-            echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
-            sudo apt-get update
-            sudo apt-get install -y brave-browser
+    if [ "$pkg" = "brave-browser" ]; then
+                sudo apt-get install -y apt-transport-https curl
+                sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+                echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+                sudo apt-get update
+                sudo apt-get install -y brave-browser
+            fi
+            
         elif [ "$pkg" = "warp-terminal" ]; then
             sudo apt-get install -y wget gpg
             wget -qO- https://releases.warp.dev/linux/keys/warp.asc | gpg --dearmor > warpdotdev.gpg
