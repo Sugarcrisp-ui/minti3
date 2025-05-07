@@ -46,8 +46,6 @@ packages=(
     network-manager-openvpn-gnome
     arandr
     audacity
-    bat
-    brave-browser
     fonts-liberation-sans-narrow
     fonts-linuxlibertine
     fonts-noto-extra
