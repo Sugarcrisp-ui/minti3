@@ -35,6 +35,7 @@ fi
 # Check and install dependencies
 echo "Checking and installing dependencies..."
 packages=(
+	brave-browser
     feh
     geany
     qbittorrent
