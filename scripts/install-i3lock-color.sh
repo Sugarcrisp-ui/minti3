@@ -76,7 +76,7 @@ if [ -d "$I3LOCK_COLOR_DIR" ]; then
     git pull
 else
     echo "Cloning i3lock-color repository..."
-    git clone https://github.com/RaymondLi123/i3lock-color.git "$I3LOCK_COLOR_DIR"
+    git clone https://github.com/Raymo111/i3lock-color.git "$I3LOCK_COLOR_DIR"
 fi
 # Fix ownership to current user
 sudo chown -R $USER:$USER "$I3LOCK_COLOR_DIR"
