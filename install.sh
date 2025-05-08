@@ -94,8 +94,25 @@ done
 # Copy user configuration files after scripts
 echo "Copying user configuration files from $CONFIG_SRC..."
 config_mappings=(
-    ".config/polybar:$USER_HOME/.config/polybar"
+    ".bin-personal:$USER_HOME/.bin-personal"
+    ".config:$USER_HOME/.config"
+    ".fonts:$USER_HOME/.fonts"
+    ".local/share/applications:$USER_HOME/.local/share/applications"
+    ".mozilla:$USER_HOME/.mozilla"
+    ".ssh:$USER_HOME/.ssh"
+    ".config/brave:$USER_HOME/.config/brave"
+    "Pictures:$USER_HOME/Pictures"
+    "cron:$USER_HOME/cron"
     "sddm.conf:/etc/sddm.conf"
+    "xorg.conf.d:/etc/X11/xorg.conf.d"
+    "Notebooks:$USER_HOME/Notebooks"
+    "Videos:$USER_HOME/Videos"
+    ".fehbg:$USER_HOME/.fehbg"
+    ".bashrc:$USER_HOME/.bashrc"
+    ".bashrc-personal:$USER_HOME/.bashrc-personal"
+    "bashrc-personal-sync:$USER_HOME/bashrc-personal-sync"
+    ".dircolors:$USER_HOME/.dircolors"
+    ".gtkrc-2.0.mine:$USER_HOME/.gtkrc-2.0.mine"
 )
 for mapping in "${config_mappings[@]}"; do
     src="${mapping%%:*}"
