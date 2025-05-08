@@ -12,12 +12,11 @@ USER_HOME=$(eval echo ~$USER)
 LOG_DIR="$USER_HOME/log-files/install-i3-apps"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 OUTPUT_FILE="$LOG_DIR/install-i3-apps-$TIMESTAMP.txt"
-LATEST_LOG="$LOG_DIR/install-i3-apps-output.txt"
 
-# Redirect output to timestamped and latest log files
+# Redirect output to timestamped log file
 mkdir -p "$LOG_DIR"
-exec > >(tee -a "$OUTPUT_FILE" "$LATEST_LOG") 2>&1
-echo "Logging output to $OUTPUT_FILE and $LATEST_LOG"
+exec > >(tee -a "$OUTPUT_FILE") 2>&1
+echo "Logging output to $OUTPUT_FILE"
 
 # Preconfigure sddm as default display manager
 echo "Preconfiguring sddm as default display manager..."
@@ -35,7 +34,6 @@ fi
 # Check and install dependencies
 echo "Checking and installing dependencies..."
 packages=(
-	brave-browser
     feh
     geany
     qbittorrent
@@ -47,6 +45,7 @@ packages=(
     network-manager-openvpn-gnome
     arandr
     audacity
+    brave-browser
     fonts-liberation-sans-narrow
     fonts-linuxlibertine
     fonts-noto-extra
@@ -67,26 +66,25 @@ packages=(
     zim
 )
 for pkg in "${packages[@]}"; do
-    if [ "$pkg" = "brave-browser" ]; then
-        echo "Setting up Brave Browser repository..."
-        sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-        if [ $? -ne 0 ]; then
-            echo "Error: Failed to download Brave Browser keyring. Exiting."
-            exit 1
-        fi
-        echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
-        if [ $? -ne 0 ]; then
-            echo "Error: Failed to set up Brave Browser repository. Exiting."
-            exit 1
-        fi
-        sudo apt-get update
-        if [ $? -ne 0 ]; then
-            echo "Error: Failed to update apt after adding Brave repository. Exiting."
-            exit 1
-        fi
-        sudo apt-get install -y brave-browser
-    fi
-            
+    if ! dpkg -l | grep -q " $pkg "; then
+        if [ "$pkg" = "brave-browser" ]; then
+            echo "Setting up Brave Browser repository..."
+            sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to download Brave Browser keyring. Continuing."
+                continue
+            fi
+            echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to set up Brave Browser repository. Continuing."
+                continue
+            fi
+            sudo apt-get update
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to update apt after adding Brave repository. Continuing."
+                continue
+            fi
+            sudo apt-get install -y brave-browser
         elif [ "$pkg" = "warp-terminal" ]; then
             sudo apt-get install -y wget gpg
             wget -qO- https://releases.warp.dev/linux/keys/warp.asc | gpg --dearmor > warpdotdev.gpg
@@ -103,6 +101,8 @@ for pkg in "${packages[@]}"; do
         fi
         if [ $? -ne 0 ]; then
             echo "Error: Failed to install $pkg. Continuing."
+        else
+            echo "$pkg installed successfully."
         fi
     else
         echo "$pkg is already installed."
