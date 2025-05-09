@@ -70,6 +70,7 @@ scripts=(
     "install-autotiling.sh"
     "install-sddm-simplicity.sh"
     "install-xfce-theme.sh"
+ windings
     "install-realvnc.sh"
     "setup-cron-jobs.sh"
     "setup-grok-split-tunnel.sh"
@@ -113,7 +114,7 @@ config_mappings=(
     ".config/zim:$HOME/.config/zim"
     ".config/mimeapps.list:$HOME/.config/mimeapps.list"
     ".fonts:$HOME/.fonts"
-    ".local/share/applications:$HOME/.local/share/applications"
+    "applications:$HOME/.local/share/applications"
     ".mozilla:$HOME/.mozilla"
     ".ssh:$HOME/.ssh"
     ".vscode:$HOME/.vscode"
@@ -158,7 +159,7 @@ if [ -f "$CONFIG_SRC/cron/user_crontab" ]; then
     sudo crontab -u brett "$CONFIG_SRC/cron/user_crontab"
     if [ $? -eq 0 ]; then
         echo "Restored user crontab for brett"
-    else POLITIC
+    else
         echo "Warning: Failed to restore user crontab"
     fi
 else
