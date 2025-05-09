@@ -34,18 +34,10 @@ fi
 # Check and install dependencies
 echo "Checking and installing dependencies..."
 packages=(
-    feh
-    geany
-    qbittorrent
-    thunar
-    xfce4-settings
-    xfce4-power-manager
-    xfce4-panel
-    network-manager-gnome
-    network-manager-openvpn-gnome
     arandr
     audacity
     brave-browser
+	feh
     fonts-liberation-sans-narrow
     fonts-linuxlibertine
     fonts-noto-extra
@@ -53,10 +45,19 @@ packages=(
     fonts-sil-gentium
     fonts-sil-gentium-basic
     geoclue-2.0
+	geany
+    insync
+	network-manager-gnome
+	network-manager-openvpn-gnome
+	qbittorrent
+	thunar
     vlc
     warp-terminal
     whoopsie
     xdotool
+    xfce4-settings
+    xfce4-power-manager
+    xfce4-panel
     yaru-theme-gnome-shell
     zim
 )
@@ -88,6 +89,24 @@ for pkg in "${packages[@]}"; do
             rm warpdotdev.gpg
             sudo apt-get update
             sudo apt-get install -y warp-terminal
+        elif [ "$pkg" = "insync" ]; then
+            echo "Setting up Insync repository..."
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ACCAF35C
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to add Insync key. Continuing."
+                continue
+            fi
+            echo "deb http://apt.insync.io/mint uma main" | sudo tee /etc/apt/sources.list.d/insync.list
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to set up Insync repository. Continuing."
+                continue
+            fi
+            sudo apt-get update
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to update apt after adding Insync repository. Continuing."
+                continue
+            fi
+            sudo apt-get install -y insync
         elif [ "$pkg" = "gdm3" ]; then
             echo "gdm3 shared/default-x-display-manager select sddm" | sudo debconf-set-selections
             sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "$pkg"
