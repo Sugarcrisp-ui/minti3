@@ -100,7 +100,7 @@ config_mappings=(
     ".config/alacritty:$HOME/.config/alacritty"
     ".config/brave-profiles:$HOME/.config/brave-profiles"
     ".config/dunst:$HOME/.config/dunst"
-    ".config/gtk-3.0:$HOME/.config/gtk-3.0"
+    ".config/gtk-.0:$HOME/.config/gtk-3.0"
     ".config/i3:$HOME/.config/i3"
     ".config/micro:$HOME/.config/micro"
     ".config/polybar:$HOME/.config/polybar"
@@ -126,7 +126,7 @@ config_mappings=(
     ".bashrc-personal:$HOME/.bashrc-personal"
     ".dircolors:$HOME/.dircolors"
     ".fehbg:$HOME/.fehbg"
-    ".gtkrc-2.0:$HOME/.gtkrc-2.0"
+    ".gtkrc-2.0.mine:$HOME/.gtkrc-2.0.mine"
     "xorg.conf.d/40-libinput.conf:/etc/X11/xorg.conf.d/40-libinput.conf"
 )
 
