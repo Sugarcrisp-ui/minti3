@@ -140,6 +140,7 @@ config_mappings=(
     ".dircolors:$HOME/.dircolors"
     ".fehbg:$HOME/.fehbg"
     ".gtkrc-2.0:$HOME/.gtkrc-2.0"
+    "sddm.conf:/etc/sddm.conf"
     "xorg.conf.d/40-libinput.conf:/etc/X11/xorg.conf.d/40-libinput.conf"
 )
 
