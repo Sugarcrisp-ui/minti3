@@ -53,10 +53,6 @@ packages=(
     fonts-sil-gentium
     fonts-sil-gentium-basic
     geoclue-2.0
-    ubuntu-docs
-    ubuntu-session
-    ubuntu-wallpapers
-    ubuntu-wallpapers-noble
     vlc
     warp-terminal
     whoopsie
