@@ -52,7 +52,6 @@ packages=(
     fonts-noto-ui-core
     fonts-sil-gentium
     fonts-sil-gentium-basic
-    gdm3
     geoclue-2.0
     ubuntu-docs
     ubuntu-session
