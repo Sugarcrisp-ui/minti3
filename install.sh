@@ -70,7 +70,6 @@ scripts=(
     "install-autotiling.sh"
     "install-sddm-simplicity.sh"
     "install-xfce-theme.sh"
- windings
     "install-realvnc.sh"
     "setup-cron-jobs.sh"
     "setup-grok-split-tunnel.sh"
@@ -100,7 +99,7 @@ config_mappings=(
     ".config/alacritty:$HOME/.config/alacritty"
     ".config/brave-profiles:$HOME/.config/brave-profiles"
     ".config/dunst:$HOME/.config/dunst"
-    ".config/gtk-.0:$HOME/.config/gtk-3.0"
+    ".config/gtk-3.0:$HOME/.config/gtk-3.0"
     ".config/i3:$HOME/.config/i3"
     ".config/micro:$HOME/.config/micro"
     ".config/polybar:$HOME/.config/polybar"
@@ -126,7 +125,7 @@ config_mappings=(
     ".bashrc-personal:$HOME/.bashrc-personal"
     ".dircolors:$HOME/.dircolors"
     ".fehbg:$HOME/.fehbg"
-    ".gtkrc-2.0.mine:$HOME/.gtkrc-2.0.mine"
+    ".gtkrc-2.0:$HOME/.gtkrc-2.0"
     "xorg.conf.d/40-libinput.conf:/etc/X11/xorg.conf.d/40-libinput.conf"
 )
 
@@ -138,11 +137,13 @@ for mapping in "${config_mappings[@]}"; do
         mkdir -p "$(dirname "$dest")"
         # Use cp -P for .bashrc-personal to preserve symlink
         if [[ "$src" == ".bashrc-personal" ]]; then
-            cp -P "$src_path" "$dest"
-        elif [[ "$dest" == /etc/* ]]; then
-            sudo cp -r "$src_path" "$dest"
+            cp -Pf "$src_path" "$dest"
+        # Use cp -rf for directories to copy contents and overwrite
+        elif [ -d "$src_path" ] && [ ! -L "$src_path" ]; then
+            cp -rf "$src_path/." "$dest"
+        # Use cp -f for files to overwrite
         else
-            cp -r "$src_path" "$dest"
+            cp -f "$src_path" "$dest"
         fi
         if [ $? -eq 0 ]; then
             echo "Copied $src to $dest"
