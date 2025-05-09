@@ -10,13 +10,13 @@ if [ "$USER" = "root" ]; then
 fi
 
 # Variables
-USER_HOME=$(eval echo ~$USER)
-GITHUB_REPOS_DIR="$USER_HOME/github-repos"
-LOG_DIR="$USER_HOME/log-files/install"
+HOME="/home/brett"
+GITHUB_REPOS_DIR="$HOME/github-repos"
+LOG_DIR="$HOME/log-files/install"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 OUTPUT_FILE="$LOG_DIR/install-$TIMESTAMP.txt"
 SCRIPTS_DIR="$GITHUB_REPOS_DIR/minti3/scripts"
-CONFIG_SRC="$USER_HOME/github-repos/user-configs/backup.latest"
+CONFIG_SRC="/media/brett/backup/user-configs/backup.latest"
 
 # Redirect output to timestamped log file
 mkdir -p "$LOG_DIR"
@@ -91,38 +91,41 @@ for script in "${scripts[@]}"; do
     fi
 done
 
-# Copy user configuration files after scripts
+# Copy user configuration files from backup.latest
 echo "Copying user configuration files from $CONFIG_SRC..."
+
+# Configuration mappings (source:destination)
 config_mappings=(
-    ".config/alacritty:$USER_HOME/.config/alacritty"
-    ".config/brave-profiles:$USER_HOME/.config/brave-profiles"
-    ".config/dunst:$USER_HOME/.config/dunst"
-    ".config/gtk-3.0:$USER_HOME/.config/gtk-3.0"
-    ".config/i3:$USER_HOME/.config/i3"
-    ".config/micro:$USER_HOME/.config/micro"
-    ".config/polybar:$USER_HOME/.config/polybar"
-    ".config/qBittorrent:$USER_HOME/.config/qBittorrent"
-    ".config/rofi:$USER_HOME/.config/rofi"
-    ".config/solaar:$USER_HOME/.config/solaar"
-    ".config/sublime-text:$USER_HOME/.config/sublime-text"
-    ".config/systemd:$USER_HOME/.config/systemd"
-    ".config/Thunar:$USER_HOME/.config/Thunar"
-    ".config/xfce4:$USER_HOME/.config/xfce4"
-    ".config/zim:$USER_HOME/.config/zim"
-    ".config/mimeapps.list:$USER_HOME/.config/mimeapps.list"
-    ".fonts:$USER_HOME/.fonts"
-    ".local/share/applications:$USER_HOME/.local/share/applications"
-    ".mozilla:$USER_HOME/.mozilla"
-    ".ssh:$USER_HOME/.ssh"
-    ".vscode:$USER_HOME/.vscode"
-    "bashrc-personal-sync:$USER_HOME/bashrc-personal-sync"
-    "Notebooks:$USER_HOME/Notebooks"
-    "protonvpn-server-configs:$USER_HOME/protonvpn-server-configs"
-    "syncthing-shared:$USER_HOME/syncthing-shared"
-    ".bashrc:$USER_HOME/.bashrc"
-    ".dircolors:$USER_HOME/.dircolors"
-    ".fehbg:$USER_HOME/.fehbg"
-    ".gtkrc-2.0:$USER_HOME/.gtkrc-2.0"
+    ".config/alacritty:$HOME/.config/alacritty"
+    ".config/brave-profiles:$HOME/.config/brave-profiles"
+    ".config/dunst:$HOME/.config/dunst"
+    ".config/gtk-3.0:$HOME/.config/gtk-3.0"
+    ".config/i3:$HOME/.config/i3"
+    ".config/micro:$HOME/.config/micro"
+    ".config/polybar:$HOME/.config/polybar"
+    ".config/qBittorrent:$HOME/.config/qBittorrent"
+    ".config/rofi:$HOME/.config/rofi"
+    ".config/solaar:$HOME/.config/solaar"
+    ".config/sublime-text:$HOME/.config/sublime-text"
+    ".config/systemd:$HOME/.config/systemd"
+    ".config/Thunar:$HOME/.config/Thunar"
+    ".config/xfce4:$HOME/.config/xfce4"
+    ".config/zim:$HOME/.config/zim"
+    ".config/mimeapps.list:$HOME/.config/mimeapps.list"
+    ".fonts:$HOME/.fonts"
+    ".local/share/applications:$HOME/.local/share/applications"
+    ".mozilla:$HOME/.mozilla"
+    ".ssh:$HOME/.ssh"
+    ".vscode:$HOME/.vscode"
+    "bashrc-personal-sync:$HOME/bashrc-personal-sync"
+    "Notebooks:$HOME/Notebooks"
+    "protonvpn-server-configs:$HOME/protonvpn-server-configs"
+    "syncthing-shared:$HOME/syncthing-shared"
+    ".bashrc:$HOME/.bashrc"
+    ".bashrc-personal:$HOME/.bashrc-personal"
+    ".dircolors:$HOME/.dircolors"
+    ".fehbg:$HOME/.fehbg"
+    ".gtkrc-2.0:$HOME/.gtkrc-2.0"
     "xorg.conf.d/40-libinput.conf:/etc/X11/xorg.conf.d/40-libinput.conf"
 )
 
@@ -130,9 +133,12 @@ for mapping in "${config_mappings[@]}"; do
     src="${mapping%%:*}"
     dest="${mapping##*:}"
     src_path="$CONFIG_SRC/$src"
-    if [ -e "$src_path" ]; then
+    if [ -e "$src_path" ] || [ -L "$src_path" ]; then
         mkdir -p "$(dirname "$dest")"
-        if [[ "$dest" == /etc/* ]]; then
+        # Use cp -P for .bashrc-personal to preserve symlink
+        if [[ "$src" == ".bashrc-personal" ]]; then
+            cp -P "$src_path" "$dest"
+        elif [[ "$dest" == /etc/* ]]; then
             sudo cp -r "$src_path" "$dest"
         else
             cp -r "$src_path" "$dest"
@@ -147,31 +153,20 @@ for mapping in "${config_mappings[@]}"; do
     fi
 done
 
-# Create .bashrc-personal symlink
-if [ -e "$CONFIG_SRC/bashrc-personal-sync/.bashrc-personal" ]; then
-    ln -sf "$USER_HOME/bashrc-personal-sync/.bashrc-personal" "$USER_HOME/.bashrc-personal"
-    if [ $? -eq 0 ]; then
-        echo "Created symlink $USER_HOME/.bashrc-personal -> $USER_HOME/bashrc-personal-sync/.bashrc-personal"
-    else
-        echo "Warning: Failed to create .bashrc-personal symlink"
-    fi
-else
-    echo "Warning: $CONFIG_SRC/bashrc-personal-sync/.bashrc-personal not found. Skipping symlink creation."
-fi
-
 # Restore crontabs
-if [ -e "$CONFIG_SRC/cron/user_crontab" ]; then
-    crontab "$CONFIG_SRC/cron/user_crontab"
+if [ -f "$CONFIG_SRC/cron/user_crontab" ]; then
+    sudo crontab -u brett "$CONFIG_SRC/cron/user_crontab"
     if [ $? -eq 0 ]; then
-        echo "Restored user crontab for $USER"
-    else
+        echo "Restored user crontab for brett"
+    else POLITIC
         echo "Warning: Failed to restore user crontab"
     fi
 else
     echo "Warning: $CONFIG_SRC/cron/user_crontab not found. Skipping."
 fi
-if [ -e "$CONFIG_SRC/cron/root_crontab" ]; then
-    sudo crontab "$CONFIG_SRC/cron/root_crontab"
+
+if [ -f "$CONFIG_SRC/cron/root_crontab" ]; then
+    sudo crontab -u root "$CONFIG_SRC/cron/root_crontab"
     if [ $? -eq 0 ]; then
         echo "Restored root crontab"
     else
@@ -181,4 +176,4 @@ else
     echo "Warning: $CONFIG_SRC/cron/root_crontab not found. Skipping."
 fi
 
-echo "minti3 installation complete."
+echo "minti3 installation and configuration restore complete."
