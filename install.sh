@@ -18,7 +18,7 @@ OUTPUT_FILE="$LOG_DIR/install-$TIMESTAMP.txt"
 SCRIPTS_DIR="$GITHUB_REPOS_DIR/minti3/scripts"
 CONFIG_SRC="/media/brett/backup/user-configs/backup.latest"
 
-# Redirect output to timestamped log file
+# Redirect output to timestamped log file and terminal
 mkdir -p "$LOG_DIR"
 exec > >(tee -a "$OUTPUT_FILE") 2>&1
 echo "Logging output to $OUTPUT_FILE"
@@ -93,12 +93,12 @@ for script in "${scripts[@]}"; do
             chmod +x "$SCRIPTS_DIR/$script"
         fi
         echo "Running $script..."
-        # Run script, rely on cached sudo credentials, capture output
-        bash "$SCRIPTS_DIR/$script" >> "$OUTPUT_FILE" 2>&1
-        if [ $? -eq 0 ]; then
+        # Run script, show output in terminal and log
+        bash "$SCRIPTS_DIR/$script" 2>&1 | tee -a "$OUTPUT_FILE"
+        if [ ${PIPESTATUS[0]} -eq 0 ]; then
             echo "$script completed successfully."
         else
-            echo "Warning: $script failed with exit code $?. Check $OUTPUT_FILE for details."
+            echo "Warning: $script failed with exit code ${PIPESTATUS[0]}. Check $OUTPUT_FILE for details."
         fi
     else
         echo "Warning: $script not found in $SCRIPTS_DIR. Skipping."
