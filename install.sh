@@ -65,6 +65,7 @@ fi
 echo "Running minti3 setup scripts..."
 scripts=(
     "install-i3-mint.sh"
+    "install-i3-apps.sh"
     "install-i3lock-color.sh"
     "install-i3-logout.sh"
     "install-autotiling.sh"
@@ -79,12 +80,17 @@ scripts=(
 
 for script in "${scripts[@]}"; do
     if [ -f "$SCRIPTS_DIR/$script" ]; then
+        if [ ! -x "$SCRIPTS_DIR/$script" ]; then
+            echo "Making $script executable..."
+            chmod +x "$SCRIPTS_DIR/$script"
+        fi
         echo "Running $script..."
-        bash "$SCRIPTS_DIR/$script"
+        # Run script with sudo -S, capture output and errors
+        sudo -S bash "$SCRIPTS_DIR/$script" >> "$OUTPUT_FILE" 2>&1
         if [ $? -eq 0 ]; then
             echo "$script completed successfully."
         else
-            echo "Warning: $script failed. Continuing."
+            echo "Warning: $script failed with exit code $?. Check $OUTPUT_FILE for details."
         fi
     else
         echo "Warning: $script not found in $SCRIPTS_DIR. Skipping."
