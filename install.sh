@@ -23,6 +23,14 @@ mkdir -p "$LOG_DIR"
 exec > >(tee -a "$OUTPUT_FILE") 2>&1
 echo "Logging output to $OUTPUT_FILE"
 
+# Cache sudo credentials
+echo "Please enter your sudo password to cache credentials for script execution:"
+sudo -v
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to cache sudo credentials. Exiting."
+    exit 1
+fi
+
 # Check and create github-repos directory
 if [ ! -d "$GITHUB_REPOS_DIR" ]; then
     echo "Creating $GITHUB_REPOS_DIR..."
@@ -85,8 +93,8 @@ for script in "${scripts[@]}"; do
             chmod +x "$SCRIPTS_DIR/$script"
         fi
         echo "Running $script..."
-        # Run script with sudo -S, capture output and errors
-        sudo -S bash "$SCRIPTS_DIR/$script" >> "$OUTPUT_FILE" 2>&1
+        # Run script, rely on cached sudo credentials, capture output
+        bash "$SCRIPTS_DIR/$script" >> "$OUTPUT_FILE" 2>&1
         if [ $? -eq 0 ]; then
             echo "$script completed successfully."
         else
