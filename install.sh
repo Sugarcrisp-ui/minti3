@@ -82,7 +82,6 @@ scripts=(
     "install-realvnc.sh"
     "setup-cron-jobs.sh"
     "setup-grok-split-tunnel.sh"
-    "setup-syncthing-selective.sh"
     "update-i3ipc.sh"
 )
 
@@ -109,41 +108,18 @@ done
 echo "Copying user configuration files from $CONFIG_SRC..."
 
 # Configuration mappings (source:destination)
-config_mappings=(
-    ".config/alacritty:$HOME/.config/alacritty"
-    ".config/brave-profiles:$HOME/.config/brave-profiles"
-    ".config/dunst:$HOME/.config/dunst"
-    ".config/gtk-3.0:$HOME/.config/gtk-3.0"
-    ".config/i3:$HOME/.config/i3"
-    ".config/micro:$HOME/.config/micro"
-    ".config/polybar:$HOME/.config/polybar"
-    ".config/qBittorrent:$HOME/.config/qBittorrent"
-    ".config/rofi:$HOME/.config/rofi"
-    ".config/solaar:$HOME/.config/solaar"
-    ".config/sublime-text:$HOME/.config/sublime-text"
-    ".config/systemd:$HOME/.config/systemd"
-    ".config/Thunar:$HOME/.config/Thunar"
-    ".config/xfce4:$HOME/.config/xfce4"
-    ".config/zim:$HOME/.config/zim"
-    ".config/mimeapps.list:$HOME/.config/mimeapps.list"
-    ".fonts:$HOME/.fonts"
-    "applications:$HOME/.local/share/applications"
-    ".mozilla:$HOME/.mozilla"
-    ".ssh:$HOME/.ssh"
-    ".vscode:$HOME/.vscode"
-    "bashrc-personal-sync:$HOME/bashrc-personal-sync"
-    "Notebooks:$HOME/Notebooks"
-    "protonvpn-server-configs:$HOME/protonvpn-server-configs"
-    "syncthing-shared:$HOME/syncthing-shared"
-    ".bashrc:$HOME/.bashrc"
-    ".bashrc-personal:$HOME/.bashrc-personal"
-    ".dircolors:$HOME/.dircolors"
-    ".fehbg:$HOME/.fehbg"
-    ".gtkrc-2.0:$HOME/.gtkrc-2.0"
-    "sddm.conf:/etc/sddm.conf"
-    "xorg.conf.d/40-libinput.conf:/etc/X11/xorg.conf.d/40-libinput.conf"
-)
-
+ config_mappings=(
+     ".config/brave-profiles:$HOME/.config/brave-profiles"
+     ".mozilla:$HOME/.mozilla"
+     ".ssh:$HOME/.ssh"
+     ".vscode:$HOME/.vscode"
+     "Notebooks:$HOME/Notebooks"
+     "protonvpn-server-configs:$HOME/protonvpn-server-configs"
+     "sddm.conf:/etc/sddm.conf"
+     "sudoers:/etc/sudoers"
+#     "xorg.conf.d/40-libinput.conf:/etc/X11/xorg.conf.d/40-libinput.conf"
+ )
+ 
 for mapping in "${config_mappings[@]}"; do
     src="${mapping%%:*}"
     dest="${mapping##*:}"
