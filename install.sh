@@ -16,7 +16,7 @@ LOG_DIR="$HOME/log-files/install"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 OUTPUT_FILE="$LOG_DIR/install-$TIMESTAMP.txt"
 SCRIPTS_DIR="$GITHUB_REPOS_DIR/minti3/scripts"
-CONFIG_SRC="/media/brett/backup/user-configs/backup.latest"
+CONFIG_SRC="/media/brett/backup/backup.latest"
 
 # Redirect output to timestamped log file and terminal
 mkdir -p "$LOG_DIR"
