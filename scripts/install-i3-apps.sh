@@ -34,30 +34,35 @@ fi
 # Check and install dependencies
 echo "Checking and installing dependencies..."
 packages=(
+    feh
+    geany
+    qbittorrent
+    thunar
+    xfce4-settings
+    xfce4-power-manager
+    xfce4-panel
+    network-manager-gnome
+    network-manager-openvpn-gnome
     arandr
     audacity
     brave-browser
-	feh
+    syncthing
     fonts-liberation-sans-narrow
     fonts-linuxlibertine
     fonts-noto-extra
     fonts-noto-ui-core
     fonts-sil-gentium
     fonts-sil-gentium-basic
+    gdm3
     geoclue-2.0
-	geany
-    insync
-	network-manager-gnome
-	network-manager-openvpn-gnome
-	qbittorrent
-	thunar
+    ubuntu-docs
+    ubuntu-session
+    ubuntu-wallpapers
+    ubuntu-wallpapers-noble
     vlc
     warp-terminal
     whoopsie
     xdotool
-    xfce4-settings
-    xfce4-power-manager
-    xfce4-panel
     yaru-theme-gnome-shell
     zim
 )
@@ -81,7 +86,31 @@ for pkg in "${packages[@]}"; do
                 continue
             fi
             sudo apt-get install -y brave-browser
+        elif [ "$pkg" = "syncthing" ]; then
+            echo "Setting up Syncthing repository..."
+            curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to add Syncthing repository key. Continuing."
+                continue
+            fi
+            echo "deb https://apt.syncthing.net/ syncthing stable" | sudo tee /etc/apt/sources.list.d/syncthing.list
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to set up Syncthing repository. Continuing."
+                continue
+            fi
+            sudo apt-get install -y apt-transport-https
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to install apt-transport-https. Continuing."
+                continue
+            fi
+            sudo apt-get update
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to update apt after adding Syncthing repository. Continuing."
+                continue
+            fi
+            sudo apt-get install -y syncthing
         elif [ "$pkg" = "warp-terminal" ]; then
+            echo "Setting up Warp Terminal repository..."
             sudo apt-get install -y wget gpg
             wget -qO- https://releases.warp.dev/linux/keys/warp.asc | gpg --dearmor > warpdotdev.gpg
             sudo install -D -o root -g root -m 644 warpdotdev.gpg /etc/apt/keyrings/warpdotdev.gpg
@@ -89,24 +118,9 @@ for pkg in "${packages[@]}"; do
             rm warpdotdev.gpg
             sudo apt-get update
             sudo apt-get install -y warp-terminal
-        elif [ "$pkg" = "insync" ]; then
-            echo "Setting up Insync repository..."
-            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ACCAF35C
-            if [ $? -ne 0 ]; then
-                echo "Error: Failed to add Insync key. Continuing."
-                continue
-            fi
-            echo "deb http://apt.insync.io/mint uma main" | sudo tee /etc/apt/sources.list.d/insync.list
-            if [ $? -ne 0 ]; then
-                echo "Error: Failed to set up Insync repository. Continuing."
-                continue
-            fi
-            sudo apt-get update
-            if [ $? -ne 0 ]; then
-                echo "Error: Failed to update apt after adding Insync repository. Continuing."
-                continue
-            fi
-            sudo apt-get install -y insync
+            # Configure Warp Terminal input position to Classic Mode
+            mkdir -p "$USER_HOME/.config/warp-terminal"
+            echo '{"prefs":{"InputPosition":"start_at_the_top"}}' > "$USER_HOME/.config/warp-terminal/user_preferences.json"
         elif [ "$pkg" = "gdm3" ]; then
             echo "gdm3 shared/default-x-display-manager select sddm" | sudo debconf-set-selections
             sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "$pkg"
