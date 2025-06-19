@@ -36,7 +36,7 @@ echo "Checking and installing dependencies..."
 packages=(
     feh geany qbittorrent thunar xfce4-settings xfce4-power-manager xfce4-panel
     network-manager-gnome network-manager-openvpn-gnome arandr audacity brave-browser
-    syncthing fonts-liberation-sans-narrow fonts-linuxlibertine fonts-noto-extra
+    syncthing rsnapshot fonts-liberation-sans-narrow fonts-linuxlibertine fonts-noto-extra
     fonts-noto-ui-core fonts-sil-gentium fonts-sil-gentium-basic gdm3 geoclue-2.0
     ubuntu-docs ubuntu-session ubuntu-wallpapers ubuntu-wallpapers-noble vlc
     warp-terminal whoopsie xdotool yaru-theme-gnome-shell zim
