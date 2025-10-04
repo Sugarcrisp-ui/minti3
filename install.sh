@@ -2,8 +2,8 @@
 
 # Script to coordinate installation of minti3 environment and copy user configurations
 
-# Parse args
-BACKUP_DIR="${1:-/media/$USER/backup/backup.latest}"  # Default: /media/<user>/backup/backup.latest
+# Parse args (optional backup dir override)
+BACKUP_OVERRIDE="${1:-}"
 
 # Ensure script is run as non-root user
 USER=$(whoami)
@@ -19,7 +19,23 @@ LOG_DIR="$USER_HOME/log-files/install"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 OUTPUT_FILE="$LOG_DIR/install-$TIMESTAMP.txt"
 SCRIPTS_DIR="$GITHUB_REPOS_DIR/minti3/scripts"
-CONFIG_SRC="$BACKUP_DIR"
+
+# Dynamic CONFIG_SRC: Most recent daily backup
+DAILY_BACKUP_DIR="/media/$USER/backup/daily"
+if [ -n "$BACKUP_OVERRIDE" ]; then
+    CONFIG_SRC="$BACKUP_OVERRIDE"
+elif [ -d "$DAILY_BACKUP_DIR" ]; then
+    LATEST_DAILY=$(ls -t "$DAILY_BACKUP_DIR"/daily.* 2>/dev/null | head -n1)
+    if [ -n "$LATEST_DAILY" ] && [ -d "$LATEST_DAILY/backup.latest" ]; then
+        CONFIG_SRC="$LATEST_DAILY/backup.latest"
+    else
+        echo "Error: No valid daily backups found in $DAILY_BACKUP_DIR (need daily.X/backup.latest). Exiting."
+        exit 1
+    fi
+else
+    echo "Error: Daily backups dir $DAILY_BACKUP_DIR not found. Exiting."
+    exit 1
+fi
 
 # Redirect output to timestamped log file and terminal
 mkdir -p "$LOG_DIR"
@@ -32,12 +48,6 @@ echo "Please enter your sudo password to cache credentials for script execution:
 sudo -v
 if [ $? -ne 0 ]; then
     echo "Error: Failed to cache sudo credentials. Exiting."
-    exit 1
-fi
-
-echo "Mounting external LUKS drive..."
-if ! bash "$SCRIPTS_DIR/automount-external-luks.sh"; then
-    echo "Error: LUKS mount failed. Exiting."
     exit 1
 fi
 
@@ -73,6 +83,13 @@ if [ ! -d "$SCRIPTS_DIR" ]; then
     exit 1
 fi
 
+# Mount external LUKS drive
+echo "Mounting external LUKS drive..."
+if ! bash "$SCRIPTS_DIR/automount-external-luks.sh"; then
+    echo "Error: LUKS mount failed. Exiting."
+    exit 1
+fi
+
 # Check for config directory
 if [ ! -d "$CONFIG_SRC" ]; then
     echo "Error: User configs directory $CONFIG_SRC not found. Exiting."
@@ -82,7 +99,7 @@ fi
 # Run individual setup scripts
 echo "Running minti3 setup scripts..."
 scripts=(
-    "automount-external-luks.sh"    
+    "automount-external-luks.sh"
     "install-i3-mint.sh"
     "install-i3-apps.sh"
     "install-i3lock-color.sh"
@@ -106,7 +123,7 @@ for script in "${scripts[@]}"; do
     fi
 done
 
-# Copy user configuration files from backup.latest
+# Copy user configuration files from backup
 echo "Copying user configuration files from $CONFIG_SRC..."
 
 # Configuration mappings (source:destination)
