@@ -5,7 +5,7 @@
 # Dependencies: git, python3, python3-pip, python3-venv.
 # Notes:
 # - Installs i3ipc in ~/i3ipc-venv to handle PEP 668 restrictions.
-# - Places autotiling in ~/.bin-personal/ and adds to i3 config for brett-K501UX.
+# - Places autotiling in ~/.bin-personal/ and adds to i3 config.
 # - Logs to ~/log-files/install-autotiling/<timestamp>.txt.
 # - Tailored for Linux Mint with i3/Polybar.
 # Author: Brett Crisp (brettcrisp2@gmail.com)
@@ -62,9 +62,8 @@ fi
 # Install i3ipc in virtual environment
 echo "Installing i3ipc in virtual environment..."
 source "$VENV_DIR/bin/activate" || { echo "Error: Failed to activate virtual environment. Exiting."; exit 1; }
-pip install --upgrade pip || { echo "Error: Failed to upgrade pip. Exiting."; deactivate; exit 1; }
-pip install i3ipc==2.2.1 || { echo "Error: Failed to install i3ipc. Exiting."; deactivate; exit 1; }
-echo "i3ipc installed successfully."
+pip install --upgrade pip || { echo "Error: Failed to upgrade pip. Exiting."; exit 1; }
+pip install i3ipc || { echo "Error: Failed to install i3ipc. Exiting."; exit 1; }
 deactivate
 
 # Clone or update autotiling repository
@@ -90,10 +89,10 @@ else
     exit 1
 fi
 
-# Add autotiling to i3 config for laptop
-echo "Configuring i3 to run autotiling on brett-K501UX..."
+# Add autotiling to i3 config
+echo "Configuring i3 to run autotiling..."
 I3_CONFIG="$USER_HOME/.config/i3/config"
-AUTOTILING_LINE='exec --no-startup-id bash -c "[ \"$(hostname)\" = \"brett-K501UX\" ] && ~/.bin-personal/autotiling"'
+AUTOTILING_LINE='exec --no-startup-id ~/.bin-personal/autotiling'
 if ! grep -Fx "$AUTOTILING_LINE" "$I3_CONFIG" >/dev/null; then
     echo "$AUTOTILING_LINE" >> "$I3_CONFIG" || { echo "Error: Failed to update i3 config. Exiting."; exit 1; }
     i3-msg reload || echo "Warning: Failed to reload i3. Run 'i3-msg reload' manually."

@@ -6,10 +6,11 @@ if [ "$(whoami)" != "root" ]; then
     exit 1
 fi
 
-# Variables
+# Variables (pass USER as env var or arg; default to current non-root user)
+USER="${USER:-$(logname)}"  # Fallback to logname if not set
 DRIVE_LABEL="backup"
 DRIVE_UUID=$(blkid -s UUID -o value -l -t LABEL="$DRIVE_LABEL")
-MOUNT_POINT="/media/brett/backup"
+MOUNT_POINT="/media/$USER/backup"
 CRYPT_NAME="luks_backup"
 FSTYPE="ext4"
 KEY_FILE="/root/luks_backup_key"
@@ -43,7 +44,7 @@ fi
 
 # Create mount point
 mkdir -p "$MOUNT_POINT"
-chown brett:brett "$MOUNT_POINT"
+chown "$USER":"$USER" "$MOUNT_POINT"
 chmod 755 "$MOUNT_POINT"
 
 # Add to /etc/fstab
@@ -71,6 +72,3 @@ else
     exit 1
 fi
 
-# Reboot
-echo "Rebooting to apply changes..."
-reboot

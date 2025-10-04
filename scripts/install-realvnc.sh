@@ -11,8 +11,8 @@ fi
 # Variables
 SERVER_DOWNLOAD_URL="https://downloads.realvnc.com/download/file/vnc.files/VNC-Server-7.13.0-Linux-x64.deb"
 VIEWER_DOWNLOAD_URL="https://downloads.realvnc.com/download/file/viewer.files/VNC-Viewer-7.13.0-Linux-x64.deb"
-SERVER_DEB_FILE="$HOME/tmp/VNC-Server-7.13.0-Linux-x64.deb"
-VIEWER_DEB_FILE="$HOME/tmp/VNC-Viewer-7.13.0-Linux-x64.deb"
+SERVER_DEB_FILE="$USER_HOME/tmp/VNC-Server-7.13.0-Linux-x64.deb"
+VIEWER_DEB_FILE="$USER_HOME/tmp/VNC-Viewer-7.13.0-Linux-x64.deb"
 LOG_DIR="$USER_HOME/log-files/install-realvnc"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 OUTPUT_FILE="$LOG_DIR/install-realvnc-$TIMESTAMP.txt"
@@ -25,9 +25,9 @@ echo "Logging output to $OUTPUT_FILE and $LATEST_LOG"
 
 # Create temporary directory
 echo "Creating temporary directory..."
-mkdir -p "$HOME/tmp"
+mkdir -p "$USER_HOME/tmp"
 if [ $? -ne 0 ]; then
-    echo "Warning: Failed to create $HOME/tmp. Continuing."
+    echo "Warning: Failed to create $USER_HOME/tmp. Continuing."
 fi
 
 # Check and install dependencies
@@ -39,7 +39,7 @@ packages=(
 for pkg in "${packages[@]}"; do
     if ! dpkg -l | grep -q " $pkg "; then
         echo "Installing $pkg..."
-        sudo apt-get install -y "$pkg"
+        sudo apt-get install -y --no-install-recommends "$pkg"
         if [ $? -ne 0 ]; then
             echo "Warning: Failed to install $pkg. Continuing."
         fi

@@ -1,18 +1,20 @@
-NetworkManager Dispatcher Script for Disabling IPv6 on Wired connection 1
+NetworkManager Dispatcher Script for Disabling IPv6 on Wired connection
 Purpose: Disables IPv6 at boot to prevent 138-second login delay due to DHCPv6 renewals.
 Location: /etc/NetworkManager/dispatcher.d/10-disable-ipv6-wired.sh
 Content:
 #!/bin/bash
 INTERFACE="$1"
 ACTION="$2"
-if [ "$INTERFACE" = "enp1s0" ] && [ "$ACTION" = "up" ]; then
-    nmcli con mod "Wired connection 1" ipv6.method disabled
-    nmcli con up "Wired connection 1"
+WIRED_IFACE=$(ip link | grep -o 'enp[0-9]s[0-9]' | head -1)  # Auto-detect primary wired (adjust grep if needed)
+WIRED_CONN=$(nmcli con show --active | grep ethernet | awk '{print $1}' | head -1)  # Auto-detect active wired connection
+if [ "$INTERFACE" = "$WIRED_IFACE" ] && [ "$ACTION" = "up" ]; then
+    nmcli con mod "$WIRED_CONN" ipv6.method disabled
+    nmcli con up "$WIRED_CONN"
 fi
 Installation:
 1. Create: sudo micro /etc/NetworkManager/dispatcher.d/10-disable-ipv6-wired.sh
 2. Add the above content.
 3. Make executable: sudo chmod +x /etc/NetworkManager/dispatcher.d/10-disable-ipv6-wired.sh
 Notes:
-- Interface is enp1s0; adjust if hardware changes.
+- Auto-detects interface/connection; test with `ip link` and `nmcli con show`.
 - Back up this file with dotfiles or Syncthing to preserve for reinstalls.

@@ -8,9 +8,8 @@ if [ "$USER" = "root" ]; then
 fi
 
 # Variables
-USER=$(whoami)
 USER_HOME=$(eval echo ~$USER)
-THEMES_DIR="$HOME/tmp/sddm-themes"
+THEMES_DIR="$USER_HOME/tmp/sddm-themes"
 LOG_DIR="$USER_HOME/log-files/install-sddm-simplicity"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 OUTPUT_FILE="$LOG_DIR/install-sddm-simplicity-$TIMESTAMP.txt"
@@ -36,9 +35,9 @@ for pkg in "${packages[@]}"; do
             echo "sddm shared/default-x-display-manager select sddm" | sudo debconf-set-selections
             echo "keyboard-configuration keyboard-configuration/layoutcode string us" | sudo debconf-set-selections
             echo "keyboard-configuration keyboard-configuration/variantcode string" | sudo debconf-set-selections
-            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "$pkg"
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$pkg"
         else
-            sudo apt-get install -y "$pkg"
+            sudo apt-get install -y --no-install-recommends "$pkg"
         fi
         if [ $? -ne 0 ]; then
             echo "Warning: Failed to install $pkg. Continuing."
@@ -49,7 +48,8 @@ for pkg in "${packages[@]}"; do
 done
 
 # Create user-specific temporary directory
-echo "Created $HOME/tmp directory."
+echo "Creating $USER_HOME/tmp directory..."
+mkdir -p "$USER_HOME/tmp"
 
 # Clone or update sddm-themes repository
 echo "Cloning or updating sddm-themes repository..."

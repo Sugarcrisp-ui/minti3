@@ -2,6 +2,13 @@
 
 # Script to update i3ipc in ~/i3ipc-venv/ on Linux Mint
 
+# Ensure script is run as non-root user
+USER=$(whoami)
+if [ "$USER" = "root" ]; then
+    echo "Error: This script should not be run as root. Exiting."
+    exit 1
+fi
+
 # Variables
 USER_HOME=$(eval echo ~$USER)
 VENV_DIR="$USER_HOME/i3ipc-venv"

@@ -13,6 +13,7 @@ CRONTAB_BACKUP="$USER_HOME/crontab-backup-$(date +%F-%H%M%S).txt"
 LOG_DIR="$USER_HOME/log-files/setup-cron-jobs"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 OUTPUT_FILE="$LOG_DIR/setup-cron-jobs-$TIMESTAMP.txt"
+MINTI3_SCRIPTS="$USER_HOME/github-repos/minti3/scripts"
 
 # Redirect output to timestamped log file
 mkdir -p "$LOG_DIR"
@@ -44,7 +45,7 @@ echo "Backup created at $CRONTAB_BACKUP."
 # Define cron jobs
 CRON_JOBS=(
     "# Update i3lock-color every Sunday at 9:20 PM"
-    "20 21 * * 0 /bin/bash $USER_HOME/github-repos/minti3/scripts/install-i3lock-color.sh >> $USER_HOME/log-files/install-i3lock-color/install-i3lock-color.log 2>&1"
+    "20 21 * * 0 /bin/bash $MINTI3_SCRIPTS/install-i3lock-color.sh >> $USER_HOME/log-files/install-i3lock-color/install-i3lock-color.log 2>&1"
     "# Backup user config files to user-configs repo daily at 22:00"
     "0 22 * * * /bin/bash $USER_HOME/.bin-personal/backup-user-configs-github-rsync.sh >> $USER_HOME/log-files/backup-user-configs-github-rsync/backup-user-configs-github-rsync.log 2>&1"
     "# Backup user config files to external daily at 22:10"

@@ -27,7 +27,7 @@ packages=(
 for pkg in "${packages[@]}"; do
     if ! dpkg -l | grep -q " $pkg "; then
         echo "Installing $pkg..."
-        sudo apt-get install -y "$pkg"
+        sudo apt-get install -y --no-install-recommends "$pkg"
         if [ $? -ne 0 ]; then
             echo "Error: Failed to install $pkg. Continuing."
         fi

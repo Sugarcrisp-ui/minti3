@@ -41,7 +41,7 @@ packages=(
 for pkg in "${packages[@]}"; do
     if ! dpkg -l | grep -q " $pkg "; then
         echo "Installing $pkg..."
-        sudo apt-get install -y "$pkg"
+        sudo apt-get install -y --no-install-recommends "$pkg"
         if [ $? -ne 0 ]; then
             echo "Warning: Failed to install $pkg. Continuing."
         fi
@@ -72,35 +72,21 @@ fi
 echo "Checking for Python files..."
 for file in i3-logout.py GUI.py Functions.py; do
     if [ ! -f "$I3_LOGOUT_DIR/$file" ]; then
-        echo "Error: $file not found in $I3_LOGOUT_DIR/. Exiting."
+        echo "Error: $file not found in $I3_LOGOUT_DIR. Exiting."
         exit 1
     fi
 done
 
-# Update i3-logout.py to remove archlinux references
-echo "Updating i3-logout.py to remove archlinux references..."
-sed -i 's/archlinux-logout/i3-logout/g' "$I3_LOGOUT_DIR/i3-logout.py"
-sed -i 's/archlinux-betterlockscreen/betterlockscreen/g' "$I3_LOGOUT_DIR/i3-logout.py"
-sed -i 's/Archlinux Logout/i3-logout/g' "$I3_LOGOUT_DIR/i3-logout.py"
-if [ $? -ne 0 ]; then
-    echo "Warning: Failed to update i3-logout.py. Continuing."
-fi
-
-# Install config from user-configs/backup.latest
-echo "Installing config..."
-LATEST_BACKUP=""
-BACKUP_LINK="$USER_CONFIGS_DIR/backup.latest"
-if [ -L "$BACKUP_LINK" ] && [ -d "$(readlink -f "$BACKUP_LINK")" ]; then
-    LATEST_BACKUP=$(readlink -f "$BACKUP_LINK")
-else
-    echo "Warning: No valid backup.latest link found at $BACKUP_LINK. Skipping config installation."
-fi
-CONFIG_FILE="$LATEST_BACKUP/.config/i3-logout/i3-logout.conf"
+# Copy config file if present
+CONFIG_FILE="$USER_CONFIGS_DIR/i3-logout.conf"
+echo "Copying config file..."
 if [ -f "$CONFIG_FILE" ]; then
-    echo "Installing $CONFIG_FILE to /etc/i3-logout.conf"
-    sudo install -Dm644 "$CONFIG_FILE" /etc/i3-logout.conf
-    if [ $? -ne 0 ]; then
-        echo "Warning: Failed to install $CONFIG_FILE to /etc/i3-logout.conf. Continuing."
+    sudo mkdir -p /etc/i3-logout
+    sudo cp "$CONFIG_FILE" /etc/i3-logout/i3-logout.conf
+    if [ $? -eq 0 ]; then
+        echo "Copied i3-logout.conf to /etc/i3-logout/i3-logout.conf."
+    else
+        echo "Warning: Failed to copy i3-logout.conf. Continuing."
     fi
 else
     echo "Warning: i3-logout.conf not found at $CONFIG_FILE. Continuing."

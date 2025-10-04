@@ -75,7 +75,7 @@ bindsym $mod+x exec --no-startup-id archlinux-logout
 #bindsym $mod+x exec --no-startup-id sh -c '[ -f /etc/arch-release ] && archlinux-logout || xfce4-session-logout'
 
 # Screen Lock
-bindsym Control+Mod1+k exec --no-startup-id /home/brett/.bin-personal/lock-screen.sh
+bindsym Control+Mod1+k exec --no-startup-id $HOME/.bin-personal/lock-screen.sh
 
 # Suspend
 bindsym Control+Mod1+l exec --no-startup-id ~/.bin-personal/suspend-lock.sh
@@ -134,7 +134,7 @@ bindsym $mod+Shift+Return exec --no-startup-id $fileManager
 bindsym $mod+w exec --no-startup-id $browser
 #bindsym Control+$alt+f exec --no-startup-id firefox
 bindsym Control+$alt+p exec --no-startup-id xfce4-screenshooter
-#bindsym Control+$alt+v exec --no-startup-id xfce4-terminal -e "bash /home/brett/.bin-personal/realvnc-viewer.sh"
+#bindsym Control+$alt+v exec --no-startup-id xfce4-terminal -e "bash $HOME/.bin-personal/realvnc-viewer.sh"
 
 # Audio Control
 bindsym XF86AudioRaiseVolume exec --no-startup-id "amixer -D pulse set Master '5%+'"

@@ -2,6 +2,9 @@
 
 # Script to coordinate installation of minti3 environment and copy user configurations
 
+# Parse args
+BACKUP_DIR="${1:-/media/$USER/backup/backup.latest}"  # Default: /media/<user>/backup/backup.latest
+
 # Ensure script is run as non-root user
 USER=$(whoami)
 if [ "$USER" = "root" ]; then
@@ -10,24 +13,31 @@ if [ "$USER" = "root" ]; then
 fi
 
 # Variables
-HOME="/home/brett"
-GITHUB_REPOS_DIR="$HOME/github-repos"
-LOG_DIR="$HOME/log-files/install"
+USER_HOME=$(eval echo ~$USER)
+GITHUB_REPOS_DIR="$USER_HOME/github-repos"
+LOG_DIR="$USER_HOME/log-files/install"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 OUTPUT_FILE="$LOG_DIR/install-$TIMESTAMP.txt"
 SCRIPTS_DIR="$GITHUB_REPOS_DIR/minti3/scripts"
-CONFIG_SRC="/media/brett/backup/backup.latest"
+CONFIG_SRC="$BACKUP_DIR"
 
 # Redirect output to timestamped log file and terminal
 mkdir -p "$LOG_DIR"
 exec > >(tee -a "$OUTPUT_FILE") 2>&1
 echo "Logging output to $OUTPUT_FILE"
+echo "Using backup dir: $CONFIG_SRC"
 
 # Cache sudo credentials
 echo "Please enter your sudo password to cache credentials for script execution:"
 sudo -v
 if [ $? -ne 0 ]; then
     echo "Error: Failed to cache sudo credentials. Exiting."
+    exit 1
+fi
+
+echo "Mounting external LUKS drive..."
+if ! bash "$SCRIPTS_DIR/automount-external-luks.sh"; then
+    echo "Error: LUKS mount failed. Exiting."
     exit 1
 fi
 
@@ -72,6 +82,7 @@ fi
 # Run individual setup scripts
 echo "Running minti3 setup scripts..."
 scripts=(
+    "automount-external-luks.sh"    
     "install-i3-mint.sh"
     "install-i3-apps.sh"
     "install-i3lock-color.sh"
@@ -81,22 +92,13 @@ scripts=(
     "install-xfce-theme.sh"
     "install-realvnc.sh"
     "setup-cron-jobs.sh"
-    "setup-grok-split-tunnel.sh"
     "update-i3ipc.sh"
 )
 
 for script in "${scripts[@]}"; do
     if [ -f "$SCRIPTS_DIR/$script" ]; then
-        if [ ! -x "$SCRIPTS_DIR/$script" ]; then
-            echo "Making $script executable..."
-            chmod +x "$SCRIPTS_DIR/$script"
-        fi
         echo "Running $script..."
-        # Run script, show output in terminal and log
-        bash "$SCRIPTS_DIR/$script" 2>&1 | tee -a "$OUTPUT_FILE"
-        if [ ${PIPESTATUS[0]} -eq 0 ]; then
-            echo "$script completed successfully."
-        else
+        if ! bash "$SCRIPTS_DIR/$script"; then
             echo "Warning: $script failed with exit code ${PIPESTATUS[0]}. Check $OUTPUT_FILE for details."
         fi
     else
@@ -108,18 +110,18 @@ done
 echo "Copying user configuration files from $CONFIG_SRC..."
 
 # Configuration mappings (source:destination)
- config_mappings=(
-     ".config/brave-profiles:$HOME/.config/brave-profiles"
-     ".mozilla:$HOME/.mozilla"
-     ".ssh:$HOME/.ssh"
-     ".vscode:$HOME/.vscode"
-     "Notebooks:$HOME/Notebooks"
-     "protonvpn-server-configs:$HOME/protonvpn-server-configs"
-     "sddm.conf:/etc/sddm.conf"
-     "sudoers:/etc/sudoers"
-#     "xorg.conf.d/40-libinput.conf:/etc/X11/xorg.conf.d/40-libinput.conf"
- )
- 
+config_mappings=(
+    ".config/brave-profiles:$USER_HOME/.config/brave-profiles"
+    ".mozilla:$USER_HOME/.mozilla"
+    ".ssh:$USER_HOME/.ssh"
+    ".vscode:$USER_HOME/.vscode"
+    "Notebooks:$USER_HOME/Notebooks"
+    "protonvpn-server-configs:$USER_HOME/protonvpn-server-configs"
+    "sddm.conf:/etc/sddm.conf"
+    "sudoers:/etc/sudoers"
+#    "xorg.conf.d/40-libinput.conf:/etc/X11/xorg.conf.d/40-libinput.conf"
+)
+
 for mapping in "${config_mappings[@]}"; do
     src="${mapping%%:*}"
     dest="${mapping##*:}"
@@ -148,9 +150,9 @@ done
 
 # Restore crontabs
 if [ -f "$CONFIG_SRC/cron/user_crontab" ]; then
-    sudo crontab -u brett "$CONFIG_SRC/cron/user_crontab"
+    sudo crontab -u "$USER" "$CONFIG_SRC/cron/user_crontab"
     if [ $? -eq 0 ]; then
-        echo "Restored user crontab for brett"
+        echo "Restored user crontab for $USER"
     else
         echo "Warning: Failed to restore user crontab"
     fi

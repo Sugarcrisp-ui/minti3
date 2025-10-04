@@ -59,45 +59,27 @@ for pkg in "${packages[@]}"; do
             echo "Setting up Syncthing repository..."
             curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
             echo "deb https://apt.syncthing.net/ syncthing stable" | sudo tee /etc/apt/sources.list.d/syncthing.list
-            sudo apt-get install -y apt-transport-https
             sudo apt-get update
             sudo apt-get install -y syncthing
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to install syncthing. Continuing."
+            else
+                echo "syncthing installed successfully."
 
-            echo "Configuring Syncthing synced directories..."
-            systemctl --user enable syncthing.service
-            systemctl --user start syncthing.service
-            sleep 10
-
-            synced_dirs=(
-                "$USER_HOME/.bin-personal"
-                "$USER_HOME/.config"
-                "$USER_HOME/.fonts"
-                "$USER_HOME/Appimages"
-                "$USER_HOME/Calibre-Library"
-                "$USER_HOME/Documents"
-                "$USER_HOME/Notebooks"
-                "$USER_HOME/Pictures"
-                "$USER_HOME/Shared"
-                "$USER_HOME/Videos"
-                "$USER_HOME/.local/share/applications"
-                "$USER_HOME/dotfiles"
-            )
-
-            API_KEY=$(grep "<apiKey>" $USER_HOME/.config/syncthing/config.xml | sed -E 's/.*<apiKey>(.*)<\/apiKey>.*/\1/')
-
-            for dir in "${synced_dirs[@]}"; do
-                if [ -d "$dir" ]; then
-                    dir_id=$(basename "$dir" | tr '[:upper:]' '[:lower:]')
-                    dir_label=$(basename "$dir")
-
-                    curl -X POST -H "X-API-Key: $API_KEY" \
-                        http://localhost:8384/rest/config/folders \
-                        -d "{\"id\":\"$dir_id\",\"label\":\"$dir_label\",\"path\":\"$dir\",\"type\":\"sendreceive\"}"
-
-                    if [ $? -eq 0 ]; then
-                        echo "Added $dir to Syncthing synced folders."
-                        if [ "$dir" = "$USER_HOME/.config" ]; then
-                            cat << 'EOF' > "$dir/.stignore"
+                # Configure Syncthing (start service, add folders)
+                sudo systemctl enable --now syncthing@"$USER"
+                sleep 5  # Wait for service to start
+                DIR_ID="github-configs"
+                DIR_LABEL="GitHub Configs"
+                DIR="$USER_HOME/github-repos/user-configs"
+                curl -X POST -H "X-API-Key: $(curl -s -X GET http://localhost:8384/rest/config | jq -r .gui.apikey)" \
+                     -H "Content-Type: application/json" \
+                     http://localhost:8384/rest/config/folders \
+                     -d "{\"id\":\"$DIR_ID\",\"label\":\"$DIR_LABEL\",\"path\":\"$DIR\",\"type\":\"sendreceive\"}"
+                if [ $? -eq 0 ]; then
+                    echo "Added $DIR to Syncthing synced folders."
+                    if [ "$DIR" = "$USER_HOME/.config" ]; then
+                        cat << 'EOF' > "$DIR/.stignore"
 !betterlockscreen/
 !bluetooth-connect/
 !dunst/
@@ -113,15 +95,12 @@ for pkg in "${packages[@]}"; do
 !BraveSoftware/
 *
 EOF
-                            echo "Created .stignore for .config with specified patterns."
-                        fi
-                    else
-                        echo "Warning: Failed to add $dir to Syncthing. Continuing."
+                        echo "Created .stignore for .config with specified patterns."
                     fi
                 else
-                    echo "Warning: Directory $dir not found. Skipping."
+                    echo "Warning: Failed to add $DIR to Syncthing. Continuing."
                 fi
-            done
+            fi
 
         elif [ "$pkg" = "warp-terminal" ]; then
             echo "Setting up Warp Terminal repository..."
@@ -163,3 +142,5 @@ if [ -f "/etc/X11/default-display-manager" ]; then
         echo "Confirmed sddm as default display manager."
     fi
 fi
+
+echo "i3-apps installation complete."
