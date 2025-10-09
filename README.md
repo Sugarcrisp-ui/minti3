@@ -9,6 +9,7 @@ Modular scripts for installing/configuring i3 on Linux Mint, including apps, the
 - Automation: Integrate `automount-external-luks.sh` (no-reboot mode).
 - Removals: Arch refs, grok-split-tunnel (ProtonVPN native).
 - Fixes: Network IPv6 dynamic iface detection.
+- Backup handling: Auto-select most recent /media/$USER/backup/daily/daily.X/backup.latest.
 
 ## Prereqs
 - Fresh Linux Mint install.
