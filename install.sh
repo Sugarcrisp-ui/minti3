@@ -110,6 +110,8 @@ scripts=(
     "install-realvnc.sh"
     "setup-cron-jobs.sh"
     "update-i3ipc.sh"
+    "install-flatpaks.sh"
+    "install-docker-services.sh"
 )
 
 for script in "${scripts[@]}"; do
