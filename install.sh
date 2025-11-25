@@ -106,3 +106,10 @@ done
 
 echo "=== minti3 installation + full restore complete! ==="
 echo "Reboot and enjoy your perfect i3 desktop."
+
+echo "------------------------------------------------------------"
+echo "FINAL STEP AFTER REBOOT:"
+echo "   Run once (or add to i3 config):"
+echo "       eval \"\$(ssh-agent -s)\" && ssh-add ~/.ssh/id_ed25519"
+echo "   This loads your SSH key for GitHub (already restored from backup)"
+echo "------------------------------------------------------------"
