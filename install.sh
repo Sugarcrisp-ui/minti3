@@ -66,6 +66,7 @@ scripts=(
     "setup-cron-jobs.sh"
     "update-i3ipc.sh"
     "install-epub-to-audiobook.sh"
+    "thunar-navigate-back-keybinding.sh"
 )
 
 for script in "${scripts[@]}"; do
