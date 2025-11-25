@@ -1,74 +1,63 @@
 #!/bin/bash
+# automount-external-luks.sh – 2025 final: safe, idempotent, zero surprises
 
-# Ensure script is run as root
-if [ "$(whoami)" != "root" ]; then
-    echo "Error: This script must be run as root. Use sudo."
-    exit 1
-fi
+set -euo pipefail
+IFS=$'\n\t'
 
-# Variables (pass USER as env var or arg; default to current non-root user)
-USER="${USER:-$(logname)}"  # Fallback to logname if not set
+# Must be root
+[[ $EUID -eq 0 ]] || { echo "Error: Run as root (sudo)"; exit 1; }
+
+# User who owns the mount (passed via env or fallback to whoever is logged in)
+USER="${USER:-$(logname 2>/dev/null || echo brett)}"
 DRIVE_LABEL="backup"
-DRIVE_UUID=$(blkid -s UUID -o value -l -t LABEL="$DRIVE_LABEL")
 MOUNT_POINT="/media/$USER/backup"
 CRYPT_NAME="luks_backup"
-FSTYPE="ext4"
 KEY_FILE="/root/luks_backup_key"
 
-# Check if UUID is found
-if [ -z "$DRIVE_UUID" ]; then
-    echo "Error: No drive with label '$DRIVE_LABEL' found."
-    exit 1
-fi
+echo "Setting up LUKS backup drive for user '$USER'..."
 
-# Check if key file exists, create if not
-if [ ! -f "$KEY_FILE" ]; then
-    echo "Creating LUKS key file..."
-    dd if=/dev/urandom of="$KEY_FILE" bs=32 count=1
+# 1. Find the drive
+DRIVE_UUID=$(blkid -o value -s UUID -t LABEL="$DRIVE_LABEL") || {
+    echo "Error: No drive with label '$DRIVE_LABEL' found"
+    exit 1
+}
+echo "Found drive UUID=$DRIVE_UUID"
+
+# 2. Ensure key file exists and is added to LUKS header
+if [[ ! -f "$KEY_FILE" ]]; then
+    echo "Creating new LUKS key file..."
+    dd if=/dev/urandom of="$KEY_FILE" bs=32 count=1 >/dev/null
     chmod 600 "$KEY_FILE"
-    cryptsetup luksAddKey "/dev/disk/by-uuid/$DRIVE_UUID" "$KEY_FILE"
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to add LUKS key."
-        exit 1
-    fi
+    cryptsetup luksAddKey "/dev/disk/by-uuid/$DRIVE_UUID" "$KEY_FILE" --key-file=- <<<"" >/dev/null
 fi
 
-# Add to /etc/crypttab
-CRYPTTAB_ENTRY="$CRYPT_NAME UUID=$DRIVE_UUID $KEY_FILE luks"
-if ! grep -q "$CRYPT_NAME" /etc/crypttab; then
-    echo "$CRYPTTAB_ENTRY" >> /etc/crypttab
-    echo "Added $CRYPT_NAME to /etc/crypttab."
+# 3. /etc/crypttab – idempotent
+if ! grep -q "^$CRYPT_NAME[[:space:]]" /etc/crypttab; then
+    echo "$CRYPT_NAME UUID=$DRIVE_UUID $KEY_FILE luks,discard" >> /etc/crypttab
+    echo "Added entry to /etc/crypttab"
 else
-    echo "$CRYPT_NAME already in /etc/crypttab."
+    echo "/etc/crypttab already configured"
 fi
 
-# Create mount point
-mkdir -p "$MOUNT_POINT"
-chown "$USER":"$USER" "$MOUNT_POINT"
-chmod 755 "$MOUNT_POINT"
-
-# Add to /etc/fstab
-FSTAB_ENTRY="/dev/mapper/$CRYPT_NAME $MOUNT_POINT $FSTYPE defaults,user,exec 0 2"
-if ! grep -q "$MOUNT_POINT" /etc/fstab; then
-    echo "$FSTAB_ENTRY" >> /etc/fstab
-    echo "Added $MOUNT_POINT to /etc/fstab."
+# 4. /etc/fstab – idempotent
+if ! grep -q "[[:space:]]$MOUNT_POINT[[:space:]]" /etc/fstab; then
+    mkdir -p "$MOUNT_POINT"
+    chown "$USER:$USER" "$MOUNT_POINT"
+    echo "/dev/mapper/$CRYPT_NAME $MOUNT_POINT ext4 defaults,noatime,nofail 0 2" >> /etc/fstab
+    echo "Added entry to /etc/fstab"
 else
-    echo "$MOUNT_POINT already in /etc/fstab."
+    echo "/etc/fstab already configured"
 fi
 
-# Update cryptsetup and test decryption
-cryptdisks_start "$CRYPT_NAME"
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to open LUKS device."
-    exit 1
+# 5. Open + mount (idempotent)
+if ! cryptsetup status "$CRYPT_NAME" &>/dev/null; then
+    echo "Opening LUKS container..."
+    cryptsetup luksOpen --key-file="$KEY_FILE" "/dev/disk/by-uuid/$DRIVE_UUID" "$CRYPT_NAME"
 fi
 
-# Test mount
-mount -a
-if [ $? -eq 0 ]; then
-    echo "Mount successful at $MOUNT_POINT."
-else
-    echo "Error: Failed to mount $MOUNT_POINT."
-    exit 1
+if ! mountpoint -q "$MOUNT_POINT"; then
+    echo "Mounting $MOUNT_POINT..."
+    mount "$MOUNT_POINT"
 fi
 
+echo "LUKS backup drive ready at $MOUNT_POINT"

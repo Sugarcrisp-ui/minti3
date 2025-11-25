@@ -1,146 +1,41 @@
 #!/bin/bash
+# install-i3-logout.sh – 2025 final: your custom logout menu
 
-# Ensure script is run as non-root user
-USER=$(whoami)
-if [ "$USER" = "root" ]; then
-    echo "Error: This script should not be run as root. Exiting."
-    exit 1
-fi
+set -euo pipefail
 
-# Variables
-USER_HOME=$(eval echo ~$USER)
-USER_CONFIGS_DIR="$USER_HOME/github-repos/user-configs"
-I3_LOGOUT_DIR="$USER_HOME/github-repos/i3-logout"
+[[ $EUID -ne 0 ]] || { echo "Error: Do not run as root"; exit 1; }
+
+USER_HOME="${HOME:?}"
+REPO="$USER_HOME/github-repos/i3-logout"
 LOG_DIR="$USER_HOME/log-files/install-i3-logout"
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-OUTPUT_FILE="$LOG_DIR/install-i3-logout-$TIMESTAMP.txt"
-
-# Redirect output to timestamped log file
 mkdir -p "$LOG_DIR"
-exec > >(tee -a "$OUTPUT_FILE") 2>&1
-echo "Logging output to $OUTPUT_FILE"
+exec > >(tee -a "$LOG_DIR/install-i3-logout-$(date +%Y%m%d-%H%M%S).txt") 2>&1
 
-# Check for Python
-echo "Checking for Python..."
-if ! command -v python3 >/dev/null 2>&1; then
-    echo "Error: python3 not found. Exiting."
-    exit 1
-fi
+echo "Installing i3-logout (your custom menu)..."
 
-# Check and install dependencies
-echo "Checking and installing dependencies..."
-packages=(
-    python3
-    python3-gi
-    gir1.2-wnck-3.0
-    python3-psutil
-    python3-cairo
-    python3-distro
-    git
-)
-for pkg in "${packages[@]}"; do
-    if ! dpkg -l | grep -q " $pkg "; then
-        echo "Installing $pkg..."
-        sudo apt-get install -y --no-install-recommends "$pkg"
-        if [ $? -ne 0 ]; then
-            echo "Warning: Failed to install $pkg. Continuing."
-        fi
-    else
-        echo "$pkg is already installed."
-    fi
-done
+# Dependencies in one shot
+sudo apt-get install -y --no-install-recommends \
+    python3 python3-gi gir1.2-wnck-3.0 python3-psutil python3-cairo python3-distro
 
-# Clone or update i3-logout repository
-echo "Cloning or updating i3-logout repository..."
-if [ -d "$I3_LOGOUT_DIR/.git" ]; then
-    echo "i3-logout repository exists at $I3_LOGOUT_DIR, updating..."
-    cd "$I3_LOGOUT_DIR"
-    git pull
-    if [ $? -ne 0 ]; then
-        echo "Warning: Failed to update i3-logout repository. Continuing."
-    fi
+# Clone or update your fork
+if [[ -d "$REPO/.git" ]]; then
+    git -C "$REPO" pull --ff-only
 else
-    echo "Cloning i3-logout repository..."
-    git clone https://github.com/Sugarcrisp-ui/i3-logout.git "$I3_LOGOUT_DIR"
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to clone i3-logout repository. Exiting."
-        exit 1
-    fi
+    git clone https://github.com/Sugarcrisp-ui/i3-logout.git "$REPO"
 fi
 
-# Ensure i3-logout.py, GUI.py, and Functions.py exist
-echo "Checking for Python files..."
-for file in i3-logout.py GUI.py Functions.py; do
-    if [ ! -f "$I3_LOGOUT_DIR/$file" ]; then
-        echo "Error: $file not found in $I3_LOGOUT_DIR. Exiting."
-        exit 1
-    fi
-done
-
-# Copy config file if present
-CONFIG_FILE="$USER_CONFIGS_DIR/i3-logout.conf"
-echo "Copying config file..."
-if [ -f "$CONFIG_FILE" ]; then
-    sudo mkdir -p /etc/i3-logout
-    sudo cp "$CONFIG_FILE" /etc/i3-logout/i3-logout.conf
-    if [ $? -eq 0 ]; then
-        echo "Copied i3-logout.conf to /etc/i3-logout/i3-logout.conf."
-    else
-        echo "Warning: Failed to copy i3-logout.conf. Continuing."
-    fi
-else
-    echo "Warning: i3-logout.conf not found at $CONFIG_FILE. Continuing."
-fi
-
-# Install binaries
-echo "Installing binaries..."
-sudo install -Dm755 "$I3_LOGOUT_DIR/i3-logout.py" /usr/bin/i3-logout
-if [ $? -ne 0 ]; then
-    echo "Warning: Failed to install i3-logout.py to /usr/bin/i3-logout. Continuing."
-fi
-
-# Install Python files
-echo "Installing Python files..."
+# Install binary + support files
+sudo install -Dm755 "$REPO/i3-logout.py" /usr/bin/i3-logout
 sudo mkdir -p /usr/share/i3-logout
-sudo install -Dm644 "$I3_LOGOUT_DIR/GUI.py" /usr/share/i3-logout/GUI.py
-sudo install -Dm644 "$I3_LOGOUT_DIR/Functions.py" /usr/share/i3-logout/Functions.py
-if [ $? -ne 0 ]; then
-    echo "Warning: Failed to install Python files to /usr/share/i3-logout/. Continuing."
+sudo install -Dm644 "$REPO"/{GUI.py,Functions.py} /usr/share/i3-logout/
+
+# Themes (optional but nice)
+if [[ -d "$REPO/themes" ]]; then
+    sudo mkdir -p /usr/share/i3-logout-themes/themes
+    sudo cp -r "$REPO/themes/"* /usr/share/i3-logout-themes/themes/
 fi
 
-# Install themes
-echo "Installing themes..."
-sudo mkdir -p /usr/share/i3-logout-themes
-if [ -d "$I3_LOGOUT_DIR/themes" ]; then
-    sudo mkdir -p /usr/share/i3-logout-themes/themes && sudo cp -r "$I3_LOGOUT_DIR/themes/"* /usr/share/i3-logout-themes/themes/ 2>/tmp/theme-copy-error.log
-    if [ $? -eq 0 ]; then
-        echo "Themes copied successfully."
-    else
-        echo "Warning: Failed to copy themes. Error details in /tmp/theme-copy-error.log."
-        cat /tmp/theme-copy-error.log
-    fi
-    if sudo cp "$I3_LOGOUT_DIR"/*.svg /usr/share/i3-logout-themes/ 2>/tmp/svg-copy-error.log; then
-        echo "SVG files copied successfully."
-        sudo chown -R root:root /usr/share/i3-logout-themes/
-    else
-        echo "Note: No SVG files found in $I3_LOGOUT_DIR root or failed to copy. Details in /tmp/svg-copy-error.log."
-        cat /tmp/svg-copy-error.log
-    fi
-else
-    echo "Note: No themes directory in $I3_LOGOUT_DIR. Using default i3-logout theme."
-fi
+# Config restored from external drive later — no GitHub dependency
+echo "i3-logout installed — config will be restored from external drive"
 
-# Verify installation
-echo "Verifying installation..."
-if command -v i3-logout >/dev/null 2>&1; then
-    echo "i3-logout is installed and executable."
-else
-    echo "Warning: i3-logout is not installed or not executable."
-fi
-
-# Check for Docker environment
-if [ -f "/proc/1/cgroup" ] && grep -qE "docker|containerd|kubepods|libpod|/docker/|/.*/docker/|/.*/containerd/" /proc/1/cgroup || [ -f "/.dockerenv" ]; then
-    echo "Warning: Running in a containerized environment (Docker). Some operations may be restricted."
-fi
-
-echo "i3-logout installation complete."
+echo "i3-logout ready → bind it in your i3 config"

@@ -1,53 +1,34 @@
 #!/bin/bash
-# install-flatpaks.sh – install only the Flatpaks you actually want
+# install-flatpaks.sh – 2025 final: ultra-clean, bullet-proof
 
-USER=$(whoami)
-if [ "$USER" = "root" ]; then
-    echo "Error: This script should not be run as root. Exiting."
-    exit 1
-fi
+set -euo pipefail
 
-USER_HOME=$(eval echo ~$USER)
+[[ $EUID -ne 0 ]] || { echo "Error: Do not run as root"; exit 1; }
+
+USER_HOME="${HOME:?}"
 LOG_DIR="$USER_HOME/log-files/install-flatpaks"
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-OUTPUT_FILE="$LOG_DIR/install-flatpaks-$TIMESTAMP.txt"
-
 mkdir -p "$LOG_DIR"
-exec > >(tee -a "$OUTPUT_FILE") 2>&1
-echo "Logging output to $OUTPUT_FILE"
+exec > >(tee -a "$LOG_DIR/install-flatpaks-$(date +%Y%m%d-%H%M%S).txt") 2>&1
 
-# === YOUR FLATPAK LIST (edit this only) ===
+# === YOUR FLATPAKS (single source of truth) ===
 FLATPAKS=(
-    "com.bitwarden.desktop"          # Bitwarden
-    "io.github.PintaProject.Pinta"   # Pinta
-    # Add new ones here, one per line
-    # "org.signal.Signal"            # Example: uncomment to install Signal
+    com.bitwarden.desktop          # Bitwarden
+    io.github.PintaProject.Pinta   # Pinta
 )
 
 echo "Installing ${#FLATPAKS[@]} approved Flatpaks..."
 
-# Ensure Flathub is enabled
-if ! flatpak remotes | grep -q "^flathub[[:space:]]"; then
-    echo "Adding Flathub repository..."
-    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to add Flathub. Continuing anyway."
-    fi
-fi
+# Ensure Flathub (system-wide, once)
+flatpak remote-add --if-not-exists --system flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
-# Install each Flatpak from the list
+# Install each
 for app_id in "${FLATPAKS[@]}"; do
     if flatpak list --app | grep -q "^$app_id[[:space:]]"; then
-        echo "$app_id is already installed."
+        echo "✓ $app_id already installed"
     else
-        echo "Installing $app_id..."
-        flatpak install -y flathub "$app_id"
-        if [ $? -eq 0 ]; then
-            echo "$app_id installed successfully."
-        else
-            echo "Error: Failed to install $app_id. Continuing."
-        fi
+        echo "→ Installing $app_id..."
+        flatpak install -y --system flathub "$app_id"
     fi
 done
 
-echo "Flatpak installation complete."
+echo "Flatpak installation complete"

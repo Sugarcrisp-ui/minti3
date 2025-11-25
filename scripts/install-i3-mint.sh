@@ -1,99 +1,32 @@
 #!/bin/bash
+# install-i3-mint.sh – 2025 final: core i3 + polybar + rofi + dunst
 
-# Ensure script is run as non-root user
-USER=$(whoami)
-if [ "$USER" = "root" ]; then
-    echo "Error: This script should not be run as root. Exiting."
-    exit 1
-fi
+set -euo pipefail
 
-# Variables
-USER_HOME=$(eval echo ~$USER)
+[[ $EUID -ne 0 ]] || { echo "Error: Do not run as root"; exit 1; }
+
+USER_HOME="${HOME:?}"
 LOG_DIR="$USER_HOME/log-files/install-i3-mint"
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-OUTPUT_FILE="$LOG_DIR/install-i3-mint-$TIMESTAMP.txt"
-
-# Redirect output to timestamped log file
 mkdir -p "$LOG_DIR"
-exec > >(tee -a "$OUTPUT_FILE") 2>&1
-echo "Logging output to $OUTPUT_FILE"
+exec > >(tee -a "$LOG_DIR/install-i3-mint-$(date +%Y%m%d-%H%M%S).txt") 2>&1
 
-# Update package lists
-echo "Updating package lists..."
-sudo apt-get update -y
-if [ $? -ne 0 ]; then
-    echo "Warning: Failed to update package lists. Continuing."
-fi
+echo "Installing core i3 environment..."
 
-# Check and install dependencies
-echo "Checking and installing dependencies..."
-packages=(
-    i3
-    i3status
-    rofi
-    dunst
-    xfce4-terminal
-    micro
-    polybar
-    build-essential
-    cmake
-    libjsoncpp-dev
-    libxcb-randr0-dev
-    libxcb-xinerama0-dev
-    libxcb-util-dev
-    libxcb-icccm4-dev
-    copyq
-    blueman
-    pasystray
-)
-unavailable_packages=(
-    libiw-dev
-)
-for pkg in "${unavailable_packages[@]}"; do
-    echo "Warning: Package $pkg may not be available in Linux Mint repositories. Skipping."
-done
-for pkg in "${packages[@]}"; do
-    if ! dpkg -l | grep -q " $pkg "; then
-        echo "Installing $pkg..."
-        sudo apt-get install -y --no-install-recommends "$pkg"
-        if [ $? -ne 0 ]; then
-            echo "Error: Failed to install $pkg. Continuing."
-        fi
-    else
-        echo "$pkg is already installed."
-    fi
-done
+# Update once
+sudo apt-get update
 
-# Create configuration directories
-echo "Creating configuration directories..."
-mkdir -p "$USER_HOME/.config/i3" "$USER_HOME/.config/polybar" "$USER_HOME/.config/rofi" "$USER_HOME/.config/dunst"
-if [ $? -eq 0 ]; then
-    echo "Configuration directories created."
-else
-    echo "Warning: Failed to create configuration directories."
-fi
+# Core packages in one shot (no build deps — those live in i3lock-color)
+sudo apt-get install -y --no-install-recommends \
+    i3 i3status rofi dunst polybar \
+    xfce4-terminal micro copyq blueman pasystray
 
-# Verify installations
-echo "Verifying installations..."
-if command -v i3 >/dev/null; then
-    echo "i3 is installed: $(i3 --version)"
-else
-    echo "Warning: i3 is not installed."
-fi
-if command -v polybar >/dev/null; then
-    echo "polybar is installed: $(polybar --version)"
-else
-    echo "Warning: polybar is not installed."
-fi
-if command -v rofi >/dev/null; then
-    echo "rofi is installed: $(rofi -v)"
-else
-    echo "Warning: rofi is not installed."
-fi
-if command -v dunst >/dev/null; then
-    echo "dunst is installed: $(dunst -v)"
-else
-    echo "Warning: dunst is not installed."
-fi
+# Config dirs (idempotent)
+mkdir -p "$USER_HOME/.config"/{i3,polybar,rofi,dunst}
 
-echo "i3-mint installation complete."
+echo "i3 + polybar + rofi + dunst installed"
+echo "   → i3 version: $(i3 --version 2>/dev/null || echo 'unknown')"
+echo "   → polybar:    $(polybar --version 2>/dev/null || echo 'not found')"
+echo "   → rofi:       $(rofi -v 2>/dev/null || echo 'not found')"
+echo "   → dunst:      $(dunst -v 2>/dev/null || echo 'not found')"
+
+echo "i3-mint core installation complete"

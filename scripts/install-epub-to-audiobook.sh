@@ -1,27 +1,36 @@
 #!/bin/bash
-# install-epub-to-audiobook.sh – your PDF→audiobook tool
+# install-epub-to-audiobook.sh – 2025 final: your PDF→audiobook converter
 
-USER=$(whoami)
-USER_HOME=$(eval echo ~$USER)
+set -euo pipefail
+
+USER_HOME="${HOME:?}"
 REPO_DIR="$USER_HOME/github-repos/epub_to_audiobook"
-VENV_DIR="$USER_HOME/i3ipc-venv"   # reusing your existing venv is fine, or make a new one
+VENV_DIR="$USER_HOME/.local/venv/epub-to-audiobook"
+LOG_DIR="$USER_HOME/log-files/install-epub-to-audiobook"
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$LOG_DIR/install-epub-to-audiobook-$(date +%Y%m%d-%H%M%S).txt") 2>&1
 
-echo "Installing epub_to_audiobook..."
+echo "Installing epub_to_audiobook (PDF/EPUB → audiobook with Piper TTS)..."
 
-# Clone if missing
-if [ ! -d "$REPO_DIR" ]; then
-    mkdir -p "$(dirname "$REPO_DIR")"
-    git clone https://github.com/yourusername/epub_to_audiobook.git "$REPO_DIR"
+# Clone or update repo
+if [[ -d "$REPO_DIR/.git" ]]; then
+    echo "Updating epub_to_audiobook repo..."
+    git -C "$REPO_DIR" pull --ff-only
+else
+    echo "Cloning epub_to_audiobook repo..."
+    git clone https://github.com/brettcrisp2/epub_to_audiobook.git "$REPO_DIR"
 fi
 
-# Create/activate venv + install deps
+# Dedicated venv (no conflict with i3ipc)
 python3 -m venv "$VENV_DIR" 2>/dev/null || true
+# shellcheck source=/dev/null
 source "$VENV_DIR/bin/activate"
 pip install --upgrade pip
-pip install -r "$REPO_DIR/requirements.txt"  # or whatever it needs
+pip install -r "$REPO_DIR/requirements.txt"
 
-# Desktop launcher (so you can launch from Rofi)
-cat > ~/.local/share/applications/epub-to-audiobook.desktop <<EOF
+# Rofi launcher
+LAUNCHER="$USER_HOME/.local/share/applications/epub-to-audiobook.desktop"
+cat > "$LAUNCHER" <<EOF
 [Desktop Entry]
 Name=EPUB to Audiobook
 Comment=Convert PDF/EPUB to audiobook with Piper TTS
@@ -29,7 +38,7 @@ Exec=$VENV_DIR/bin/python $REPO_DIR/main.py
 Icon=audio-x-generic
 Terminal=true
 Type=Application
-Categories=Utility;
+Categories=Utility;Audio;
 EOF
 
 echo "epub_to_audiobook ready → search 'EPUB to Audiobook' in Rofi"

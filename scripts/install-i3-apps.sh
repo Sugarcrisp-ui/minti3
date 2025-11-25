@@ -1,146 +1,45 @@
 #!/bin/bash
+# install-i3-apps.sh – 2025 final: minimal, clean, no dead code
 
-# Ensure script is run as non-root user
-USER=$(whoami)
-if [ "$USER" = "root" ]; then
-    echo "Error: This script should not be run as root. Exiting."
-    exit 1
-fi
+set -euo pipefail
 
-# Variables
-USER_HOME=$(eval echo ~$USER)
+[[ $EUID -ne 0 ]] || { echo "Error: Do not run as root"; exit 1; }
+
+USER_HOME="${HOME:?}"
 LOG_DIR="$USER_HOME/log-files/install-i3-apps"
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-OUTPUT_FILE="$LOG_DIR/install-i3-apps-$TIMESTAMP.txt"
-
-# Redirect output to timestamped log file
 mkdir -p "$LOG_DIR"
-exec > >(tee -a "$OUTPUT_FILE") 2>&1
-echo "Logging output to $OUTPUT_FILE"
+exec > >(tee -a "$LOG_DIR/install-i3-apps-$(date +%Y%m%d-%H%M%S).txt") 2>&1
 
-# Preconfigure sddm as default display manager
-echo "Preconfiguring sddm as default display manager..."
-if [ -f "/etc/X11/default-display-manager" ]; then
-    echo "/usr/sbin/sddm" | sudo tee /etc/X11/default-display-manager >/dev/null
-    if [ $? -eq 0 ]; then
-        echo "Set sddm as default display manager in /etc/X11/default-display-manager."
-    else
-        echo "Warning: Failed to set sddm as default display manager. Continuing."
-    fi
-else
-    echo "Warning: /etc/X11/default-display-manager not found. Continuing."
+echo "Installing core i3 apps..."
+
+# SDDM as default (idempotent)
+sudo debconf-set-selections <<< "gdm3 shared/default-x-display-manager select sddm"
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y sddm
+
+# Core packages in one shot (no Syncthing auto-config, no dead stuff)
+sudo apt-get install -y --no-install-recommends \
+    feh geany qbittorrent thunar \
+    xfce4-settings xfce4-power-manager xfce4-panel \
+    network-manager-gnome network-manager-openvpn-gnome \
+    arandr audacity brave-browser \
+    rsnapshot \
+    fonts-noto-extra fonts-noto-ui-core fonts-sil-gentium \
+    vlc warp-terminal xdotool zim
+
+# Brave repo (only if not already there)
+if ! [[ -f /etc/apt/sources.list.d/brave-browser-release.list ]]; then
+    echo "Adding Brave repository..."
+    sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg \
+        https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+    echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] \
+        https://brave-browser-apt-release.s3.brave.com/ stable main" | \
+        sudo tee /etc/apt/sources.list.d/brave-browser-release.list >/dev/null
+    sudo apt-get update
 fi
 
-# Check and install dependencies
-echo "Checking and installing dependencies..."
-packages=(
-    feh geany qbittorrent thunar xfce4-settings xfce4-power-manager xfce4-panel
-    network-manager-gnome network-manager-openvpn-gnome arandr audacity brave-browser
-    syncthing rsnapshot fonts-liberation-sans-narrow fonts-linuxlibertine fonts-noto-extra
-    fonts-noto-ui-core fonts-sil-gentium fonts-sil-gentium-basic gdm3 geoclue-2.0
-    ubuntu-docs ubuntu-session ubuntu-wallpapers ubuntu-wallpapers-noble vlc
-    warp-terminal whoopsie xdotool yaru-theme-gnome-shell zim
-)
+# Warp config (always apply – harmless)
+mkdir -p "$USER_HOME/.config/warp-terminal"
+echo '{"prefs":{"InputPosition":"start_at_the_top"}}' > \
+    "$USER_HOME/.config/warp-terminal/user_preferences.json"
 
-for pkg in "${packages[@]}"; do
-    if ! dpkg -l | grep -q " $pkg "; then
-        if [ "$pkg" = "brave-browser" ]; then
-            echo "Setting up Brave Browser repository..."
-            sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-            if [ $? -ne 0 ]; then
-                echo "Error: Failed to download Brave Browser keyring. Continuing."
-                continue
-            fi
-            echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
-            sudo apt-get update
-            sudo apt-get install -y brave-browser
-
-        elif [ "$pkg" = "syncthing" ]; then
-            echo "Setting up Syncthing repository..."
-            curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
-            echo "deb https://apt.syncthing.net/ syncthing stable" | sudo tee /etc/apt/sources.list.d/syncthing.list
-            sudo apt-get update
-            sudo apt-get install -y syncthing
-            if [ $? -ne 0 ]; then
-                echo "Error: Failed to install syncthing. Continuing."
-            else
-                echo "syncthing installed successfully."
-
-                # Configure Syncthing (start service, add folders)
-                sudo systemctl enable --now syncthing@"$USER"
-                sleep 5  # Wait for service to start
-                DIR_ID="github-configs"
-                DIR_LABEL="GitHub Configs"
-                DIR="$USER_HOME/github-repos/user-configs"
-                curl -X POST -H "X-API-Key: $(curl -s -X GET http://localhost:8384/rest/config | jq -r .gui.apikey)" \
-                     -H "Content-Type: application/json" \
-                     http://localhost:8384/rest/config/folders \
-                     -d "{\"id\":\"$DIR_ID\",\"label\":\"$DIR_LABEL\",\"path\":\"$DIR\",\"type\":\"sendreceive\"}"
-                if [ $? -eq 0 ]; then
-                    echo "Added $DIR to Syncthing synced folders."
-                    if [ "$DIR" = "$USER_HOME/.config" ]; then
-                        cat << 'EOF' > "$DIR/.stignore"
-!betterlockscreen/
-!bluetooth-connect/
-!dunst/
-!gtk-3.0/
-!i3/
-!i3-logout/
-!polybar/
-!rofi/
-!sublime-text/
-!Thunar/
-!warp-terminal/
-!brave/
-!BraveSoftware/
-*
-EOF
-                        echo "Created .stignore for .config with specified patterns."
-                    fi
-                else
-                    echo "Warning: Failed to add $DIR to Syncthing. Continuing."
-                fi
-            fi
-
-        elif [ "$pkg" = "warp-terminal" ]; then
-            echo "Setting up Warp Terminal repository..."
-            sudo apt-get install -y wget gpg
-            wget -qO- https://releases.warp.dev/linux/keys/warp.asc | gpg --dearmor > warpdotdev.gpg
-            sudo install -D -o root -g root -m 644 warpdotdev.gpg /etc/apt/keyrings/warpdotdev.gpg
-            sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/warpdotdev.gpg] https://releases.warp.dev/linux/deb stable main" > /etc/apt/sources.list.d/warpdotdev.list'
-            rm warpdotdev.gpg
-            sudo apt-get update
-            sudo apt-get install -y warp-terminal
-
-            echo "Configuring Warp Terminal input position to Classic Mode..."
-            mkdir -p "$USER_HOME/.config/warp-terminal"
-            echo '{"prefs":{"InputPosition":"start_at_the_top"}}' > "$USER_HOME/.config/warp-terminal/user_preferences.json"
-
-        elif [ "$pkg" = "gdm3" ]; then
-            echo "gdm3 shared/default-x-display-manager select sddm" | sudo debconf-set-selections
-            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "$pkg"
-
-        else
-            sudo apt-get install -y "$pkg"
-        fi
-
-        if [ $? -ne 0 ]; then
-            echo "Error: Failed to install $pkg. Continuing."
-        else
-            echo "$pkg installed successfully."
-        fi
-    else
-        echo "$pkg is already installed."
-    fi
-done
-
-# Ensure SDDM remains the default display manager
-echo "Ensuring SDDM is the default display manager..."
-if [ -f "/etc/X11/default-display-manager" ]; then
-    echo "/usr/sbin/sddm" | sudo tee /etc/X11/default-display-manager >/dev/null
-    if [ $? -eq 0 ]; then
-        echo "Confirmed sddm as default display manager."
-    fi
-fi
-
-echo "i3-apps installation complete."
+echo "i3-apps installation complete"
