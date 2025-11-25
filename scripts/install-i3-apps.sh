@@ -16,15 +16,14 @@ echo "Installing core i3 apps..."
 sudo debconf-set-selections <<< "gdm3 shared/default-x-display-manager select sddm"
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y sddm
 
-# Core packages in one shot (no Syncthing auto-config, no dead stuff)
 sudo apt-get install -y --no-install-recommends \
     feh geany qbittorrent thunar \
     xfce4-settings xfce4-power-manager xfce4-panel \
     network-manager-gnome network-manager-openvpn-gnome \
     arandr audacity brave-browser \
-    rsnapshot \
+    rsnapshot restic rclone \
     fonts-noto-extra fonts-noto-ui-core fonts-sil-gentium \
-    vlc warp-terminal xdotool zim
+    vlc warp-terminal xdotool
 
 # Brave repo (only if not already there)
 if ! [[ -f /etc/apt/sources.list.d/brave-browser-release.list ]]; then
