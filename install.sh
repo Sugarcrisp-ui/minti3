@@ -1,5 +1,5 @@
 #!/bin/bash
-# install.sh – minti3 full system setup + restore (2025 final version)
+# install.sh – minti3 full system setup + restore (2025 FINAL – perfect forever)
 
 USER=$(whoami)
 if [ "$USER" = "root" ]; then
@@ -32,18 +32,23 @@ fi
 cd "$GITHUB_REPOS_DIR/minti3" || exit 1
 
 # === CRITICAL: Require external backup drive ===
-if [ ! -d "/media/$USER/backup/daily.latest/backup.latest" ]; then
+if [ ! -d "/media/$USER/backup" ]; then
     echo "ERROR: External LUKS backup drive not found!"
     echo "       Plug in your drive and re-run this script."
-    echo "       Without it you will NOT have:"
-    echo "         • dotfiles (.config, .bin-personal, etc.)"
-    echo "         • SSH keys"
-    echo "         • personal data (Notebooks, warp-terminal, etc.)"
     exit 1
 fi
 
-CONFIG_SRC="/media/$USER/backup/daily.latest/backup.latest"
-echo "External backup found → starting FULL perfect restore..."
+# Find the newest ULTIMATE backup (no symlink dependency)
+LATEST_BACKUP=$(ls -1d /media/$USER/backup/ULTIMATE-* 2>/dev/null | sort | tail -1)
+if [ -z "$LATEST_BACKUP" ]; then
+    echo "ERROR: No ULTIMATE backup found on external drive!"
+    echo "       Run ultimate-backup.sh first."
+    exit 1
+fi
+
+CONFIG_SRC="$LATEST_BACKUP"
+echo "Found latest backup → $CONFIG_SRC"
+echo "Starting FULL perfect restore..."
 
 # Mount external LUKS drive (if not already)
 if ! mount | grep -q "/media/$USER/backup"; then
@@ -57,7 +62,9 @@ scripts=(
     "install-i3-apps.sh"
     "install-flatpaks.sh"
     "install-docker-services.sh"
+    "install-epub-to-audiobook.sh"
     "install-i3lock-color.sh"
+    "install-betterlockscreen.sh"
     "install-i3-logout.sh"
     "install-autotiling.sh"
     "install-sddm-simplicity.sh"
@@ -65,8 +72,8 @@ scripts=(
     "install-realvnc.sh"
     "setup-cron-jobs.sh"
     "update-i3ipc.sh"
-    "install-epub-to-audiobook.sh"
-    "thunar-navigate-back-keybinding.sh"
+    "set-dpi.sh"
+    "set-codec-sbc.sh"
 )
 
 for script in "${scripts[@]}"; do
@@ -78,13 +85,14 @@ for script in "${scripts[@]}"; do
     fi
 done
 
-# Restore user configs from external drive
-echo "Restoring user configurations from backup..."
+# Restore user configs from latest backup
+echo "Restoring user configurations from latest backup..."
 config_mappings=(
     ".config/brave-profiles:$USER_HOME/.config/brave-profiles"
     ".mozilla:$USER_HOME/.mozilla"
     ".ssh:$USER_HOME/.ssh"
     ".vscode:$USER_HOME/.vscode"
+    "Notebooks:$USER_HOME/Notebooks"
     "protonvpn-server-configs:$USER_HOME/protonvpn-server-configs"
     "sddm.conf:/etc/sddm.conf"
     "sudoers:/etc/sudoers"
@@ -93,7 +101,7 @@ config_mappings=(
 for mapping in "${config_mappings[@]}"; do
     src="${mapping%%:*}"
     dest="${mapping##*:}"
-    src_path="$CONFIG_SRC/$src"
+    src_path="$CONFIG_SRC/user/home/brett/$src"
     if [ -e "$src_path" ]; then
         mkdir -p "$(dirname "$dest")"
         cp -rf "$src_path" "$dest"
@@ -102,8 +110,8 @@ for mapping in "${config_mappings[@]}"; do
 done
 
 # Restore crontabs
-[ -f "$CONFIG_SRC/cron/user_crontab" ] && sudo crontab -u "$USER" "$CONFIG_SRC/cron/user_crontab" && echo "User crontab restored"
-[ -f "$CONFIG_SRC/cron/root_crontab" ] && sudo crontab -u root "$CONFIG_SRC/cron/root_crontab" && echo "Root crontab restored"
+[ -f "$CONFIG_SRC/user/cron/brett.cron" ] && crontab "$CONFIG_SRC/user/cron/brett.cron" && echo "User crontab restored"
+[ -f "$CONFIG_SRC/root/cron/root.cron" ] && sudo crontab "$CONFIG_SRC/root/cron/root.cron" && echo "Root crontab restored"
 
 echo "=== minti3 installation + full restore complete! ==="
 echo "Reboot and enjoy your perfect i3 desktop."
