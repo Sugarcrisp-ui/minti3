@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-i3-apps.sh – 2025 final: minimal, clean, no dead code
+# installi3apps.sh – 2025 final: minimal, clean, no dead code
 
 set -euo pipefail
 

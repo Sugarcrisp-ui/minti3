@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-docker-services.sh – 2025 final: ultra-clean, bullet-proof
+# installdockerservices.sh – 2025 final: ultra-clean, bullet-proof
 
 set -euo pipefail
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-i3lock-color.sh – your custom blur lock screen (2025 final)
+# installi3lockcolor.sh – your custom blur lock screen (2025 final)
 
 USER=$(whoami)
 if [ "$USER" = "root" ]; then

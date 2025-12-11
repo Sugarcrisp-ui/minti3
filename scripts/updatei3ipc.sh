@@ -1,5 +1,5 @@
 #!/bin/bash
-# update-i3ipc.sh – 2025 final: keep i3ipc fresh in dedicated venv
+# updatei3ipc.sh – 2025 final: keep i3ipc fresh in dedicated venv
 
 set -euo pipefail
 

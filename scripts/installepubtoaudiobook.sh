@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-epub-to-audiobook.sh – 2025 final: your PDF→audiobook converter
+# installepubtoaudiobook.sh – 2025 final: your PDF→audiobook converter
 
 set -euo pipefail
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-betterlockscreen.sh – 2025 final: your Tesla lock screen
+# installbetterlockscreen.sh – 2025 final: your Tesla lock screen
 
 set -euo pipefail
 

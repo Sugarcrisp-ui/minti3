@@ -1,5 +1,5 @@
 #!/bin/bash
-# automount-external-luks.sh – 2025 final: safe, idempotent, zero surprises
+# automountexternalluks.sh – 2025 final: safe, idempotent, zero surprises
 
 set -euo pipefail
 IFS=$'\n\t'

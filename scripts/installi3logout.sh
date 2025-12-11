@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-i3-logout.sh – 2025 final: your custom logout menu
+# installi3logout.sh – 2025 final: your custom logout menu
 
 set -euo pipefail
 

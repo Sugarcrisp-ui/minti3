@@ -1,5 +1,5 @@
 #!/bin/bash
-# setup-cron-jobs.sh – 2025 final: restore your real crontabs from external drive
+# setupcronjobs.sh – 2025 final: restore your real crontabs from external drive
 
 set -euo pipefail
 

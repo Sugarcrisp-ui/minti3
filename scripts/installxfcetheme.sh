@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-xfce-theme.sh – 2025 final: Arc-Darker theme (your look)
+# installxfcetheme.sh – 2025 final: Arc-Darker theme (your look)
 
 set -euo pipefail
 

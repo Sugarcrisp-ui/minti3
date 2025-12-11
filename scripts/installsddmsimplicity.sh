@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-sddm-simplicity.sh – 2025 final: your custom SDDM theme
+# installsddmsimplicity.sh – 2025 final: your custom SDDM theme
 
 set -euo pipefail
 

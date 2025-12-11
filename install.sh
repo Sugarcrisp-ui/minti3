@@ -58,22 +58,22 @@ fi
 
 # Run all install scripts
 scripts=(
-    "install-i3-mint.sh"
-    "install-i3-apps.sh"
-    "install-flatpaks.sh"
-    "install-docker-services.sh"
-    "install-epub-to-audiobook.sh"
-    "install-i3lock-color.sh"
-    "install-betterlockscreen.sh"
-    "install-i3-logout.sh"
-    "install-autotiling.sh"
-    "install-sddm-simplicity.sh"
-    "install-xfce-theme.sh"
-    "install-realvnc.sh"
-    "setup-cron-jobs.sh"
-    "update-i3ipc.sh"
-    "set-dpi.sh"
-    "set-codec-sbc.sh"
+    "installi3mint.sh"
+    "installi3apps.sh"
+    "installflatpaks.sh"
+    "installdockerservices.sh"
+    "installepubtoaudiobook.sh"
+    "installi3lockcolor.sh"
+    "installbetterlockscreen.sh"
+    "installi3logout.sh"
+    "installautotiling.sh"
+    "installsddmsimplicity.sh"
+    "installxfcetheme.sh"
+    "installrealvnc.sh"
+    "setupcronjobs.sh"
+    "updatei3ipc.sh"
+    "setdpi.sh"
+    "setcodecsbc.sh"
 )
 
 for script in "${scripts[@]}"; do

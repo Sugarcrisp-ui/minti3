@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-autotiling.sh – 2025 final: minimal, fast, bullet-proof
+# installautotiling.sh – 2025 final: minimal, fast, bullet-proof
 
 set -euo pipefail
 

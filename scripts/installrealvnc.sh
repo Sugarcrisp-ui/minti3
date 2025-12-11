@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-realvnc.sh – 2025 final: official repo, no downloads
+# installrealvnc.sh – 2025 final: official repo, no downloads
 
 set -euo pipefail
 

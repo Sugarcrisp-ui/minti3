@@ -1,5 +1,5 @@
 #!/bin/bash
-# install-i3-mint.sh – 2025 final: core i3 + polybar + rofi + dunst
+# installi3mint.sh – 2025 final: core i3 + polybar + rofi + dunst
 
 set -euo pipefail
 
