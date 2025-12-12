@@ -1,41 +1,20 @@
 #!/bin/bash
-# set-codec-sbc.sh – 2025 final: force SBC on your Bluetooth devices
-# Runs on login → perfect audio every time
+# setcodecsbc.sh – 2025-12-12 FINAL: Mint 22.1 codec pack
 
 set -euo pipefail
+[[ $EUID -ne 0 ]] || { echo "Error: Do not run as root"; exit 1; }
 
-LOG="$HOME/log-files/bluetooth/set-codec-sbc.log"
-mkdir -p "$(dirname "$LOG")"
-log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOG"; }
+LOG_DIR="$HOME/log-files/install-codecs"
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$LOG_DIR/install-codecs-$(date +%Y%m%d-%H%M%S).txt") 2>&1
 
-# Your devices (add/remove as needed)
-declare -A DEVICES=(
-    ["C0:C2:0F:86:2A:7A"]="AirPods Black"
-    ["41:42:84:E3:BC:26"]="Buds Green"
-    ["41:42:EB:13:29:6A"]="Buds Red"
-)
+echo "Installing Mint codec pack (H.264, fonts, etc.)..."
 
-log "Checking Bluetooth devices for SBC codec..."
+# Mint 22.1 equivalent of ubuntu-restricted-extras
+sudo apt-get update
+sudo apt-get install -y mint-meta-codecs
 
-for mac in "${!DEVICES[@]}"; do
-    card="bluez_card.$(echo "$mac" | tr ':' '_')"
+# Extra fonts most people want
+sudo apt-get install -y fonts-crosextra-carlito fonts-crosextra-caladea
 
-    # Wait up to 5 seconds for the card to appear
-    for i in {1..5}; do
-        if pactl list cards | grep -q "$card"; then
-            current=$(pactl send-message /card/"$card"/bluez get-codec 2>/dev/null | tr -d '"')
-            log "Found ${DEVICES[$mac]} ($mac) → current codec: ${current:-none}"
-
-            if [[ "$current" != "sbc" ]]; then
-                log "Switching ${DEVICES[$mac]} to SBC"
-                pactl send-message /card/"$card"/bluez switch-codec '"sbc"' >> "$LOG" 2>&1 || log "Failed to switch"
-            else
-                log "${DEVICES[$mac]} already on SBC"
-            fi
-            break
-        fi
-        sleep 1
-    done
-done
-
-log "SBC check complete"
+echo "Codecs and fonts installed – YouTube, Netflix, etc. ready"
