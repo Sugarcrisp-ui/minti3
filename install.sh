@@ -1,5 +1,5 @@
 #!/bin/bash
-# install.sh – minti3 full system setup + restore (2025-12 FINAL – T14 perfect)
+# install.sh – minti3 full system setup + restore (2025-12-12 FINAL – T14 PERFECT)
 
 USER=$(whoami)
 if [ "$USER" = "root" ]; then
@@ -37,24 +37,22 @@ if [ ! -d "$GITHUB_REPOS_DIR/minti3" ]; then
 fi
 cd "$GITHUB_REPOS_DIR/minti3" || exit 1
 
-# === CRITICAL: Find external LUKS backup drive automatically (2025-12 robust version) ===
-ULTIMATE_PATH=$(find /media/$USER -maxdepth 3 -type d -name "ULTIMATE*" 2>/dev/null | head -n 1)
+# === CRITICAL: Find backup drive – works with /backup OR /backup2 automatically ===
+ULTIMATE_PATH=$(find /media/$USER -type d \( -name "backup" -o -name "backup2" \) -prune -o -type d -name "ULTIMATE*" -print 2>/dev/null | head -n 1)
+
 if [ -z "$ULTIMATE_PATH" ]; then
-    echo "ERROR: No external backup drive containing an ULTIMATE* folder was found!"
-    echo "   Plug in backup or backup2 and re-run the script."
+    echo "ERROR: No ULTIMATE* backup found on any mounted drive under /media/$USER"
+    echo "   Looked in /media/$USER/backup and /media/$USER/backup2 (and subfolders)"
+    echo "   Plug in your backup drive and re-run."
     exit 1
 fi
 
 BACKUP_ROOT=$(dirname "$ULTIMATE_PATH")
 LATEST_BACKUP=$(find "$BACKUP_ROOT" -type d -name "ULTIMATE*" 2>/dev/null | sort -r | head -n 1)
-if [ -z "$LATEST_BACKUP" ]; then
-    echo "ERROR: Could not determine the newest ULTIMATE backup!"
-    exit 1
-fi
 
 CONFIG_SRC="$LATEST_BACKUP"
-echo "Found backup drive at   → $BACKUP_ROOT"
-echo "Using latest backup     → $LATEST_BACKUP"
+echo "Found backup drive → $BACKUP_ROOT"
+echo "Using latest backup → $LATEST_BACKUP"
 
 # Run all install scripts
 scripts=(
@@ -85,7 +83,7 @@ for script in "${scripts[@]}"; do
     fi
 done
 
-# Restore user configs from latest backup (runs AFTER all apps exist)
+# Restore user configs from latest backup
 echo "Restoring user configurations from latest backup..."
 config_mappings=(
     ".config/brave-profiles:$USER_HOME/.config/brave-profiles"
