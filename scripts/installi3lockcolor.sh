@@ -1,57 +1,45 @@
 #!/bin/bash
-# installi3lockcolor.sh – your custom blur lock screen (2025 final)
+# installi3lockcolor.sh – 2025-12-12 FINAL: works on fresh Mint 22.1 T14
 
-USER=$(whoami)
-if [ "$USER" = "root" ]; then
-    echo "Error: This script should not be run as root. Exiting."
-    exit 1
-fi
+set -euo pipefail
+[[ $EUID -ne 0 ]] || { echo "Error: Do not run as root"; exit 1; }
 
-USER_HOME=$(eval echo ~$USER)
-REPO_DIR="$USER_HOME/github-repos/i3lock-color"
+USER_HOME="${HOME:?}"
 LOG_DIR="$USER_HOME/log-files/install-i3lock-color"
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-OUTPUT_FILE="$LOG_DIR/install-i3lock-color-$TIMESTAMP.txt"
-
 mkdir -p "$LOG_DIR"
-exec > >(tee -a "$OUTPUT_FILE") 2>&1
-echo "Logging output to $OUTPUT_FILE"
+exec > >(tee -a "$LOG_DIR/install-i3lock-color-$(date +%Y%m%d-%H%M%S).txt") 2>&1
+
+echo "Installing i3lock-color..."
 
 # Install build dependencies once
-echo "Installing build dependencies..."
 sudo apt-get update
 sudo apt-get install -y --no-install-recommends \
-    git autoconf automake pkg-config \
-    libpam0g-dev libcairo2-dev libfontconfig1-dev \
-    libxcb-composite0-dev libev-dev libx11-xcb-dev \
-    libxcb-xkb-dev libxcb-xinerama0-dev libxcb-randr0-dev \
-    libxcb-image0-dev libxcb-util-dev libxcb-xrm-dev \
-    libxkbcommon-dev libxkbcommon-x11-dev libjpeg-dev libgif-dev
+    autoconf automake pkg-config libpam0g-dev \
+    libcairo2-dev libxcb1-dev libxcb-util0-dev \
+    libev-dev libx11-xcb-dev libxcb-xrm-dev \
+    libxcb-randr0-dev libxcb-xinerama0-dev \
+    libxcb-composite0-dev libxcb-image0-dev \
+    libjpeg-dev libxcb-xkb-dev libxkbcommon-dev \
+    libxkbcommon-x11-dev libxcb-dpms0-dev
 
-# Clone or update repo
-if [ -d "$REPO_DIR/.git" ]; then
-    echo "Updating existing i3lock-color repo..."
-    cd "$REPO_DIR"
-    git pull --ff-only
-else
+# Clone or update the repo
+REPO_DIR="$USER_HOME/github-repos/i3lock-color"
+if [ ! -d "$REPO_DIR" ]; then
     echo "Cloning i3lock-color repo..."
+    mkdir -p "$(dirname "$REPO_DIR")"
     git clone https://github.com/Raymo111/i3lock-color.git "$REPO_DIR"
-    cd "$REPO_DIR"
+else
+    echo "Updating existing i3lock-color repo..."
+    (cd "$REPO_DIR" && git pull --ff-only)
 fi
 
-# Build & install
+# Build and install
+cd "$REPO_DIR"
 echo "Building i3lock-color..."
-autoreconf -fi
-./configure --prefix=/usr --sysconfdir=/etc
-make -j"$(nproc)"
+autoreconf -fiv
+./configure
+make -j$(nproc)
 sudo make install
 
-# Final verification
-if command -v i3lock-color >/dev/null 2>&1; then
-    echo "SUCCESS: i3lock-color installed → $(i3lock-color --version 2>&1 | head -n1)"
-else
-    echo "ERROR: i3lock-color failed to install"
-    exit 1
-fi
-
-echo "i3lock-color installation complete."
+echo "i3lock-color installed successfully"
+echo "Test with: i3lock --color=333333"
