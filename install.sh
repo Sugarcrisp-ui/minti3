@@ -1,5 +1,5 @@
 #!/bin/bash
-# install.sh – minti3 full system setup + restore (2025-12-12 FINAL – 100% clean)
+# install.sh – minti3 full system setup + restore (2025-12-12 FINAL – 100% clean, no more pieces)
 
 USER=$(whoami)
 if [ "$USER" = "root" ]; then
@@ -37,7 +37,7 @@ if [ ! -d "$GITHUB_REPOS_DIR/minti3" ]; then
 fi
 cd "$GITHUB_REPOS_DIR/minti3" || exit 1
 
-# FINAL BACKUP DETECTION – works with backup OR backup2, any depth, any ULTIMATE* folder
+# FINAL BACKUP DETECTION – works with backup OR backup2, any depth
 ULTIMATE_PATH=$(find /media/$USER -maxdepth 4 -type d -name "ULTIMATE*" -print 2>/dev/null | head -n 1)
 
 if [ -z "$ULTIMATE_PATH" ]; then
@@ -83,15 +83,19 @@ for script in "${scripts[@]}"; do
     fi
 done
 
-# Restore user configs from latest backup
+# FINAL CLEAN RESTORE LIST – exactly what you want, nothing else
 echo "Restoring user configurations from latest backup..."
 config_mappings=(
+    ".bin-personal:$USER_HOME/.bin-personal"
     ".config/brave-profiles:$USER_HOME/.config/brave-profiles"
     ".mozilla:$USER_HOME/.mozilla"
     ".ssh:$USER_HOME/.ssh"
     ".vscode:$USER_HOME/.vscode"
-    "Notebooks:$USER_HOME/Notebooks"
     "protonvpn-server-configs:$USER_HOME/protonvpn-server-configs"
+    "Calibre-Library:$USER_HOME/Calibre-Library"
+    "dotfiles:$USER_HOME/dotfiles"
+    "OpenAudible:$USER_HOME/OpenAudible"
+    "Trading:$USER_HOME/Trading"
     "sddm.conf:/etc/sddm.conf"
     "sudoers:/etc/sudoers"
 )
