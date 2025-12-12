@@ -1,5 +1,5 @@
 #!/bin/bash
-# installepubtoaudiobook.sh – 2025-12-12 FINAL: correct filename main.py
+# installepubtoaudiobook.sh – FINAL 2025-12-12: PUBLIC HTTPS ONLY – NO CREDENTIAL PROMPT EVER
 
 set -euo pipefail
 [[ $EUID -ne 0 ]] || { echo "Error: Do not run as root"; exit 1; }
@@ -9,30 +9,22 @@ LOG_DIR="$USER_HOME/log-files/install-epub"
 mkdir -p "$LOG_DIR"
 exec > >(tee -a "$LOG_DIR/install-epub-$(date +%Y%m%d-%H%M%S).txt") 2>&1
 
-echo "Installing epub_to_audiobook – correct filename main.py, Mint 22.1 compatible"
+echo "Installing epub_to_audiobook – PUBLIC HTTPS (no credentials)"
 
-# Install pip if missing
-if ! command -v pip3 >/dev/null 2>&1; then
-    echo "Installing python3-pip..."
-    sudo apt-get update
-    sudo apt-get install -y python3-pip
-fi
+REPO_DIR="$USER_HOME/github-repos/epub_to_audiobook"
 
-# Clone or update the public repo
-if [ ! -d "$USER_HOME/epub_to_audiobook" ]; then
-    echo "Cloning epub_to_audiobook (public HTTPS)..."
-    git clone --depth 1 https://github.com/p0n1/epub_to_audiobook.git "$USER_HOME/epub_to_audiobook"
+if [ ! -d "$REPO_DIR" ]; then
+    echo "Cloning public repo..."
+    git clone --depth 1 https://github.com/p0n1/epub_to_audiobook.git "$REPO_DIR"
 else
-    echo "Updating existing epub_to_audiobook repo..."
-    (cd "$USER_HOME/epub_to_audiobook" && git pull --ff-only)
+    echo "Updating repo..."
+    (cd "$REPO_DIR" && git pull --ff-only)
 fi
 
-# Install Python deps with PEP 668 override
-echo "Installing Python requirements..."
-pip3 install --user --break-system-packages -r "$USER_HOME/epub_to_audiobook/requirements.txt"
+# Install deps (safe for Mint 22.1)
+pip3 install --user --break-system-packages -r "$REPO_DIR/requirements.txt"
 
-# Correct filename is main.py
-chmod +x "$USER_HOME/epub_to_audiobook/main.py"
+# Correct binary
+chmod +x "$REPO_DIR/main.py"
 
-echo "epub_to_audiobook installed and ready"
-echo "Run with: ~/epub_to_audiobook/main.py [options]"
+echo "epub_to_audiobook ready – run with ~/github-repos/epub_to_audiobook/main.py"
