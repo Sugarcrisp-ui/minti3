@@ -1,5 +1,5 @@
 #!/bin/bash
-# installepubtoaudiobook.sh – FINAL 2025-12-12 – NEVER asks for credentials again
+# installepubtoaudiobook.sh – FINAL 2025-12-12 – deletes old repo, no credential prompt EVER
 
 set -euo pipefail
 [[ $EUID -ne 0 ]] || { echo "Error: Do not run as root"; exit 1; }
@@ -7,22 +7,18 @@ set -euo pipefail
 USER_HOME="${HOME:?}"
 REPO_DIR="$USER_HOME/github-repos/epub_to_audiobook"
 
-echo "Installing epub_to_audiobook – 100% clean, no credential prompt ever"
+echo "Installing epub_to_audiobook – 100% clean, no prompt"
 
-# NUCLEAR CLEAN: delete any old version with bad config
+# This is the ONLY thing that works: delete any old version with cached credentials
 rm -rf "$REPO_DIR"
 
-# Fresh clone from the public repo
+# Fresh public clone
 git clone --depth 1 https://github.com/p0n1/epub_to_audiobook.git "$REPO_DIR"
 
-# Force-disable any credential helper for this repo (prevents future prompts)
-git -C "$REPO_DIR" config credential.helper ""
-
-# Install Python deps
+# Install deps
 pip3 install --user --break-system-packages -r "$REPO_DIR/requirements.txt"
 
 # Make executable
 chmod +x "$REPO_DIR/main.py"
 
 echo "epub_to_audiobook installed – ready"
-echo "Run with: ~/github-repos/epub_to_audiobook/main.py"
