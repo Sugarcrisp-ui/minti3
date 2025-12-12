@@ -63,9 +63,9 @@ for script in "${scripts[@]}"; do
     [ -f "$SCRIPTS_DIR/$script" ] && bash "$SCRIPTS_DIR/$script" || echo "Warning: $script missing"
 done
 
-# FULL RESTORE – everything you want
-echo "=== RESTORING ALL YOUR FILES FROM BACKUP ==="
-rsync -ah --info=progress2 "$CONFIG_SRC"/. "$USER_HOME"/
+# FULL RESTORE – CORRECTED: delete existing first, then copy clean
+echo "=== RESTORING ALL YOUR FILES FROM BACKUP (clean overwrite) ==="
+rsync -ah --delete --info=progress2 "$CONFIG_SRC"/. "$USER_HOME"/
 
 echo "=== minti3 installation + full restore complete! ==="
 echo "Reboot → choose i3 → perfection"
