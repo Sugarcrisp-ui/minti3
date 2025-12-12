@@ -1,44 +1,26 @@
 #!/bin/bash
-# installepubtoaudiobook.sh – 2025 final: your PDF→audiobook converter
+# installepubtoaudiobook.sh – 2025-12-12 FINAL: HTTPS clone of public repo (no credentials, no SSH)
 
 set -euo pipefail
+[[ $EUID -ne 0 ]] || { echo "Error: Do not run as root"; exit 1; }
 
 USER_HOME="${HOME:?}"
-REPO_DIR="$USER_HOME/github-repos/epub_to_audiobook"
-VENV_DIR="$USER_HOME/.local/venv/epub-to-audiobook"
-LOG_DIR="$USER_HOME/log-files/install-epub-to-audiobook"
+LOG_DIR="$USER_HOME/log-files/install-epub"
 mkdir -p "$LOG_DIR"
-exec > >(tee -a "$LOG_DIR/install-epub-to-audiobook-$(date +%Y%m%d-%H%M%S).txt") 2>&1
+exec > >(tee -a "$LOG_DIR/install-epub-$(date +%Y%m%d-%H%M%S).txt") 2>&1
 
-echo "Installing epub_to_audiobook (PDF/EPUB → audiobook with Piper TTS)..."
+echo "Installing epub_to_audiobook (public HTTPS clone – no auth needed)..."
 
-# Clone or update repo
-if [[ -d "$REPO_DIR/.git" ]]; then
-    echo "Updating epub_to_audiobook repo..."
-    git -C "$REPO_DIR" pull --ff-only
+# Public HTTPS clone (original repo is public – no prompt ever)
+if [ ! -d "$USER_HOME/epub_to_audiobook" ]; then
+    git clone --depth 1 https://github.com/p0n1/epub_to_audiobook.git "$USER_HOME/epub_to_audiobook"
 else
-    echo "Cloning epub_to_audiobook repo..."
-    git clone https://github.com/brettcrisp2/epub_to_audiobook.git "$REPO_DIR"
+    echo "Already exists – pulling latest"
+    (cd "$USER_HOME/epub_to_audiobook" && git pull)
 fi
 
-# Dedicated venv (no conflict with i3ipc)
-python3 -m venv "$VENV_DIR" 2>/dev/null || true
-# shellcheck source=/dev/null
-source "$VENV_DIR/bin/activate"
-pip install --upgrade pip
-pip install -r "$REPO_DIR/requirements.txt"
+# Dependencies + make executable
+pip3 install --user -r "$USER_HOME/epub_to_audiobook/requirements.txt" || echo "Pip deps skipped (manual later if needed)"
+chmod +x "$USER_HOME/epub_to_audiobook/epub_to_audiobook.py"
 
-# Rofi launcher
-LAUNCHER="$USER_HOME/.local/share/applications/epub-to-audiobook.desktop"
-cat > "$LAUNCHER" <<EOF
-[Desktop Entry]
-Name=EPUB to Audiobook
-Comment=Convert PDF/EPUB to audiobook with Piper TTS
-Exec=$VENV_DIR/bin/python $REPO_DIR/main.py
-Icon=audio-x-generic
-Terminal=true
-Type=Application
-Categories=Utility;Audio;
-EOF
-
-echo "epub_to_audiobook ready → search 'EPUB to Audiobook' in Rofi"
+echo "epub_to_audiobook ready – run with ~/epub_to_audiobook/epub_to_audiobook.py [options]"

@@ -1,5 +1,5 @@
 #!/bin/bash
-# installi3apps.sh – 2025-12-12 FINAL: Brave & Warp fixed for Mint 22.1 (Xia)
+# installi3apps.sh – 2025-12-12 FINAL: Brave & Warp fixed for Mint 22.1 (Xia) – .list for Brave
 
 set -euo pipefail
 [[ $EUID -ne 0 ]] || { echo "Error: Do not run as root"; exit 1; }
@@ -25,14 +25,14 @@ sudo apt-get install -y --no-install-recommends \
 sudo debconf-set-selections <<< "gdm3 shared/default-x-display-manager select sddm" 2>/dev/null || true
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y sddm || true
 
-# Brave – Official Mint 22.1 method (curl .sources file, no .list errors)
+# Brave – Official method with .list file (fixes "locate package" on Mint 22.1)
 if ! command -v brave-browser >/dev/null 2>&1; then
     echo "Installing Brave Browser..."
     sudo apt install -y curl
     sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg \
         https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-    sudo curl -fsSLo /etc/apt/sources.list.d/brave-browser-release.sources \
-        https://brave-browser-apt-release.s3.brave.com/brave-browser.sources
+    echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | \
+        sudo tee /etc/apt/sources.list.d/brave-browser-release.list >/dev/null
     sudo apt update
     sudo apt install -y brave-browser
 else
