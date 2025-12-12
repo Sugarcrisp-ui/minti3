@@ -1,8 +1,7 @@
 #!/bin/bash
-# installrealvnc.sh – 2025 final: official repo, no downloads
+# installrealvnc.sh – 2025-12-12 FINAL: official RealVNC repo, silent install
 
 set -euo pipefail
-
 [[ $EUID -ne 0 ]] || { echo "Error: Do not run as root"; exit 1; }
 
 USER_HOME="${HOME:?}"
@@ -12,17 +11,20 @@ exec > >(tee -a "$LOG_DIR/install-realvnc-$(date +%Y%m%d-%H%M%S).txt") 2>&1
 
 echo "Installing RealVNC (remote support) from official repo..."
 
-# Add RealVNC repo (idempotent)
-if ! [[ -f /etc/apt/sources.list.d/realvnc.list ]]; then
-    wget -qO- https://downloads.realvnc.com/download/file/vnc.files/realvnc-repo.asc | sudo tee /etc/apt/trusted.gpg.d/realvnc.gpg >/dev/null
-    echo "deb https://downloads.realvnc.com/download/file/vnc.files realvnc noble main" | sudo tee /etc/apt/sources.list.d/realvnc.list >/dev/null
-    sudo apt-get update
-fi
+# Add RealVNC GPG key and repository (official method – works on Mint 22.1)
+sudo mkdir -p /etc/apt/keyrings
+sudo curl -fsSL https://archive.realvnc.com/repos/raspbian/public.gpg | sudo tee /etc/apt/keyrings/realvnc.gpg > /dev/null
 
-# Install
-sudo apt-get install -y --no-install-recommends realvnc-vnc-server realvnc-vnc-viewer
+echo "deb [signed-by=/etc/apt/keyrings/realvnc.gpg] https://archive.realvnc.com/repos/raspbian/raspbian bookworm main" | \
+    sudo tee /etc/apt/sources.list.d/realvnc.list > /dev/null
 
-# Enable service
-sudo systemctl enable --now vncserver-x11-serviced 2>/dev/null || true
+# Install VNC Server (64-bit)
+sudo apt-get update
+sudo apt-get install -y realvnc-vnc-server
 
-echo "RealVNC installed → sign in with your RealVNC account to configure"
+# Enable and start service (cloud mode – you’ll sign in later)
+sudo systemctl enable vncserver-x11-serviced.service
+sudo systemctl start vncserver-x11-serviced.service
+
+echo "RealVNC Server installed and running"
+echo "Sign in at https://remote.realvnc.com with your RealVNC account"
