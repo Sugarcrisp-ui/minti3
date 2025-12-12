@@ -32,21 +32,26 @@ fi
 cd "$GITHUB_REPOS_DIR/minti3" || exit 1
 
 # === CRITICAL: Find external LUKS backup drive automatically ===
-# Look for any mounted backup drive that contains an ULTIMATE-* folder
-BACKUP_ROOT=$(find /media/$USER -maxdepth 2 -type d -name "ULTIMATE-*" -exec dirname {} \; | head -1)
-if [ -z "$BACKUP_ROOT" ]; then
-    echo "ERROR: No external backup drive with an ULTIMATE-* folder found!"
+# Look for any mounted backup drive that contains an ULTIMATE* folder
+ULTIMATE_PATH=$(find /media/$USER -maxdepth 2 -type d -name "ULTIMATE*" -print 2>/dev/null | head -1)
+if [ -z "$ULTIMATE_PATH" ]; then
+    echo "ERROR: No external backup drive with an ULTIMATE* folder found!"
     echo "   Checked under /media/$USER"
     echo "   Plug in backup or backup2 and re-run."
     exit 1
 fi
 
+BACKUP_ROOT=$(dirname "$ULTIMATE_PATH")
 # Find the newest ULTIMATE backup inside that mount
-LATEST_BACKUP=$(find "$BACKUP_ROOT" -type d -name "ULTIMATE-*" | sort | tail -1)
+LATEST_BACKUP=$(find "$BACKUP_ROOT" -type d -name "ULTIMATE*" -print 2>/dev/null | sort | tail -1)
 if [ -z "$LATEST_BACKUP" ]; then
     echo "ERROR: Could not determine latest ULTIMATE backup!"
     exit 1
 fi
+
+CONFIG_SRC="$LATEST_BACKUP"
+echo "Found external backup drive → $BACKUP_ROOT"
+echo "Using latest backup → $LATEST_BACKUP"
 
 CONFIG_SRC="$LATEST_BACKUP"
 echo "Found external backup drive → $BACKUP_ROOT"
