@@ -1,5 +1,5 @@
 #!/bin/bash
-# installepubtoaudiobook.sh – 2025-12-12 FINAL: public clone + pip + correct path
+# installepubtoaudiobook.sh – 2025-12-12 FINAL: works on Mint 22.1 / Ubuntu 24.04+ (PEP 668 fix)
 
 set -euo pipefail
 [[ $EUID -ne 0 ]] || { echo "Error: Do not run as root"; exit 1; }
@@ -9,16 +9,16 @@ LOG_DIR="$USER_HOME/log-files/install-epub"
 mkdir -p "$LOG_DIR"
 exec > >(tee -a "$LOG_DIR/install-epub-$(date +%Y%m%d-%H%M%S).txt") 2>&1
 
-echo "Installing epub_to_audiobook – public HTTPS clone, no auth, no pip errors"
+echo "Installing epub_to_audiobook – Mint 22.1 / Ubuntu 24.04+ compatible"
 
-# Install pip if missing (Mint doesn't have it by default)
+# Install pip if missing
 if ! command -v pip3 >/dev/null 2>&1; then
     echo "Installing python3-pip..."
     sudo apt-get update
     sudo apt-get install -y python3-pip
 fi
 
-# Clone/update the public repo (no SSH, no credentials ever)
+# Clone or update the public repo (no SSH ever)
 if [ ! -d "$USER_HOME/epub_to_audiobook" ]; then
     echo "Cloning epub_to_audiobook (public HTTPS)..."
     git clone --depth 1 https://github.com/p0n1/epub_to_audiobook.git "$USER_HOME/epub_to_audiobook"
@@ -27,11 +27,11 @@ else
     (cd "$USER_HOME/epub_to_audiobook" && git pull --ff-only)
 fi
 
-# Install Python dependencies (user install – safe & idempotent)
+# Install Python deps with PEP 668 override (safe for personal use)
 echo "Installing Python requirements..."
-pip3 install --user -r "$USER_HOME/epub_to_audiobook/requirements.txt"
+pip3 install --user --break-system-packages -r "$USER_HOME/epub_to_audiobook/requirements.txt"
 
-# Make the script executable
+# Make executable
 chmod +x "$USER_HOME/epub_to_audiobook/epub_to_audiobook.py"
 
 echo "epub_to_audiobook installed and ready"
