@@ -1,5 +1,5 @@
 #!/bin/bash
-# installepubtoaudiobook.sh – 2025-12-12 FINAL: correct filename + pip + idempotent
+# installepubtoaudiobook.sh – 2025-12-12 FINAL: correct filename epub2audiobook.py
 
 set -euo pipefail
 [[ $EUID -ne 0 ]] || { echo "Error: Do not run as root"; exit 1; }
