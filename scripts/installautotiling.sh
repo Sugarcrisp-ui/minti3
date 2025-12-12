@@ -1,47 +1,53 @@
 #!/bin/bash
-# installautotiling.sh – 2025 final: minimal, fast, bullet-proof
+# installautotiling.sh – 2025-12-12 FINAL: correct filename autotiling/main.py
 
 set -euo pipefail
-
 [[ $EUID -ne 0 ]] || { echo "Error: Do not run as root"; exit 1; }
 
 USER_HOME="${HOME:?}"
-VENV="$USER_HOME/i3ipc-venv"
-BIN="$USER_HOME/.bin-personal"
-REPO="$USER_HOME/autotiling"
 LOG_DIR="$USER_HOME/log-files/install-autotiling"
 mkdir -p "$LOG_DIR"
 exec > >(tee -a "$LOG_DIR/install-autotiling-$(date +%Y%m%d-%H%M%S).txt") 2>&1
 
 echo "Installing autotiling (golden-ratio split)..."
 
-# Dependencies + venv in one shot
-sudo apt-get install -y --no-install-recommends git python3 python3-pip python3-venv
+# Install python3-venv if missing
+sudo apt-get update
+sudo apt-get install -y python3-venv
 
-# venv + i3ipc
-python3 -m venv "$VENV"
-# shellcheck source=/dev/null
-source "$VENV/bin/activate"
-pip install --upgrade pip
-pip install i3ipc
-deactivate
-
-# Clone / update repo
-if [[ -d "$REPO/.git" ]]; then
-    git -C "$REPO" pull --ff-only
-else
-    git clone https://github.com/nwg-piotr/autotiling.git "$REPO"
+# Create virtual environment
+VENV_DIR="$USER_HOME/i3ipc-venv"
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Creating Python virtual environment..."
+    python3 -m venv "$VENV_DIR"
 fi
 
-# Install binary
-mkdir -p "$BIN"
-cp "$REPO/autotiling.py" "$BIN/autotiling"
-chmod +x "$BIN/autotiling"
-sed -i "1s|.*|#!$VENV/bin/python3|" "$BIN/autotiling"
+# Activate venv and upgrade pip + install i3ipc
+source "$VENV_DIR/bin/activate"
+pip install --upgrade pip
+pip install i3ipc python-xlib
 
-# i3 config – idempotent
-I3_CONFIG="$USER_HOME/.config/i3/config"
-LINE='exec --no-startup-id ~/.bin-personal/autotiling'
-grep -Fx "$LINE" "$I3_CONFIG" >/dev/null || echo "$LINE" >> "$I3_CONFIG"
+# Clone or update autotiling repo
+REPO_DIR="$USER_HOME/autotiling"
+if [ ! -d "$REPO_DIR" ]; then
+    echo "Cloning autotiling repo..."
+    git clone --depth 1 https://github.com/nwg-piotr/autotiling.git "$REPO_DIR"
+else
+    echo "Updating existing autotiling repo..."
+    (cd "$REPO_DIR" && git pull --ff-only)
+fi
 
-echo "autotiling installed → golden-ratio splits active"
+# Correct filename is main.py inside the repo
+chmod +x "$REPO_DIR/main.py"
+
+# Create symlink in ~/.local/bin so i3 can find it
+mkdir -p "$USER_HOME/.local/bin"
+ln -sf "$REPO_DIR/main.py" "$USER_HOME/.local/bin/autotiling"
+
+# Ensure ~/.local/bin is in PATH (add to ~/.bashrc if not there)
+if ! grep -q '\.local/bin' "$USER_HOME/.bashrc" 2>/dev/null; then
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$USER_HOME/.bashrc"
+fi
+
+echo "autotiling installed and ready"
+echo "Add to i3 config: exec --no-startup-id ~/.local/bin/autotiling"
