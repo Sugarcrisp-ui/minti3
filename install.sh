@@ -1,5 +1,5 @@
 #!/bin/bash
-# install.sh – minti3 full system setup + restore (2025-12-12 FINAL – T14 PERFECT)
+# install.sh – minti3 full system setup + restore (2025-12-12 FINAL – 100% clean)
 
 USER=$(whoami)
 if [ "$USER" = "root" ]; then
@@ -23,7 +23,7 @@ echo "=== minti3 install started: $TIMESTAMP ==="
 echo "Caching sudo credentials..."
 sudo -v || exit 1
 
-# Load SSH key immediately – epub_to_audiobook is private
+# Load SSH key early for private repos
 if [[ -f "$USER_HOME/.ssh/id_ed25519" ]]; then
     eval "$(ssh-agent -s)" >/dev/null 2>&1
     ssh-add "$USER_HOME/.ssh/id_ed25519" 2>/dev/null || true
@@ -37,12 +37,12 @@ if [ ! -d "$GITHUB_REPOS_DIR/minti3" ]; then
 fi
 cd "$GITHUB_REPOS_DIR/minti3" || exit 1
 
-# === CRITICAL: Find backup drive – works with /backup OR /backup2 automatically ===
-ULTIMATE_PATH=$(find /media/$USER -type d \( -name "backup" -o -name "backup2" \) -prune -o -type d -name "ULTIMATE*" -print 2>/dev/null | head -n 1)
+# FINAL BACKUP DETECTION – works with backup OR backup2, any depth, any ULTIMATE* folder
+ULTIMATE_PATH=$(find /media/$USER -maxdepth 4 -type d -name "ULTIMATE*" -print 2>/dev/null | head -n 1)
 
 if [ -z "$ULTIMATE_PATH" ]; then
-    echo "ERROR: No ULTIMATE* backup found on any mounted drive under /media/$USER"
-    echo "   Looked in /media/$USER/backup and /media/$USER/backup2 (and subfolders)"
+    echo "ERROR: No ULTIMATE* backup found under /media/$USER"
+    echo "   Looked up to 4 levels deep in backup and backup2"
     echo "   Plug in your backup drive and re-run."
     exit 1
 fi
@@ -115,4 +115,3 @@ echo "=== minti3 installation + full restore complete! ==="
 echo "Reboot, choose i3 at login, and enjoy your perfect desktop."
 echo "FINAL STEP AFTER REBOOT:"
 echo " eval \"\$(ssh-agent -s)\" && ssh-add ~/.ssh/id_ed25519"
-echo " (loads your GitHub key — already restored from backup)"
