@@ -1,5 +1,5 @@
 #!/bin/bash
-# install.sh – FINAL 2025-12-12 – Git identity + full restore + no credential prompts
+# install.sh – FINAL 2025-12-14 – Syncthing skip on non-desktop
 
 USER=$(whoami)
 if [ "$USER" = "root" ]; then
@@ -63,9 +63,31 @@ for script in "${scripts[@]}"; do
     [ -f "$SCRIPTS_DIR/$script" ] && bash "$SCRIPTS_DIR/$script" || echo "Warning: $script missing"
 done
 
-# FULL RESTORE – CORRECTED: delete existing first, then copy clean
-echo "=== RESTORING ALL YOUR FILES FROM BACKUP (clean overwrite) ==="
+# FULL RESTORE
+echo "=== RESTORING ALL YOUR FILES FROM BACKUP ==="
 rsync -ah --delete --info=progress2 "$CONFIG_SRC"/. "$USER_HOME"/
+
+# SYNCTHING CLEANUP – only on non-desktop
+CURRENT_HOSTNAME=$(hostname)
+if [[ "$CURRENT_HOSTNAME" != "brett-ms-7d82" ]]; then
+    echo "Non-desktop detected — removing Syncthing folders"
+    SYNCTHING_DIRS=(
+        ".bin-personal"
+        ".config"
+        ".fonts"
+        "Appimages"
+        "Calibre-Library"
+        "Documents"
+        "Pictures"
+        ".local/share/applications"
+        "Shared"
+        "Videos"
+        ".local/share/ice/firefox"
+    )
+    for dir in "${SYNCTHING_DIRS[@]}"; do
+        rm -rf "$USER_HOME/$dir/.stfolder" 2>/dev/null || true
+    done
+fi
 
 echo "=== minti3 installation + full restore complete! ==="
 echo "Reboot → choose i3 → perfection"
