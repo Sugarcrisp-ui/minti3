@@ -19,7 +19,8 @@ sudo apt-get install -y --no-install-recommends \
     network-manager-gnome network-manager-openvpn-gnome \
     arandr audacity rsnapshot restic rclone \
     fonts-noto-extra fonts-noto-ui-core fonts-sil-gentium \
-    vlc xdotool
+    vlc xdotool\
+    python3-xlib python3-pip python3-venv
 
 # SDDM as default
 sudo debconf-set-selections <<< "gdm3 shared/default-x-display-manager select sddm" 2>/dev/null || true
