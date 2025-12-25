@@ -50,13 +50,10 @@ scripts=(
     "installbetterlockscreen.sh"
     "installi3logout.sh"
     "installautotiling.sh"
-    "installsddmsimplicity.sh"
-    "installxfcetheme.sh"
     "installrealvnc.sh"
-    "setupcronjobs.sh"
     "updatei3ipc.sh"
-    "setdpi.sh"
     "setcodecsbc.sh"
+    "thunarnavigatebackkeybinding.sh"
 )
 
 for script in "${scripts[@]}"; do
