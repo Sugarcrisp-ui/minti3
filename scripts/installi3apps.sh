@@ -20,7 +20,8 @@ sudo apt-get install -y --no-install-recommends \
     arandr audacity rsnapshot restic rclone \
     fonts-noto-extra fonts-noto-ui-core fonts-sil-gentium \
     vlc xdotool\
-    python3-xlib python3-pip python3-venv
+    python3-xlib python3-pip python3-venv \
+    meld sublime-text
 
 # SDDM as default
 sudo debconf-set-selections <<< "gdm3 shared/default-x-display-manager select sddm" 2>/dev/null || true
@@ -60,5 +61,29 @@ mkdir -p "$USER_HOME/.config/warp-terminal"
 cat > "$USER_HOME/.config/warp-terminal/user_preferences.json" <<'EOF'
 {"prefs":{"InputPosition":"start_at_the_top"}}
 EOF
+
+# VS Code – official Microsoft repo (idempotent)
+if ! command -v code >/dev/null 2>&1; then
+    echo "Installing VS Code (official Microsoft repo)..."
+    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+    sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+    rm packages.microsoft.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
+    sudo apt update
+    sudo apt install -y code
+else
+    echo "VS Code already installed – skipping"
+fi
+
+# Sublime Text – official repo (idempotent)
+if ! command -v subl >/dev/null 2>&1; then
+    echo "Installing Sublime Text (official repo)..."
+    wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
+    echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
+    sudo apt update
+    sudo apt install -y sublime-text
+else
+    echo "Sublime Text already installed – skipping"
+fi
 
 echo "i3-apps installation complete – future-proof"
