@@ -21,7 +21,7 @@ sudo apt-get install -y --no-install-recommends \
     fonts-noto-extra fonts-noto-ui-core fonts-sil-gentium \
     vlc xdotool\
     python3-xlib python3-pip python3-venv \
-    meld sublime-text
+    meld sublime-text flameshot
 
 # SDDM as default
 sudo debconf-set-selections <<< "gdm3 shared/default-x-display-manager select sddm" 2>/dev/null || true
